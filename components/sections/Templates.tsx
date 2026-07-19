@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 const featuredDesigns = [
   {
@@ -42,7 +42,7 @@ const featuredDesigns = [
 ];
 
 export default function Templates() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -50,12 +50,12 @@ export default function Templates() {
     },
   };
 
-  const cardVariants = {
+  const cardVariants: Variants = {
     hidden: { opacity: 0, y: 40 },
     show: {
       opacity: 1,
       y: 0,
-      transition: { type: "spring", stiffness: 40, damping: 20, duration: 1.2 },
+      transition: { type: "spring" as const, stiffness: 40, damping: 20, duration: 1.2 },
     },
   };
 
