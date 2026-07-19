@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  /* Obsidian & Brushed Brass Theme */
+  --bg-base: #050505;
+  --bg-surface: #111111;
+  --bg-elevated: #1a1a1a;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-muted: #5c5c5c;
+  
+  /* Brushed Brass / Antique Gold */
+  --accent: #CBA365;
+  --accent-hover: #b89154;
+  
+  --border: #222222;
+  --border-light: #333333;
+}
+
+@theme inline {
+  --color-bg-base: var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  
+  /* For backward compatibility with existing components during transition */
+  --color-background: var(--bg-base);
+  --color-surface: var(--bg-surface);
+  --color-text: var(--text-primary);
+  --color-text-muted: var(--text-secondary);
+  --color-primary: var(--accent);
+  --color-primary-hover: var(--accent-hover);
+  
+  --font-sans: var(--font-outfit);
+  --font-heading: var(--font-bodoni);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-outfit), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.heading-font {
+  font-family: var(--font-bodoni), serif;
+}
+
+::selection {
+  background: var(--accent);
+  color: #050505;
+}
+
+/* Subtle premium animations */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
