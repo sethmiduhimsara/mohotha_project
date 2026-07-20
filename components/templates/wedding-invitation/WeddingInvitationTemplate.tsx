@@ -148,7 +148,7 @@ function HeroSection() {
     <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
       <motion.div className="absolute inset-0 z-0">
         <Image
-          src="/images/hero/wedding-hero.jpg"
+          src="/images/hero/wedding-hero1.jpg"
           alt="Wedding Background"
           fill
           priority
@@ -227,7 +227,7 @@ function BrideGroomSection() {
       <div className="grid md:grid-cols-2 gap-16 md:gap-8 items-center max-w-5xl mx-auto">
         <FadeIn direction="right" className="flex flex-col items-center text-center">
           <div className="relative w-64 h-80 md:w-80 md:h-100 mb-8 overflow-hidden rounded-t-full shadow-2xl">
-            <Image src="/images/hero/wedding-hero.jpg" alt="The Bride" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+            <Image src="/images/hero/wedding-hero1.jpg" alt="The Bride" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
           </div>
           <h3 className="font-serif text-3xl mb-2">Nayana Kumari</h3>
           <p className="text-foreground/60 uppercase tracking-widest text-xs mb-4">The Bride</p>
