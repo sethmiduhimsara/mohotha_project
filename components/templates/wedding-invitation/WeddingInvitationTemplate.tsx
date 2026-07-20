@@ -3,7 +3,14 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, Gift, MapPin, Navigation, ChevronDown } from "lucide-react";
+import {
+  Heart,
+  Gift,
+  MapPin,
+  Navigation,
+  ChevronDown,
+  CalendarDays,
+} from "lucide-react";
 import Button from "@/components/ui/Button";
 import Section from "@/components/ui/Section";
 import { FadeIn } from "./FadeIn";
@@ -27,7 +34,8 @@ const scheduleItems = [
   {
     time: "08:00 PM",
     title: "After Party",
-    description: "Let your hair down and dance the night away with our live DJ.",
+    description:
+      "Let your hair down and dance the night away with our live DJ.",
   },
 ];
 
@@ -67,6 +75,21 @@ const wishes = [
   },
 ];
 
+const googleCalendarUrl = (() => {
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: "Amara & Nayana Wedding",
+    dates: "20261212/20261213",
+    details:
+      "Join us to celebrate the wedding of Amara and Nayana on December 12, 2026.",
+    location:
+      "Waters Edge Grand Ballroom, 316 Ethul Kotte Road, Battaramulla 10100, Sri Lanka",
+    ctz: "Asia/Colombo",
+  });
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+})();
+
 function Header() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -93,24 +116,22 @@ function Header() {
       className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4"
     >
       <nav
-        className={
-          `flex items-center gap-2 md:gap-6 px-6 py-3 rounded-full transition-all duration-700 ease-in-out border shadow-lg backdrop-blur-xl ${
-            scrolled
-              ? "bg-white/80 border-black/5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
-              : "bg-black/20 border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
-          }`
-        }
+        className={`flex items-center gap-2 md:gap-6 px-6 py-3 rounded-full transition-all duration-700 ease-in-out border shadow-lg backdrop-blur-xl ${
+          scrolled
+            ? "bg-white/80 border-black/5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
+            : "bg-black/20 border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
+        }`}
       >
         <ul className="flex items-center gap-4 md:gap-8 overflow-x-auto no-scrollbar">
           {navItems.map((item) => (
             <li key={item.name}>
               <a
                 href={item.href}
-                className={
-                  `text-[10px] md:text-xs font-semibold tracking-[0.2em] uppercase transition-colors duration-300 whitespace-nowrap ${
-                    scrolled ? "text-foreground/70 hover:text-primary" : "text-white/80 hover:text-white"
-                  }`
-                }
+                className={`text-[10px] md:text-xs font-semibold tracking-[0.2em] uppercase transition-colors duration-300 whitespace-nowrap ${
+                  scrolled
+                    ? "text-foreground/70 hover:text-primary"
+                    : "text-white/80 hover:text-white"
+                }`}
               >
                 {item.name}
               </a>
@@ -127,14 +148,18 @@ function Footer() {
     <footer className="py-20 text-center relative overflow-hidden bg-foreground text-white">
       <div className="max-w-4xl mx-auto px-6">
         <FadeIn direction="up">
-          <h2 className="font-serif text-4xl md:text-5xl mb-6">Amara & Nayana</h2>
+          <h2 className="font-serif text-4xl md:text-5xl mb-6">
+            Amara & Nayana
+          </h2>
           <p className="font-sans text-white/60 mb-8 tracking-widest uppercase text-sm">
             Thank you for being part of our story
           </p>
           <div className="flex justify-center mb-8">
             <Heart className="text-primary w-6 h-6 animate-pulse" />
           </div>
-          <p className="text-xs text-white/40">&copy; {new Date().getFullYear()} All rights reserved.</p>
+          <p className="text-xs text-white/40">
+            &copy; {new Date().getFullYear()} All rights reserved.
+          </p>
         </FadeIn>
       </div>
     </footer>
@@ -148,7 +173,7 @@ function HeroSection() {
     <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
       <motion.div className="absolute inset-0 z-0">
         <Image
-          src="/images/hero/wedding-hero1.jpg"
+          src="/images/hero/hero1.png"
           alt="Wedding Background"
           fill
           priority
@@ -167,7 +192,8 @@ function HeroSection() {
 
         <FadeIn delay={0.9} duration={1.2} direction="up">
           <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-white mb-6 drop-shadow-lg">
-            Amara <span className="text-primary italic font-light">&amp;</span> Nayana
+            Amara <span className="text-primary italic font-light">&amp;</span>{" "}
+            Nayana
           </h1>
         </FadeIn>
 
@@ -175,6 +201,20 @@ function HeroSection() {
           <p className="text-xl md:text-2xl text-white/90 font-light tracking-widest uppercase">
             December 12, 2026
           </p>
+        </FadeIn>
+
+        <FadeIn delay={1.4} duration={1.2} direction="up">
+          <div className="mt-8 flex justify-center">
+            <Button
+              href={googleCalendarUrl}
+              variant="ghost"
+              className="gap-2 border-white/30 bg-white/10 px-6 py-3 text-[10px] uppercase tracking-[0.35em] text-white backdrop-blur-md hover:bg-white/15"
+              aria-label="Add wedding date to Google Calendar"
+            >
+              <CalendarDays className="h-4 w-4" />
+              Add to Google Calendar
+            </Button>
+          </div>
         </FadeIn>
       </div>
 
@@ -184,8 +224,13 @@ function HeroSection() {
         transition={{ delay: 1.8, duration: 1 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center"
       >
-        <p className="text-white/60 text-xs tracking-widest uppercase mb-2">Scroll to explore</p>
-        <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
+        <p className="text-white/60 text-xs tracking-widest uppercase mb-2">
+          Scroll to explore
+        </p>
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
           <ChevronDown className="text-white/80 w-6 h-6" />
         </motion.div>
       </motion.div>
@@ -195,18 +240,24 @@ function HeroSection() {
 
 function InvitationSection() {
   return (
-    <Section id="invitation" className="bg-background text-center py-24 md:py-40">
+    <Section
+      id="invitation"
+      className="bg-background text-center py-24 md:py-40"
+    >
       <FadeIn duration={1.2}>
         <div className="max-w-3xl mx-auto flex flex-col items-center">
           <h2 className="font-serif text-3xl md:text-5xl text-foreground mb-10 leading-snug">
-            With joyful hearts, we invite you to <br className="hidden md:block" />
+            With joyful hearts, we invite you to{" "}
+            <br className="hidden md:block" />
             share in our celebration of love and commitment.
           </h2>
 
           <div className="h-24 w-px bg-primary/40 my-8" />
 
           <p className="text-foreground/70 text-lg md:text-xl font-light max-w-xl mx-auto leading-relaxed">
-            Your presence will bring us great joy as we begin our new life together. We look forward to celebrating this special day surrounded by our closest friends and family.
+            Your presence will bring us great joy as we begin our new life
+            together. We look forward to celebrating this special day surrounded
+            by our closest friends and family.
           </p>
         </div>
       </FadeIn>
@@ -219,31 +270,59 @@ function BrideGroomSection() {
     <Section id="couple" className="bg-secondary/20">
       <div className="text-center mb-16 md:mb-24">
         <FadeIn>
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">The Couple</h2>
-          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">Two souls, one heart</p>
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
+            The Couple
+          </h2>
+          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">
+            Two souls, one heart
+          </p>
         </FadeIn>
       </div>
 
       <div className="grid md:grid-cols-2 gap-16 md:gap-8 items-center max-w-5xl mx-auto">
-        <FadeIn direction="right" className="flex flex-col items-center text-center">
+        <FadeIn
+          direction="right"
+          className="flex flex-col items-center text-center"
+        >
           <div className="relative w-64 h-80 md:w-80 md:h-100 mb-8 overflow-hidden rounded-t-full shadow-2xl">
-            <Image src="/images/hero/wedding-hero1.jpg" alt="The Bride" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+            <Image
+              src="/images/hero/hero1.png"
+              alt="The Bride"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
           </div>
           <h3 className="font-serif text-3xl mb-2">Nayana Kumari</h3>
-          <p className="text-foreground/60 uppercase tracking-widest text-xs mb-4">The Bride</p>
+          <p className="text-foreground/60 uppercase tracking-widest text-xs mb-4">
+            The Bride
+          </p>
           <p className="text-sm font-light text-foreground/80 max-w-xs leading-relaxed">
-            A lover of art, coffee, and quiet mornings. She brings light to every room and joy to every moment.
+            A lover of art, coffee, and quiet mornings. She brings light to
+            every room and joy to every moment.
           </p>
         </FadeIn>
 
-        <FadeIn direction="left" className="flex flex-col items-center text-center">
+        <FadeIn
+          direction="left"
+          className="flex flex-col items-center text-center"
+        >
           <div className="relative w-64 h-80 md:w-80 md:h-100 mb-8 overflow-hidden rounded-t-full shadow-2xl">
-            <Image src="/images/hero/wedding-hero.jpg" alt="The Groom" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+            <Image
+              src="/images/hero/wedding-hero.jpg"
+              alt="The Groom"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
           </div>
           <h3 className="font-serif text-3xl mb-2">Amara Kumara</h3>
-          <p className="text-foreground/60 uppercase tracking-widest text-xs mb-4">The Groom</p>
+          <p className="text-foreground/60 uppercase tracking-widest text-xs mb-4">
+            The Groom
+          </p>
           <p className="text-sm font-light text-foreground/80 max-w-xs leading-relaxed">
-            An adventurous spirit with a heart of gold. He finds beauty in the little things and comfort in her smile.
+            An adventurous spirit with a heart of gold. He finds beauty in the
+            little things and comfort in her smile.
           </p>
         </FadeIn>
       </div>
@@ -256,8 +335,12 @@ function LoveStorySection() {
     <Section id="story" className="bg-background">
       <div className="text-center mb-20">
         <FadeIn>
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">Our Story</h2>
-          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">A journey of love</p>
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
+            Our Story
+          </h2>
+          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">
+            A journey of love
+          </p>
         </FadeIn>
       </div>
 
@@ -268,20 +351,25 @@ function LoveStorySection() {
           {timeline.map((item, index) => {
             const isEven = index % 2 === 0;
             return (
-              <div key={item.year} className="relative flex flex-col md:flex-row items-center justify-between">
+              <div
+                key={item.year}
+                className="relative flex flex-col md:flex-row items-center justify-between"
+              >
                 <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-primary hidden md:block shadow-[0_0_15px_rgba(201,162,39,0.6)] z-20" />
                 <FadeIn
                   direction={isEven ? "right" : "left"}
-                  className={
-                    `md:w-[45%] bg-secondary/5 backdrop-blur-xl p-8 md:p-10 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_rgba(201,162,39,0.15)] hover:-translate-y-1 border border-primary/20 relative z-10 transition-all duration-500 ${
-                      isEven ? "md:text-right" : "md:order-last md:text-left text-center"
-                    } text-center mb-12 md:mb-0 w-full`
-                  }
+                  className={`md:w-[45%] bg-secondary/5 backdrop-blur-xl p-8 md:p-10 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_rgba(201,162,39,0.15)] hover:-translate-y-1 border border-primary/20 relative z-10 transition-all duration-500 ${
+                    isEven
+                      ? "md:text-right"
+                      : "md:order-last md:text-left text-center"
+                  } text-center mb-12 md:mb-0 w-full`}
                 >
                   <span className="text-primary font-serif text-7xl md:text-8xl opacity-15 absolute -top-10 -left-4 md:-left-8 select-none z-0 pointer-events-none">
                     {item.year}
                   </span>
-                  <h3 className="font-serif text-3xl mb-4 relative z-10 text-foreground drop-shadow-sm">{item.title}</h3>
+                  <h3 className="font-serif text-3xl mb-4 relative z-10 text-foreground drop-shadow-sm">
+                    {item.title}
+                  </h3>
                   <p className="font-light text-foreground/80 text-sm md:text-base leading-relaxed relative z-10">
                     {item.description}
                   </p>
@@ -297,7 +385,12 @@ function LoveStorySection() {
 }
 
 function CountdownSection() {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
     const targetDate = new Date("2026-12-12T00:00:00").getTime();
@@ -312,7 +405,9 @@ function CountdownSection() {
 
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        hours: Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        ),
         minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
         seconds: Math.floor((distance % (1000 * 60)) / 1000),
       });
@@ -324,19 +419,33 @@ function CountdownSection() {
   return (
     <section className="relative py-32 overflow-hidden flex items-center justify-center">
       <div className="absolute inset-0 z-0">
-        <Image src="/images/hero/wedding-hero.jpg" alt="Countdown Background" fill className="object-cover object-center grayscale opacity-40 mix-blend-multiply" />
+        <Image
+          src="/images/hero/wedding-hero.jpg"
+          alt="Countdown Background"
+          fill
+          className="object-cover object-center grayscale opacity-40 mix-blend-multiply"
+        />
         <div className="absolute inset-0 bg-accent/90" />
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center w-full">
         <FadeIn>
-          <h2 className="font-serif text-3xl md:text-5xl text-white mb-12">Counting Down to Forever</h2>
+          <h2 className="font-serif text-3xl md:text-5xl text-white mb-12">
+            Counting Down to Forever
+          </h2>
 
           <div className="flex justify-center gap-4 md:gap-8 flex-wrap">
             {Object.entries(timeLeft).map(([label, value]) => (
-              <div key={label} className="glass text-white w-24 h-24 md:w-32 md:h-32 flex flex-col items-center justify-center rounded-2xl">
-                <span className="font-serif text-3xl md:text-5xl mb-1">{value}</span>
-                <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] opacity-80">{label}</span>
+              <div
+                key={label}
+                className="glass text-white w-24 h-24 md:w-32 md:h-32 flex flex-col items-center justify-center rounded-2xl"
+              >
+                <span className="font-serif text-3xl md:text-5xl mb-1">
+                  {value}
+                </span>
+                <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] opacity-80">
+                  {label}
+                </span>
               </div>
             ))}
           </div>
@@ -351,8 +460,12 @@ function ScheduleSection() {
     <Section id="schedule" className="bg-background">
       <div className="text-center mb-20">
         <FadeIn>
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">Wedding Day</h2>
-          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">The Agenda</p>
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
+            Wedding Day
+          </h2>
+          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">
+            The Agenda
+          </p>
         </FadeIn>
       </div>
 
@@ -363,19 +476,28 @@ function ScheduleSection() {
           {scheduleItems.map((item, index) => {
             const isEven = index % 2 === 0;
             return (
-              <div key={item.title} className="relative flex flex-col md:flex-row items-center justify-between">
+              <div
+                key={item.title}
+                className="relative flex flex-col md:flex-row items-center justify-between"
+              >
                 <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-primary hidden md:block shadow-[0_0_15px_rgba(201,162,39,0.6)] z-20" />
                 <FadeIn
                   direction={isEven ? "right" : "left"}
-                  className={
-                    `md:w-[45%] bg-secondary/5 backdrop-blur-xl p-8 md:p-10 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_rgba(201,162,39,0.15)] hover:-translate-y-1 border border-primary/20 relative z-10 transition-all duration-500 ${
-                      isEven ? "md:text-right" : "md:order-last md:text-left text-center"
-                    } text-center mb-12 md:mb-0 w-full`
-                  }
+                  className={`md:w-[45%] bg-secondary/5 backdrop-blur-xl p-8 md:p-10 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_rgba(201,162,39,0.15)] hover:-translate-y-1 border border-primary/20 relative z-10 transition-all duration-500 ${
+                    isEven
+                      ? "md:text-right"
+                      : "md:order-last md:text-left text-center"
+                  } text-center mb-12 md:mb-0 w-full`}
                 >
-                  <p className="text-primary font-sans text-xs md:text-sm uppercase tracking-[0.3em] font-semibold mb-3">{item.time}</p>
-                  <h3 className="font-serif text-3xl mb-4 relative z-10 text-foreground drop-shadow-sm">{item.title}</h3>
-                  <p className="font-light text-foreground/80 text-sm md:text-base leading-relaxed relative z-10">{item.description}</p>
+                  <p className="text-primary font-sans text-xs md:text-sm uppercase tracking-[0.3em] font-semibold mb-3">
+                    {item.time}
+                  </p>
+                  <h3 className="font-serif text-3xl mb-4 relative z-10 text-foreground drop-shadow-sm">
+                    {item.title}
+                  </h3>
+                  <p className="font-light text-foreground/80 text-sm md:text-base leading-relaxed relative z-10">
+                    {item.description}
+                  </p>
                 </FadeIn>
                 <div className="md:w-[45%] hidden md:block" />
               </div>
@@ -392,17 +514,30 @@ function VenueSection() {
     <Section id="venue" className="bg-background">
       <div className="text-center mb-16 md:mb-24">
         <FadeIn>
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">The Venue</h2>
-          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">Where the magic happens</p>
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
+            The Venue
+          </h2>
+          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">
+            Where the magic happens
+          </p>
         </FadeIn>
       </div>
 
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 items-center">
-        <FadeIn direction="right" className="w-full lg:w-1/3 flex flex-col justify-center bg-white p-10 rounded-2xl shadow-xl border border-secondary/20">
+        <FadeIn
+          direction="right"
+          className="w-full lg:w-1/3 flex flex-col justify-center bg-white p-10 rounded-2xl shadow-xl border border-secondary/20"
+        >
           <MapPin className="w-10 h-10 text-primary mb-6" />
-          <h3 className="font-serif text-3xl mb-4">Waters Edge Grand Ballroom</h3>
-          <p className="font-light text-foreground/70 mb-2">316 Ethul Kotte Road,</p>
-          <p className="font-light text-foreground/70 mb-8">Battaramulla 10100, Sri Lanka.</p>
+          <h3 className="font-serif text-3xl mb-4">
+            Waters Edge Grand Ballroom
+          </h3>
+          <p className="font-light text-foreground/70 mb-2">
+            316 Ethul Kotte Road,
+          </p>
+          <p className="font-light text-foreground/70 mb-8">
+            Battaramulla 10100, Sri Lanka.
+          </p>
 
           <Button variant="secondary" className="w-fit self-start gap-2 group">
             <Navigation className="w-4 h-4 group-hover:animate-pulse" />
@@ -410,9 +545,20 @@ function VenueSection() {
           </Button>
         </FadeIn>
 
-        <FadeIn direction="left" className="w-full lg:w-2/3 h-100 md:h-125 rounded-2xl overflow-hidden shadow-2xl relative">
-          <Image src="/images/hero/wedding-hero.jpg" alt="Venue" fill className="object-cover grayscale-50 hover:grayscale-0 transition-all duration-1000" sizes="(max-width: 1024px) 100vw, 66vw" />
-          <div className="absolute inset-0 bg-black/10" />
+        <FadeIn
+          direction="left"
+          className="w-full lg:w-2/3 h-100 md:h-125 rounded-2xl overflow-hidden shadow-2xl relative"
+        >
+          <iframe
+            src="https://maps.google.com/maps?q=Waters+Edge,+Sri+Lanka&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen={false}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="filter grayscale-50 hover:grayscale-0 transition-all duration-1000"
+          ></iframe>
         </FadeIn>
       </div>
     </Section>
@@ -421,16 +567,43 @@ function VenueSection() {
 
 function GallerySection() {
   const images = [
-    { alt: "Engagement", aspect: "aspect-[3/4]" },
-    { alt: "Pre-shoot", aspect: "aspect-[4/5]" },
-    { alt: "Together", aspect: "aspect-[16/9]" },
-    { alt: "The Bride", aspect: "aspect-[3/4]" },
-    { alt: "The Groom", aspect: "aspect-[4/5]" },
-    { alt: "Forever", aspect: "aspect-[1/1]" },
+    {
+      src: "/images/gallery-1.jpg",
+      alt: "Gallery moment 1",
+      aspect: "aspect-[3/4]",
+    },
+    {
+      src: "/images/gallery-2.jpg",
+      alt: "Gallery moment 2",
+      aspect: "aspect-[4/5]",
+    },
+    {
+      src: "/images/gallery-3.jpg",
+      alt: "Gallery moment 3",
+      aspect: "aspect-[16/9]",
+    },
+    {
+      src: "/images/gallery-4.jpg",
+      alt: "Gallery moment 4",
+      aspect: "aspect-[3/4]",
+    },
+    {
+      src: "/images/gallery-5.jpg",
+      alt: "Gallery moment 5",
+      aspect: "aspect-[4/5]",
+    },
+    {
+      src: "/images/gallery-6.jpg",
+      alt: "Gallery moment 6",
+      aspect: "aspect-[1/1]",
+    },
   ];
 
   return (
-    <Section id="gallery" className="bg-transparent overflow-hidden py-24 relative">
+    <Section
+      id="gallery"
+      className="bg-transparent overflow-hidden py-24 relative"
+    >
       <div className="absolute inset-0 pointer-events-none -z-10">
         <div className="absolute top-[20%] left-[-10%] h-[40rem] w-[40rem] rounded-full bg-primary/5 blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] h-[30rem] w-[30rem] rounded-full bg-primary/5 blur-[100px]" />
@@ -440,10 +613,14 @@ function GallerySection() {
         <FadeIn>
           <div className="mb-3 flex items-center justify-center gap-4">
             <span className="h-px w-12 bg-gradient-to-r from-transparent to-primary/70" />
-            <p className="text-[10px] uppercase tracking-[0.45em] text-foreground/80">Captured Moments</p>
+            <p className="text-[10px] uppercase tracking-[0.45em] text-foreground/80">
+              Captured Moments
+            </p>
             <span className="h-px w-12 bg-gradient-to-l from-transparent to-primary/70" />
           </div>
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4 tracking-[0.08em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">Our Gallery</h2>
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4 tracking-[0.08em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+            Our Gallery
+          </h2>
         </FadeIn>
       </div>
 
@@ -451,27 +628,40 @@ function GallerySection() {
         <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#1a050b] to-transparent z-20 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#1a050b] to-transparent z-20 pointer-events-none" />
 
-        <motion.div className="flex w-max cursor-pointer hover:[animation-play-state:paused]" animate={{ x: ["0%", "-50%"] }} transition={{ ease: "linear", duration: 32, repeat: Infinity }}>
+        <motion.div
+          className="flex w-max cursor-pointer hover:[animation-play-state:paused]"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ ease: "linear", duration: 32, repeat: Infinity }}
+        >
           {[0, 1].map((set) => (
-            <div key={set} className="flex gap-6 md:gap-8 pr-6 md:pr-8 items-center">
+            <div
+              key={set}
+              className="flex gap-6 md:gap-8 pr-6 md:pr-8 items-center"
+            >
               {images.map((img, index) => {
                 const isEven = index % 2 === 0;
 
                 return (
                   <motion.div
                     key={`${set}-${index}`}
-                    className={
-                      `relative min-w-[280px] sm:min-w-[320px] md:min-w-[400px] flex-shrink-0 rounded-[2rem] overflow-hidden border border-primary/20 bg-secondary/30 shadow-[0_15px_30px_rgba(0,0,0,0.4)] ${img.aspect} ${isEven ? "-translate-y-6 md:-translate-y-10" : "translate-y-6 md:translate-y-10"}`
-                    }
+                    className={`relative min-w-[280px] sm:min-w-[320px] md:min-w-[400px] flex-shrink-0 rounded-[2rem] overflow-hidden border border-primary/20 bg-secondary/30 shadow-[0_15px_30px_rgba(0,0,0,0.4)] ${img.aspect} ${isEven ? "-translate-y-6 md:-translate-y-10" : "translate-y-6 md:translate-y-10"}`}
                     whileHover={{ scale: 1.03, zIndex: 30 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
                   >
                     <div className="absolute inset-0 bg-primary/10 mix-blend-overlay z-10 pointer-events-none" />
-                    <Image src="/images/hero/wedding-hero.jpg" alt={img.alt} fill className="object-cover pointer-events-none transition-transform duration-1000 hover:scale-110" sizes="(max-width: 768px) 80vw, 400px" />
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      className="object-cover pointer-events-none transition-transform duration-1000 hover:scale-110"
+                      sizes="(max-width: 768px) 80vw, 400px"
+                    />
                     <div className="pointer-events-none absolute inset-[12px] rounded-[1.4rem] border border-primary/30 opacity-70" />
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 z-20 flex flex-col justify-end p-8 pointer-events-auto">
-                      <p className="text-white font-serif text-2xl tracking-widest translate-y-4 hover:translate-y-0 transition-transform duration-500">{img.alt}</p>
+                      <p className="text-white font-serif text-2xl tracking-widest translate-y-4 hover:translate-y-0 transition-transform duration-500">
+                        {img.alt}
+                      </p>
                       <div className="w-8 h-[1px] bg-primary mt-4 opacity-0 hover:opacity-100 transition-opacity duration-500 delay-100" />
                     </div>
                   </motion.div>
@@ -491,19 +681,36 @@ function DressCodeSection() {
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
         <FadeIn direction="right" className="w-full md:w-1/2">
           <div className="relative w-full h-125 rounded-2xl overflow-hidden shadow-2xl">
-            <Image src="/images/hero/wedding-hero.jpg" alt="Dress Code" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+            <Image
+              src="/images/dress-code.png"
+              alt="Dress Code"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
             <div className="absolute inset-0 bg-black/10" />
           </div>
         </FadeIn>
 
-        <FadeIn direction="left" className="w-full md:w-1/2 text-center md:text-left">
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-6">Dress Code</h2>
-          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-primary mb-8 font-medium">Black Tie Optional</p>
+        <FadeIn
+          direction="left"
+          className="w-full md:w-1/2 text-center md:text-left"
+        >
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-6">
+            Dress Code
+          </h2>
+          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-primary mb-8 font-medium">
+            Black Tie Optional
+          </p>
           <p className="font-light text-foreground/80 leading-relaxed mb-6">
-            We request our guests to dress in formal attire. Gentlemen are encouraged to wear a tuxedo or a dark suit and tie. Ladies are encouraged to wear an evening gown or a formal cocktail dress.
+            We request our guests to dress in formal attire. Gentlemen are
+            encouraged to wear a tuxedo or a dark suit and tie. Ladies are
+            encouraged to wear an evening gown or a formal cocktail dress.
           </p>
           <p className="font-light text-foreground/80 leading-relaxed">
-            Please avoid wearing white, ivory, or any shades of the bridal colors. We appreciate your effort to make our special day elegant and memorable.
+            Please avoid wearing white, ivory, or any shades of the bridal
+            colors. We appreciate your effort to make our special day elegant
+            and memorable.
           </p>
         </FadeIn>
       </div>
@@ -519,68 +726,78 @@ function RSVPSection() {
 
       <div className="max-w-2xl mx-auto relative z-10 text-center">
         <FadeIn>
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">RSVP</h2>
-          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60 mb-12">Kindly respond by October 1st, 2026</p>
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
+            RSVP
+          </h2>
+          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60 mb-12">
+            Kindly respond by October 1st, 2026
+          </p>
         </FadeIn>
 
-        <FadeIn delay={0.2} className="glass p-8 md:p-12 rounded-3xl text-left border border-primary/20 shadow-[0_20px_40px_rgba(0,0,0,0.05)]">
-          <form className="space-y-6" onSubmit={(event) => event.preventDefault()}>
+        <FadeIn
+          delay={0.2}
+          className="glass p-8 md:p-12 rounded-3xl text-left border border-primary/20 shadow-[0_20px_40px_rgba(0,0,0,0.05)]"
+        >
+          <form
+            className="space-y-6"
+            onSubmit={(event) => event.preventDefault()}
+          >
             <div className="space-y-2">
-              <label className="text-sm uppercase tracking-widest text-foreground/80 font-medium">Full Name</label>
-              <input type="text" placeholder="Mr. & Mrs. Smith" className="w-full bg-transparent border-b border-foreground/20 py-3 focus:outline-none focus:border-primary transition-colors text-lg" />
+              <label className="text-sm uppercase tracking-widest text-foreground/80 font-medium">
+                Full Name
+              </label>
+              <input
+                type="text"
+                placeholder="Mr. & Mrs. Smith"
+                className="w-full bg-transparent border-b border-foreground/20 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
+              />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm uppercase tracking-widest text-foreground/80 font-medium">Will you attend?</label>
+              <label className="text-sm uppercase tracking-widest text-foreground/80 font-medium">
+                Will you attend?
+              </label>
               <div className="flex gap-4 pt-2">
                 <label className="flex items-center gap-2 cursor-pointer group">
                   <div className="w-5 h-5 rounded-full border border-primary flex items-center justify-center">
                     <div className="w-3 h-3 rounded-full bg-primary opacity-0 group-hover:opacity-50 transition-opacity" />
                   </div>
-                  <span className="text-foreground/80 font-light">Joyfully Accept</span>
+                  <span className="text-foreground/80 font-light">
+                    Joyfully Accept
+                  </span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer group">
                   <div className="w-5 h-5 rounded-full border border-foreground/30 flex items-center justify-center">
                     <div className="w-3 h-3 rounded-full bg-foreground/30 opacity-0 group-hover:opacity-50 transition-opacity" />
                   </div>
-                  <span className="text-foreground/80 font-light">Regretfully Decline</span>
+                  <span className="text-foreground/80 font-light">
+                    Regretfully Decline
+                  </span>
                 </label>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm uppercase tracking-widest text-foreground/80 font-medium">Dietary Restrictions</label>
-              <input type="text" placeholder="e.g. Vegetarian, Nut Allergy" className="w-full bg-transparent border-b border-foreground/20 py-3 focus:outline-none focus:border-primary transition-colors text-lg" />
+              <label className="text-sm uppercase tracking-widest text-foreground/80 font-medium">
+                Dietary Restrictions
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Vegetarian, Nut Allergy"
+                className="w-full bg-transparent border-b border-foreground/20 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
+              />
             </div>
 
             <div className="pt-6 text-center">
-              <Button type="button" variant="primary" className="w-full md:w-auto px-16">Send RSVP</Button>
+              <Button
+                type="button"
+                variant="primary"
+                className="w-full md:w-auto px-16"
+              >
+                Send RSVP
+              </Button>
             </div>
           </form>
-        </FadeIn>
-      </div>
-    </Section>
-  );
-}
-
-function GiftInformationSection() {
-  return (
-    <Section id="gifts" className="bg-secondary/20">
-      <div className="max-w-3xl mx-auto text-center">
-        <FadeIn>
-          <Gift className="w-12 h-12 text-primary mx-auto mb-8" />
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-6">Wedding Registry</h2>
-
-          <p className="font-light text-foreground/80 text-lg leading-relaxed mb-10">
-            The greatest gift of all is your presence on our special day. However, should you wish to help us celebrate with a gift, a contribution towards our honeymoon would be warmly appreciated.
-          </p>
-
-          <div className="glass inline-block p-8 rounded-2xl border border-primary/20">
-            <p className="font-sans font-medium text-lg mb-2 text-foreground">Bank Transfer Details</p>
-            <p className="font-light text-foreground/70 mb-1">Account Name: Amara &amp; Nayana</p>
-            <p className="font-light text-foreground/70 mb-1">BSB: 123-456</p>
-            <p className="font-light text-foreground/70">Account: 9876 5432</p>
-          </div>
         </FadeIn>
       </div>
     </Section>
@@ -592,18 +809,33 @@ function GuestWishesSection() {
     <Section id="wishes" className="bg-background">
       <div className="text-center mb-16 md:mb-24">
         <FadeIn>
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">Guest Book</h2>
-          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">Kind Words</p>
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
+            Guest Book
+          </h2>
+          <p className="uppercase tracking-[0.2em] text-xs md:text-sm text-foreground/60">
+            Kind Words
+          </p>
         </FadeIn>
       </div>
 
       <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {wishes.map((wish, index) => (
-          <FadeIn key={wish.name} delay={index * 0.15} direction="up" className="p-8 rounded-2xl bg-white border border-secondary/20 shadow-lg hover:shadow-xl transition-shadow flex flex-col justify-between">
-            <p className="font-light text-foreground/80 italic mb-6 leading-relaxed">{wish.text}</p>
+          <FadeIn
+            key={wish.name}
+            delay={index * 0.15}
+            direction="up"
+            className="p-8 rounded-2xl bg-white border border-secondary/20 shadow-lg hover:shadow-xl transition-shadow flex flex-col justify-between"
+          >
+            <p className="font-light text-foreground/80 italic mb-6 leading-relaxed">
+              {wish.text}
+            </p>
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-secondary/50 flex items-center justify-center font-serif text-primary">{wish.name.charAt(0)}</div>
-              <span className="font-medium text-sm text-foreground/90 uppercase tracking-wider">{wish.name}</span>
+              <div className="w-10 h-10 rounded-full bg-secondary/50 flex items-center justify-center font-serif text-primary">
+                {wish.name.charAt(0)}
+              </div>
+              <span className="font-medium text-sm text-foreground/90 uppercase tracking-wider">
+                {wish.name}
+              </span>
             </div>
           </FadeIn>
         ))}
@@ -626,7 +858,6 @@ export function WeddingInvitationTemplate() {
       <GallerySection />
       <DressCodeSection />
       <RSVPSection />
-      <GiftInformationSection />
       <GuestWishesSection />
       <Footer />
     </main>
