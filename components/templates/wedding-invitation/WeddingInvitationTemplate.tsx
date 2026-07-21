@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Heart,
   Gift,
@@ -90,6 +90,103 @@ const googleCalendarUrl = (() => {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 })();
 
+function InvitationIntro({
+  onEnter,
+}: {
+  onEnter: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.6, ease: "easeOut" } }}
+      className="fixed inset-0 z-50 overflow-hidden bg-[#090909]"
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(201,162,39,0.15),transparent_45%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_30%),#090909]" />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1, ease: [0.21, 0.47, 0.32, 0.98] }}
+        className="relative flex min-h-screen items-center justify-center px-6 text-center text-white"
+      >
+        <motion.div
+          className="absolute inset-0"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+        >
+          <div className="absolute left-1/2 top-1/2 h-136 w-136 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10" />
+          <div className="absolute left-1/2 top-1/2 h-88 w-88 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20" />
+        </motion.div>
+
+        <div className="relative z-10 max-w-3xl">
+          <motion.p
+            initial={{ opacity: 0, y: 18, letterSpacing: "0.45em" }}
+            animate={{ opacity: 1, y: 0, letterSpacing: "0.3em" }}
+            transition={{ duration: 0.9, delay: 0.15 }}
+            className="mb-6 text-[10px] uppercase tracking-[0.3em] text-primary/90"
+          >
+            A Special Invitation
+          </motion.p>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 28, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, delay: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
+            className="font-serif text-5xl leading-tight md:text-7xl lg:text-8xl"
+          >
+            Amara <span className="text-primary italic font-light">&amp;</span>{" "}
+            Nayana
+          </motion.h1>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.55 }}
+            className="mx-auto mt-8 max-w-xl"
+          >
+            <p className="text-sm uppercase tracking-[0.42em] text-white/70 md:text-base">
+              December 12, 2026
+            </p>
+            <p className="mt-6 text-base leading-relaxed text-white/78 md:text-lg">
+              We are honored to invite you to witness the beginning of our
+              forever. Please enter the invitation to discover every detail of
+              our celebration.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.8 }}
+            className="mt-10 flex justify-center"
+          >
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onEnter}
+              className="border-white/20 bg-white/10 px-7 py-3 text-[10px] uppercase tracking-[0.35em] text-white backdrop-blur-md hover:bg-white/15"
+              aria-label="Enter wedding invitation"
+            >
+              Enter Invitation
+            </Button>
+          </motion.div>
+        </div>
+
+        <motion.div
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center"
+          animate={{ opacity: [0.35, 0.85, 0.35], y: [0, -3, 0] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <div className="mb-2 text-[10px] uppercase tracking-[0.38em] text-white/50">
+            Opening the story
+          </div>
+          <div className="h-px w-20 bg-linear-to-r from-transparent via-primary/70 to-transparent" />
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function Header() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -100,11 +197,7 @@ function Header() {
   }, []);
 
   const navItems = [
-    { name: "Couple", href: "#couple" },
-    { name: "Story", href: "#story" },
-    { name: "Schedule", href: "#schedule" },
     { name: "Venue", href: "#venue" },
-    { name: "Gallery", href: "#gallery" },
     { name: "RSVP", href: "#rsvp" },
   ];
 
@@ -113,21 +206,21 @@ function Header() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 1.2, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4"
+      className="fixed top-4 right-4 z-40"
     >
       <nav
-        className={`flex items-center gap-2 md:gap-6 px-6 py-3 rounded-full transition-all duration-700 ease-in-out border shadow-lg backdrop-blur-xl ${
+        className={`flex items-center gap-4 rounded-2xl px-4 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl transition-all duration-700 ease-in-out ${
           scrolled
-            ? "bg-white/80 border-black/5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
-            : "bg-black/20 border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
+            ? "bg-white/85"
+            : "bg-black/25"
         }`}
       >
-        <ul className="flex items-center gap-4 md:gap-8 overflow-x-auto no-scrollbar">
+        <ul className="flex items-center gap-4 overflow-x-auto no-scrollbar">
           {navItems.map((item) => (
             <li key={item.name}>
               <a
                 href={item.href}
-                className={`text-[10px] md:text-xs font-semibold tracking-[0.2em] uppercase transition-colors duration-300 whitespace-nowrap ${
+                className={`text-[10px] md:text-xs font-semibold tracking-[0.22em] uppercase transition-colors duration-300 whitespace-nowrap ${
                   scrolled
                     ? "text-foreground/70 hover:text-primary"
                     : "text-white/80 hover:text-white"
@@ -167,8 +260,6 @@ function Footer() {
 }
 
 function HeroSection() {
-  const ref = useState(null)[0];
-
   return (
     <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
       <motion.div className="absolute inset-0 z-0">
@@ -547,18 +638,19 @@ function VenueSection() {
 
         <FadeIn
           direction="left"
-          className="w-full lg:w-2/3 h-100 md:h-125 rounded-2xl overflow-hidden shadow-2xl relative"
+          className="w-full lg:w-2/3 min-h-[24rem] md:min-h-[31.25rem] rounded-2xl overflow-hidden shadow-2xl relative bg-[#f4efe7]"
         >
           <iframe
-            src="https://maps.google.com/maps?q=Waters+Edge,+Sri+Lanka&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            src="https://www.google.com/maps?q=Waters+Edge+Grand+Ballroom,+316+Ethul+Kotte+Road,+Battaramulla,+Sri+Lanka&output=embed"
             width="100%"
             height="100%"
             style={{ border: 0 }}
-            allowFullScreen={false}
+            title="Waters Edge Grand Ballroom location"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            className="filter grayscale-50 hover:grayscale-0 transition-all duration-1000"
+            className="absolute inset-0 h-full w-full filter grayscale-50 hover:grayscale-0 transition-all duration-1000"
           ></iframe>
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
         </FadeIn>
       </div>
     </Section>
@@ -845,8 +937,19 @@ function GuestWishesSection() {
 }
 
 export function WeddingInvitationTemplate() {
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowIntro(false), 5500);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
   return (
     <main className="relative min-h-screen bg-background w-full">
+      <AnimatePresence>
+        {showIntro ? <InvitationIntro onEnter={() => setShowIntro(false)} /> : null}
+      </AnimatePresence>
       <Header />
       <HeroSection />
       <InvitationSection />
