@@ -18,6 +18,8 @@ import {
   BookHeart,
   ExternalLink,
   Sparkles,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Section from "@/components/ui/Section";
@@ -55,13 +57,25 @@ const emptyRsvpForm: RsvpFormData = {
 
 const scheduleItems = [
   {
-    time: "10:00 AM",
+    time: "9:00 AM",
     title: "Poruwa Ceremony",
     description: "The traditional Sri Lankan ritual for the couple.",
     icon: Sparkles,
   },
   {
-    time: "01:00 PM",
+    time: "10:00 AM",
+    title: "Start of the Ceremony",
+    description: "Join us as we exchange vows and celebrate our love.",
+    icon: Sparkles,
+  },
+  {
+    time: "11:00 AM",
+    title: "Bar Opening",
+    description: "Enjoy a selection of drinks and cocktails.",
+    icon: Sparkles,
+  },
+  {
+    time: "12:30 PM",
     title: "Lunch",
     description: "Enjoy a delicious meal with family and friends.",
     icon: Heart,
@@ -71,12 +85,6 @@ const scheduleItems = [
     title: "End of the Event",
     description: "Wrap up the celebration and say your goodbyes.",
     icon: Clock,
-  },
-  {
-    time: "08:00 PM",
-    title: "After Party",
-    description: "Let your hair down and dance the night away with our live DJ.",
-    icon: Sparkles,
   },
 ];
 
@@ -340,6 +348,7 @@ function InvitationIntro({ onEnter }: { onEnter: () => void }) {
             <MagneticWrapper>
               <motion.button
                 type="button"
+                suppressHydrationWarning
                 onClick={onEnter}
                 whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(197,160,89,0.25)" }}
                 whileTap={{ scale: 0.97 }}
@@ -368,36 +377,31 @@ function InvitationIntro({ onEnter }: { onEnter: () => void }) {
 }
 
 // ─────────────── Header / nav ─────────────────────────────────────────────────
-function Header() {
-  const navItems = [
-    { name: "Venue", href: "#venue" },
-    { name: "Attendance", href: "#rsvp" },
-  ];
+const NAV_ITEMS = [
+  { name: "Venue", href: "#venue" },
+  { name: "Attendance", href: "#rsvp" },
+];
 
+function Header() {
   return (
     <motion.header
-      initial={{ y: -80, opacity: 0 }}
+      initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 1.2, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
+      transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
       className="absolute top-0 left-0 right-0 z-40 w-full"
     >
       <nav className="flex items-center justify-center px-4 py-6">
-        <ul className="flex items-center justify-center gap-6 sm:gap-12 overflow-x-auto no-scrollbar">
-          {navItems.map((item, i) => (
-            <motion.li
-              key={item.name}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + i * 0.15, duration: 0.6 }}
-            >
+        <ul className="flex items-center justify-center gap-6 sm:gap-12">
+          {NAV_ITEMS.map((item) => (
+            <li key={item.name}>
               <a
                 href={item.href}
-                className="group relative text-[10px] md:text-xs font-semibold tracking-[0.22em] uppercase transition-colors duration-300 whitespace-nowrap text-white/80 hover:text-white"
+                className="group relative block text-[10px] md:text-xs font-semibold tracking-[0.22em] uppercase text-white/80 transition-colors duration-200 hover:text-white py-1 px-2 drop-shadow-md"
               >
                 {item.name}
-                <span className="absolute -bottom-1 left-0 h-px w-0 bg-[#C5A059] transition-all duration-300 group-hover:w-full" />
+                <span className="pointer-events-none absolute bottom-0 left-1/2 h-[2px] w-0 -translate-x-1/2 bg-[#C5A059] transition-[width] duration-300 ease-out group-hover:w-full" />
               </a>
-            </motion.li>
+            </li>
           ))}
         </ul>
       </nav>
@@ -480,7 +484,7 @@ function HeroSection() {
         >
           <Bell className="h-4 w-4 text-[#C5A059]" />
           <span className="text-[10px] uppercase tracking-[0.25em] text-white/90">
-            Save The Date
+            SAVE THE DATE
           </span>
           <Bell className="h-4 w-4 text-[#C5A059]" />
         </motion.div>
@@ -875,6 +879,7 @@ function VenueSection() {
 
           <motion.button
             type="button"
+            suppressHydrationWarning
             whileHover={{ scale: 1.04, x: 4 }}
             whileTap={{ scale: 0.97 }}
             className="group flex w-fit items-center gap-2 self-start rounded-xl border border-[#E8DCC8] bg-[#FFFBEB] px-5 py-3 text-sm text-[#5C5C4A] transition-colors hover:border-[#C9C191] hover:bg-[#FFF9F1]"
@@ -1136,7 +1141,7 @@ function RSVPSection({ onSubmit }: { onSubmit: (submission: GuestMessage) => voi
             <form className="space-y-5 text-left" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <label htmlFor="rsvp-name" className="block text-sm font-medium text-[#5C5C4A]">Name</label>
-                <input id="rsvp-name" type="text" value={form.name} onChange={(e) => handleChange("name", e.target.value)} placeholder="Eg: Namal Perera" className={inputClassName} />
+                <input id="rsvp-name" type="text" value={form.name} onChange={(e) => handleChange("name", e.target.value)} placeholder="Eg: Namal Perera" className={inputClassName} suppressHydrationWarning />
               </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
@@ -1147,6 +1152,7 @@ function RSVPSection({ onSubmit }: { onSubmit: (submission: GuestMessage) => voi
                     value={form.attending}
                     onChange={(e) => handleChange("attending", e.target.value as RsvpFormData["attending"])}
                     className={`${inputClassName} appearance-none`}
+                    suppressHydrationWarning
                   >
                     <option value="">Select</option>
                     <option value="accept">Joyfully Accept</option>
@@ -1165,13 +1171,14 @@ function RSVPSection({ onSubmit }: { onSubmit: (submission: GuestMessage) => voi
                     disabled={form.attending === "decline"}
                     placeholder="1"
                     className={`${inputClassName} disabled:cursor-not-allowed disabled:bg-[#f5f0e6] disabled:text-[#a8a08f]`}
+                    suppressHydrationWarning
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="rsvp-message" className="block text-sm font-medium text-[#5C5C4A]">Message</label>
-                <textarea id="rsvp-message" rows={4} value={form.message} onChange={(e) => handleChange("message", e.target.value)} placeholder="Leave the couple a beautiful note!" className={`${inputClassName} resize-y min-h-[7rem]`} />
+                <textarea id="rsvp-message" rows={4} value={form.message} onChange={(e) => handleChange("message", e.target.value)} placeholder="Leave the couple a beautiful note!" className={`${inputClassName} resize-y min-h-[7rem]`} suppressHydrationWarning />
               </div>
 
               {error ? <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-sm text-[#a0522d]" role="alert">{error}</motion.p> : null}
@@ -1179,6 +1186,7 @@ function RSVPSection({ onSubmit }: { onSubmit: (submission: GuestMessage) => voi
 
               <motion.button
                 type="submit"
+                suppressHydrationWarning
                 whileHover={{ scale: 1.02, boxShadow: "0 10px 30px rgba(197,160,89,0.3)" }}
                 whileTap={{ scale: 0.97 }}
                 className="w-full rounded-xl bg-[#C5A059] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#b8904d] tracking-wide"
@@ -1261,11 +1269,31 @@ function WordsOfLoveSection({ messages }: { messages: GuestMessage[] }) {
 export function WeddingInvitationTemplate() {
   const [showIntro, setShowIntro] = useState(true);
   const [guestMessages, setGuestMessages] = useState<GuestMessage[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const toggleAudio = useCallback(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(console.error);
+      }
+      setIsPlaying(!isPlaying);
+    }
+  }, [isPlaying]);
+
+  const handleEnterInvitation = useCallback(() => {
+    setShowIntro(false);
+    if (audioRef.current) {
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(console.error);
+    }
+  }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setShowIntro(false), 5500);
+    const timer = window.setTimeout(() => handleEnterInvitation(), 5500);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [handleEnterInvitation]);
 
   useEffect(() => {
     try {
@@ -1288,8 +1316,25 @@ export function WeddingInvitationTemplate() {
 
   return (
     <main className="relative min-h-screen bg-background w-full">
+      <audio ref={audioRef} src="/music/wedding-invitation.mp3" loop />
+      
+      {/* Floating Audio Button */}
+      {!showIntro && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 1 }}
+          suppressHydrationWarning
+          onClick={toggleAudio}
+          className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#C5A059] text-white shadow-[0_10px_30px_rgba(197,160,89,0.3)] transition-transform hover:scale-110"
+          aria-label={isPlaying ? "Pause music" : "Play music"}
+        >
+          {isPlaying ? <Volume2 className="h-6 w-6" /> : <VolumeX className="h-6 w-6" />}
+        </motion.button>
+      )}
+
       <AnimatePresence>
-        {showIntro ? <InvitationIntro onEnter={() => setShowIntro(false)} /> : null}
+        {showIntro ? <InvitationIntro onEnter={handleEnterInvitation} /> : null}
       </AnimatePresence>
       <Header />
       <HeroSection />
