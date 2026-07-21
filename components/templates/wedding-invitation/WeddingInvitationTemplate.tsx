@@ -321,7 +321,7 @@ function HeroSection() {
     <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
       <motion.div className="absolute inset-0 z-0">
         <Image
-          src="/images/hero/hero1.png"
+          src="/images/wedding-invitation/hero2.png"
           alt="Wedding Background"
           fill
           priority
@@ -426,7 +426,7 @@ function BrideGroomSection() {
         >
           <div className="relative mb-8 h-80 w-64 overflow-hidden rounded-t-full border border-[#E8DCC8] shadow-[0_20px_50px_rgba(197,160,89,0.12)] md:h-100 md:w-80">
             <Image
-              src="/images/hero/hero1.png"
+              src="/images/wedding-invitation/bride.png"
               alt="The Bride"
               fill
               className="object-cover"
@@ -449,7 +449,7 @@ function BrideGroomSection() {
         >
           <div className="relative mb-8 h-80 w-64 overflow-hidden rounded-t-full border border-[#E8DCC8] shadow-[0_20px_50px_rgba(197,160,89,0.12)] md:h-100 md:w-80">
             <Image
-              src="/images/hero/wedding-hero.jpg"
+              src="/images/wedding-invitation/groom.png"
               alt="The Groom"
               fill
               className="object-cover"
@@ -697,32 +697,32 @@ function VenueSection() {
 function GallerySection() {
   const images = [
     {
-      src: "/images/gallery-1.jpg",
+      src: "/images/wedding-invitation/gallery-1.jpg",
       alt: "Gallery moment 1",
       aspect: "aspect-[3/4]",
     },
     {
-      src: "/images/gallery-2.jpg",
+      src: "/images/wedding-invitation/gallery-2.jpg",
       alt: "Gallery moment 2",
       aspect: "aspect-[4/5]",
     },
     {
-      src: "/images/gallery-3.jpg",
+      src: "/images/wedding-invitation/gallery-3.jpg",
       alt: "Gallery moment 3",
       aspect: "aspect-[16/9]",
     },
     {
-      src: "/images/gallery-4.jpg",
+      src: "/images/wedding-invitation/gallery-4.jpg",
       alt: "Gallery moment 4",
       aspect: "aspect-[3/4]",
     },
     {
-      src: "/images/gallery-5.jpg",
+      src: "/images/wedding-invitation/gallery-5.jpg",
       alt: "Gallery moment 5",
       aspect: "aspect-[4/5]",
     },
     {
-      src: "/images/gallery-6.jpg",
+      src: "/images/wedding-invitation/gallery-6.jpg",
       alt: "Gallery moment 6",
       aspect: "aspect-[1/1]",
     },
@@ -801,7 +801,7 @@ function DressCodeSection() {
         <FadeIn direction="right" className="w-full md:w-1/2">
           <div className="relative h-125 w-full overflow-hidden rounded-2xl border border-[#E8DCC8] shadow-[0_20px_50px_rgba(197,160,89,0.08)]">
             <Image
-              src="/images/dress-code.png"
+              src="/images/wedding-invitation/dress-code.png"
               alt="Dress Code"
               fill
               className="object-cover"
@@ -1151,3 +1151,6 @@ export function WeddingInvitationTemplate() {
     </main>
   );
 }
+
+
+
