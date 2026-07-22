@@ -84,13 +84,13 @@ export default function OceanBreezeTemplate() {
                   </p>
 
                   <h1 className="mt-14 font-serif text-5xl italic leading-none text-[#1a5b73] sm:text-6xl drop-shadow-sm">
-                    Umidu
+                    David
                   </h1>
 
                   <div className="my-6 text-3xl font-light text-[#5fa8d3]">&amp;</div>
 
                   <h1 className="font-serif text-5xl italic leading-none text-[#1a5b73] sm:text-6xl drop-shadow-sm">
-                    Thimeth
+                    Roshel
                   </h1>
 
                   <div className="mx-auto mt-12 flex items-center justify-center gap-4 text-[#5fa8d3]">
