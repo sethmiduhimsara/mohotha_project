@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { AnimatePresence, motion, useScroll, useTransform, useMotionValue, useSpring, useInView } from "framer-motion";
+import { submitRsvp } from "@/app/actions/rsvp";
 import { Cormorant_Garamond } from "next/font/google";
 import {
   Heart,
@@ -46,8 +47,6 @@ type RsvpFormData = {
   guestCount: string;
   message: string;
 };
-
-const RSVP_STORAGE_KEY = "wedding-invitation-guest-messages";
 
 const emptyRsvpForm: RsvpFormData = {
   name: "",
@@ -1080,10 +1079,14 @@ function FramedLoveNote({ message, name }: { message: string; name: string }) {
 }
 
 // ─────────────── RSVP section ─────────────────────────────────────────────────
+// This component now saves RSVPs to the DATABASE via a Server Action,
+// NOT to the browser's localStorage.
 function RSVPSection({ onSubmit }: { onSubmit: (submission: GuestMessage) => void }) {
   const [form, setForm] = useState<RsvpFormData>(emptyRsvpForm);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  // useTransition gives us a pending state while the server action runs
+  const [isPending, startTransition] = useTransition();
 
   const handleChange = (field: keyof RsvpFormData, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -1104,23 +1107,34 @@ function RSVPSection({ onSubmit }: { onSubmit: (submission: GuestMessage) => voi
         ? Math.max(1, Number.parseInt(form.guestCount, 10) || 1)
         : 0;
 
-    const submission: GuestMessage = {
-      id: crypto.randomUUID(),
-      name: trimmedName,
-      attending: form.attending,
-      guestCount,
-      message: trimmedMessage,
-      submittedAt: new Date().toISOString(),
-    };
+    // ── Call the Server Action (saves to database) ─────────────────────────
+    startTransition(async () => {
+      const result = await submitRsvp({
+        name: trimmedName,
+        attending: form.attending as "accept" | "decline",
+        guestCount,
+        message: trimmedMessage,
+      });
 
-    onSubmit(submission);
-    setForm(emptyRsvpForm);
-    setSuccessMessage(
-      trimmedMessage
-        ? "Thank you for your RSVP!"
-        : "Thank you for your RSVP! Your response has been received.",
-    );
-    setError("");
+      if (!result.success) {
+        setError(result.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+
+      // Also update the local Words of Love section immediately (optimistic UI)
+      const localSubmission: GuestMessage = {
+        id: crypto.randomUUID(),
+        name: trimmedName,
+        attending: form.attending as "accept" | "decline",
+        guestCount,
+        message: trimmedMessage,
+        submittedAt: new Date().toISOString(),
+      };
+      onSubmit(localSubmission);
+      setForm(emptyRsvpForm);
+      setSuccessMessage("Thank you for your RSVP! Your response has been saved. 💛");
+      setError("");
+    });
   };
 
   const inputClassName =
@@ -1200,11 +1214,12 @@ function RSVPSection({ onSubmit }: { onSubmit: (submission: GuestMessage) => voi
               <motion.button
                 type="submit"
                 suppressHydrationWarning
-                whileHover={{ scale: 1.02, boxShadow: "0 10px 30px rgba(197,160,89,0.3)" }}
-                whileTap={{ scale: 0.97 }}
-                className="w-full rounded-xl bg-[#C5A059] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#b8904d] tracking-wide"
+                disabled={isPending}
+                whileHover={isPending ? {} : { scale: 1.02, boxShadow: "0 10px 30px rgba(197,160,89,0.3)" }}
+                whileTap={isPending ? {} : { scale: 0.97 }}
+                className="w-full rounded-xl bg-[#C5A059] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#b8904d] tracking-wide disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Send RSVP with Love ♡
+                {isPending ? "Sending..." : "Send RSVP with Love ♡"}
               </motion.button>
             </form>
           </motion.div>
@@ -1308,21 +1323,8 @@ export function WeddingInvitationTemplate() {
     return () => window.clearTimeout(timer);
   }, [handleEnterInvitation]);
 
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(RSVP_STORAGE_KEY);
-      if (!stored) return;
-      const parsed = JSON.parse(stored) as GuestMessage[];
-      if (Array.isArray(parsed)) setGuestMessages(parsed);
-    } catch {
-      window.localStorage.removeItem(RSVP_STORAGE_KEY);
-    }
-  }, []);
-
-  useEffect(() => {
-    window.localStorage.setItem(RSVP_STORAGE_KEY, JSON.stringify(guestMessages));
-  }, [guestMessages]);
-
+  // handleRsvpSubmit: called after a successful DB save to update the
+  // local "Words of Love" section without needing a full page reload.
   const handleRsvpSubmit = useCallback((submission: GuestMessage) => {
     setGuestMessages((current) => [submission, ...current]);
   }, []);

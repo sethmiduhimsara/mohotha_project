@@ -1,0 +1,23 @@
+// prisma/schema.prisma
+//
+// This file defines the database structure for the wedding-invitation RSVP system.
+// We removed the `url` from here because Prisma v7 requires it in prisma.config.ts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Rsvp {
+  id          String   @id @default(cuid())
+  name        String                          // Guest's full name
+  attending   String                          // "accept" or "decline"
+  guestCount  Int      @default(1)            // Number of people coming
+  message     String   @default("")           // Optional love note
+  submittedAt DateTime @default(now())        // When they submitted
+
+  @@map("rsvps")
+}
