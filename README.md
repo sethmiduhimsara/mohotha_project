@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MOHOTHA — Wedding Invitation SaaS Platform
 
-## Getting Started
+A Next.js full-stack project for building and selling premium wedding invitation templates.
 
-First, run the development server:
+---
+
+## 🚀 Getting Started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🗺️ Folder Structure Guide
 
-## Learn More
+```
+mohotha_project/
+│
+│  ← ⚙️  CONFIG FILES (Don't touch these unless you know what they do)
+├── next.config.ts          Next.js settings
+├── prisma.config.ts        Database connection settings
+├── tsconfig.json           TypeScript settings
+├── postcss.config.mjs      CSS settings
+├── package.json            Project dependencies list
+│
+│  ← 🗄️  DATABASE
+├── prisma/
+│   ├── schema.prisma       Defines the database table structure (columns, types)
+│   └── wedding_invitation.db  The actual local database file (auto-generated)
+│
+│  ← 🔌  DATABASE CONNECTION HELPER
+├── lib/
+│   └── prisma.ts           Creates and shares one database connection across the app
+│
+│  ← 🖥️  PAGES & ROUTES (Each folder = one URL on the website)
+├── app/
+│   ├── page.tsx            → mohotha.com/               (MOHOTHA main landing page)
+│   ├── layout.tsx          → The base HTML wrapper for all pages
+│   ├── globals.css         → Global CSS styles
+│   │
+│   │  ← 🔒  ADMIN DASHBOARDS (Private — for clients to see their RSVPs)
+├── app/admin/
+│   └── wedding-invitation/
+│       └── page.tsx        → mohotha.com/admin/wedding-invitation (RSVP Dashboard)
+│   │
+│   │  ← ⚙️  SERVER ACTIONS (Backend logic — saves/fetches data from the database)
+│   ├── actions/
+│   │   └── wedding-invitation/
+│   │       └── rsvp.ts     → submitRsvp() and getAllRsvps() functions
+│   │
+│   │  ← 📄  TEMPLATE ROUTES (Public pages for guests to visit)
+│   ├── wedding-invitation/
+│   │   └── page.tsx        → mohotha.com/wedding-invitation
+│   ├── template-1/
+│   │   └── page.tsx        → mohotha.com/template-1
+│   └── demo/
+│       └── page.tsx        → mohotha.com/demo
+│
+│  ← 🎨  COMPONENTS (All the visual design pieces)
+├── components/
+│   ├── ui/                 Reusable small pieces (Button, Section, etc.)
+│   ├── layout/             Header, Footer, and layout pieces
+│   ├── sections/           Big sections used across multiple pages
+│   └── templates/          ← THE MAIN TEMPLATES (One folder per template)
+│       ├── wedding-invitation/   ← Template 1: Wedding Invitation
+│       ├── ocean-breeze/         ← Template 2: Ocean Breeze
+│       └── template-1/           ← Template 3: (next template)
+│
+│  ← 🖼️  STATIC FILES (Images, music, icons)
+└── public/
+    ├── images/             All photos used on the website
+    ├── music/              Background music files
+    └── *.svg               Icon files
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📋 Key URLs
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| URL | What it is |
+|---|---|
+| `localhost:3000` | MOHOTHA Main Landing Page |
+| `localhost:3000/wedding-invitation` | Wedding Invitation Template (public) |
+| `localhost:3000/admin/wedding-invitation` | RSVP Dashboard (for the client couple) |
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🗄️ Database Commands
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Create / update the database after changing schema.prisma
+npx prisma db push
+
+# Re-generate the Prisma client after schema changes
+npx prisma generate
+
+# Open a visual browser to view your database tables
+npx prisma studio
+```
+
+---
+
+## 🚀 Deploying to Vercel (When Ready for Real Clients)
+
+1. Create a free **Supabase** account → create a project → copy the PostgreSQL URL.
+2. In `prisma/schema.prisma`, change `provider = "sqlite"` to `provider = "postgresql"`.
+3. In `prisma.config.ts`, replace the `file:...` URL with your Supabase PostgreSQL URL.
+4. Push to GitHub → connect to Vercel → add the Database URL as an Environment Variable.
+5. Done! ✅
