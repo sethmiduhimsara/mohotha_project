@@ -112,10 +112,10 @@ const timeline = [
 const googleCalendarUrl = (() => {
   const params = new URLSearchParams({
     action: "TEMPLATE",
-    text: "Amara & Nayana Wedding",
+    text: "Kasun & Devmini Wedding",
     dates: "20261212/20261213",
     details:
-      "Join us to celebrate the wedding of Amara and Nayana on December 12, 2026.",
+      "Join us to celebrate the wedding of Kasun and Devmini on December 12, 2026.",
     location:
       "Waters Edge Grand Ballroom, 316 Ethul Kotte Road, Battaramulla 10100, Sri Lanka",
     ctz: "Asia/Colombo",
@@ -321,8 +321,8 @@ function InvitationIntro({ onEnter }: { onEnter: () => void }) {
             transition={{ duration: 1.1, delay: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
             className={`${cormorant.className} text-5xl leading-tight md:text-7xl lg:text-8xl`}
           >
-            Amara <span className="text-[#C5A059] italic font-light">&amp;</span>{" "}
-            Nayana
+            Kasun <span className="text-[#C5A059] italic font-light">&amp;</span>{" "}
+            Devmini
           </motion.h1>
 
           <motion.div
@@ -432,7 +432,7 @@ function Footer() {
           </div>
 
           <h2 className={`${cormorant.className} mb-4 text-5xl md:text-7xl text-[#F7F4EE] tracking-wide`}>
-            Amara <span className="font-light italic text-[#C5A059]">&amp;</span> Nayana
+            Kasun <span className="font-light italic text-[#C5A059]">&amp;</span> Devmini
           </h2>
 
           <p className={`${cormorant.className} mb-8 text-xs md:text-sm uppercase tracking-[0.3em] text-[#C5A059]/90`}>
@@ -446,7 +446,7 @@ function Footer() {
           <div className="mx-auto mb-16 h-px w-24 bg-gradient-to-r from-transparent via-[#C5A059]/40 to-transparent" />
 
           <div className="flex flex-col items-center justify-center gap-6">
-            <p className={`${cormorant.className} text-xs md:text-sm text-[#8C857B] tracking-wide`}>&copy; {new Date().getFullYear()} Amara &amp; Nayana. All rights reserved.</p>
+            <p className={`${cormorant.className} text-xs md:text-sm text-[#8C857B] tracking-wide`}>&copy; {new Date().getFullYear()} Kasun &amp; Devmini. All rights reserved.</p>
             
             <a href="https://mohotha.com" target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-3 border-b border-transparent pb-1 transition-all duration-300 hover:border-[#C5A059]">
               <Sparkles className="h-3.5 w-3.5 text-[#C5A059] transition-transform group-hover:rotate-12" />
@@ -515,9 +515,9 @@ function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className={`${cormorant.className} text-white text-6xl md:text-8xl lg:text-9xl mb-6 drop-shadow-2xl`}
+          className={`${cormorant.className} text-white text-5xl sm:text-6xl md:text-8xl lg:text-9xl mb-6 drop-shadow-2xl`}
         >
-          Amara{" "}
+          Kasun{" "}
           <motion.span
             className="text-[#C5A059] italic font-light"
             animate={{ opacity: [0.8, 1, 0.8] }}
@@ -525,7 +525,7 @@ function HeroSection() {
           >
             &amp;
           </motion.span>{" "}
-          Nayana
+          Devmini
         </motion.h1>
 
         <motion.p
@@ -626,7 +626,7 @@ function BrideGroomSection() {
           {
             src: "/images/wedding-invitation/bride.png",
             alt: "The Bride",
-            name: "Nayana Kumari",
+            name: "Devmini Kumari",
             role: "The Bride",
             bio: "A lover of art, coffee, and quiet mornings. She brings light to every room and joy to every moment.",
             dir: "right" as const,
@@ -634,7 +634,7 @@ function BrideGroomSection() {
           {
             src: "/images/wedding-invitation/groom.png",
             alt: "The Groom",
-            name: "Amara Kumara",
+            name: "Kasun Kumara",
             role: "The Groom",
             bio: "An adventurous spirit with a heart of gold. He finds beauty in the little things and comfort in her smile.",
             dir: "left" as const,
@@ -887,7 +887,7 @@ function ScheduleSection() {
 // ─────────────── Venue section ────────────────────────────────────────────────
 function VenueSection() {
   return (
-    <Section id="venue" className="bg-[#FFFBEB]">
+    <Section id="venue" className="bg-[#FFFBEB] overflow-hidden">
       <WeddingSectionHeading title="The Venue" subtitle="Where the magic happens" className="mb-16 md:mb-24" />
 
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 lg:flex-row">
@@ -1148,7 +1148,7 @@ function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessa
   };
 
   const inputClassName =
-    "w-full rounded-xl border border-[#E8DCC8] bg-white px-4 py-3 text-sm text-[#4a4a4a] outline-none transition-all placeholder:text-[#b8b0a0] focus:border-[#C5A059] focus:shadow-[0_0_0_3px_rgba(197,160,89,0.12)]";
+    "w-full rounded-xl border border-white/60 bg-white/60 px-5 py-3.5 text-sm font-sans text-[#2f2f2f] shadow-inner outline-none backdrop-blur-sm transition-all placeholder:text-[#9a907f] focus:border-[#C5A059] focus:bg-white focus:shadow-[0_0_0_4px_rgba(197,160,89,0.15)]";
 
   return (
     <Section id="rsvp" className="relative overflow-hidden bg-[#FFF9F1] py-20 md:py-28">
@@ -1169,36 +1169,39 @@ function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessa
             </motion.div>
           </div>
           <motion.div
-            className="rounded-[1.25rem] bg-[#FFFBEB] px-6 py-8 shadow-[0_12px_40px_rgba(201,193,145,0.12)] sm:px-8 sm:py-10"
+            className="relative z-10 rounded-3xl border border-white/50 bg-white/70 px-6 py-10 backdrop-blur-md shadow-[0_20px_60px_rgba(197,160,89,0.15)] sm:px-10 sm:py-12"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <form className="space-y-5 text-left" onSubmit={handleSubmit}>
-              <div className="space-y-2">
-                <label htmlFor="rsvp-name" className="block text-sm font-medium text-[#5C5C4A]">Name</label>
+              <div className="space-y-2.5">
+                <label htmlFor="rsvp-name" className="block text-xs font-semibold font-sans tracking-[0.1em] uppercase text-[#5a5a5a]">Name</label>
                 <input id="rsvp-name" type="text" value={form.name} onChange={(e) => handleChange("name", e.target.value)} placeholder="Eg: Namal Perera" className={inputClassName} suppressHydrationWarning />
               </div>
 
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label htmlFor="rsvp-attending" className="block text-sm font-medium text-[#5C5C4A]">Will you attend?</label>
-                  <select
-                    id="rsvp-attending"
-                    value={form.attending}
-                    onChange={(e) => handleChange("attending", e.target.value as RsvpFormData["attending"])}
-                    className={`${inputClassName} appearance-none`}
-                    suppressHydrationWarning
-                  >
-                    <option value="">Select</option>
-                    <option value="accept">Joyfully Accept</option>
-                    <option value="decline">Regretfully Decline</option>
-                  </select>
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div className="space-y-2.5">
+                  <label htmlFor="rsvp-attending" className="block text-xs font-semibold font-sans tracking-[0.1em] uppercase text-[#5a5a5a]">Will you attend?</label>
+                  <div className="relative">
+                    <select
+                      id="rsvp-attending"
+                      value={form.attending}
+                      onChange={(e) => handleChange("attending", e.target.value as RsvpFormData["attending"])}
+                      className={`${inputClassName} appearance-none cursor-pointer pr-10`}
+                      suppressHydrationWarning
+                    >
+                      <option value="">Select</option>
+                      <option value="accept">Joyfully Accept</option>
+                      <option value="decline">Regretfully Decline</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#C5A059]" />
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="rsvp-guest-count" className="block text-sm font-medium text-[#5C5C4A]">Number of Guests</label>
+                <div className="space-y-2.5">
+                  <label htmlFor="rsvp-guest-count" className="block text-xs font-semibold font-sans tracking-[0.1em] uppercase text-[#5a5a5a]">Number of Guests</label>
                   <input
                     id="rsvp-guest-count"
                     type="number"
@@ -1207,15 +1210,15 @@ function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessa
                     onChange={(e) => handleChange("guestCount", e.target.value)}
                     disabled={form.attending === "decline"}
                     placeholder="1"
-                    className={`${inputClassName} disabled:cursor-not-allowed disabled:bg-[#f5f0e6] disabled:text-[#a8a08f]`}
+                    className={`${inputClassName} disabled:cursor-not-allowed disabled:bg-white/30 disabled:text-[#a8a08f]`}
                     suppressHydrationWarning
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="rsvp-message" className="block text-sm font-medium text-[#5C5C4A]">Message</label>
-                <textarea id="rsvp-message" rows={4} value={form.message} onChange={(e) => handleChange("message", e.target.value)} placeholder="Leave the couple a beautiful note!" className={`${inputClassName} resize-y min-h-[7rem]`} suppressHydrationWarning />
+              <div className="space-y-2.5">
+                <label htmlFor="rsvp-message" className="block text-xs font-semibold font-sans tracking-[0.1em] uppercase text-[#5a5a5a]">Message</label>
+                <textarea id="rsvp-message" rows={4} value={form.message} onChange={(e) => handleChange("message", e.target.value)} placeholder="Leave the couple a beautiful note!" className={`${inputClassName} resize-y min-h-[8rem]`} suppressHydrationWarning />
               </div>
 
               {error ? <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-sm text-[#a0522d]" role="alert">{error}</motion.p> : null}
@@ -1225,9 +1228,9 @@ function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessa
                 type="submit"
                 suppressHydrationWarning
                 disabled={isPending}
-                whileHover={isPending ? {} : { scale: 1.02, boxShadow: "0 10px 30px rgba(197,160,89,0.3)" }}
+                whileHover={isPending ? {} : { scale: 1.02, boxShadow: "0 15px 30px rgba(197,160,89,0.3)" }}
                 whileTap={isPending ? {} : { scale: 0.97 }}
-                className="w-full rounded-xl bg-[#C5A059] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#b8904d] tracking-wide disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-xl bg-gradient-to-r from-[#C5A059] to-[#d4b477] px-6 py-4 text-sm font-semibold font-sans uppercase tracking-[0.15em] text-white shadow-lg transition-all hover:from-[#b8904d] hover:to-[#C5A059] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending ? "Sending..." : "Send RSVP with Love ♡"}
               </motion.button>
@@ -1304,7 +1307,7 @@ function WordsOfLoveSection({ messages }: { messages: GuestMessage[] }) {
 }
 
 // ─────────────── Main export ──────────────────────────────────────────────────
-export function WeddingInvitationTemplate({ clientId = "wedding-invitation" }: { clientId?: string }) {
+export function KasunWeddingTemplate({ clientId = "kasun-devmini" }: { clientId?: string }) {
   const [showIntro, setShowIntro] = useState(true);
   const [guestMessages, setGuestMessages] = useState<GuestMessage[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -1337,7 +1340,7 @@ export function WeddingInvitationTemplate({ clientId = "wedding-invitation" }: {
   }, []);
 
   return (
-    <main className={`relative min-h-screen w-full bg-[#FFF9F1] ${cormorant.className}`}>
+    <main className={`relative min-h-screen w-full overflow-x-hidden bg-[#FFF9F1] ${cormorant.className} selection:bg-[#C5A059]/30`}>
       <audio ref={audioRef} src="/music/wedding-invitation.mp3" loop />
       
       {/* Floating Audio Button */}
