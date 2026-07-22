@@ -1148,7 +1148,7 @@ function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessa
   };
 
   const inputClassName =
-    "w-full rounded-xl border border-[#E8DCC8] bg-white px-4 py-3 text-sm text-[#4a4a4a] outline-none transition-all placeholder:text-[#b8b0a0] focus:border-[#C5A059] focus:shadow-[0_0_0_3px_rgba(197,160,89,0.12)]";
+    "w-full rounded-xl border border-white/60 bg-white/60 px-5 py-3.5 text-sm font-sans text-[#2f2f2f] shadow-inner outline-none backdrop-blur-sm transition-all placeholder:text-[#9a907f] focus:border-[#C5A059] focus:bg-white focus:shadow-[0_0_0_4px_rgba(197,160,89,0.15)]";
 
   return (
     <Section id="rsvp" className="relative overflow-hidden bg-[#FFF9F1] py-20 md:py-28">
@@ -1169,36 +1169,39 @@ function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessa
             </motion.div>
           </div>
           <motion.div
-            className="rounded-[1.25rem] bg-[#FFFBEB] px-6 py-8 shadow-[0_12px_40px_rgba(201,193,145,0.12)] sm:px-8 sm:py-10"
+            className="relative z-10 rounded-3xl border border-white/50 bg-white/70 px-6 py-10 backdrop-blur-md shadow-[0_20px_60px_rgba(197,160,89,0.15)] sm:px-10 sm:py-12"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <form className="space-y-5 text-left" onSubmit={handleSubmit}>
-              <div className="space-y-2">
-                <label htmlFor="rsvp-name" className="block text-sm font-medium text-[#5C5C4A]">Name</label>
+              <div className="space-y-2.5">
+                <label htmlFor="rsvp-name" className="block text-xs font-semibold font-sans tracking-[0.1em] uppercase text-[#5a5a5a]">Name</label>
                 <input id="rsvp-name" type="text" value={form.name} onChange={(e) => handleChange("name", e.target.value)} placeholder="Eg: Namal Perera" className={inputClassName} suppressHydrationWarning />
               </div>
 
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label htmlFor="rsvp-attending" className="block text-sm font-medium text-[#5C5C4A]">Will you attend?</label>
-                  <select
-                    id="rsvp-attending"
-                    value={form.attending}
-                    onChange={(e) => handleChange("attending", e.target.value as RsvpFormData["attending"])}
-                    className={`${inputClassName} appearance-none`}
-                    suppressHydrationWarning
-                  >
-                    <option value="">Select</option>
-                    <option value="accept">Joyfully Accept</option>
-                    <option value="decline">Regretfully Decline</option>
-                  </select>
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div className="space-y-2.5">
+                  <label htmlFor="rsvp-attending" className="block text-xs font-semibold font-sans tracking-[0.1em] uppercase text-[#5a5a5a]">Will you attend?</label>
+                  <div className="relative">
+                    <select
+                      id="rsvp-attending"
+                      value={form.attending}
+                      onChange={(e) => handleChange("attending", e.target.value as RsvpFormData["attending"])}
+                      className={`${inputClassName} appearance-none cursor-pointer pr-10`}
+                      suppressHydrationWarning
+                    >
+                      <option value="">Select</option>
+                      <option value="accept">Joyfully Accept</option>
+                      <option value="decline">Regretfully Decline</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#C5A059]" />
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="rsvp-guest-count" className="block text-sm font-medium text-[#5C5C4A]">Number of Guests</label>
+                <div className="space-y-2.5">
+                  <label htmlFor="rsvp-guest-count" className="block text-xs font-semibold font-sans tracking-[0.1em] uppercase text-[#5a5a5a]">Number of Guests</label>
                   <input
                     id="rsvp-guest-count"
                     type="number"
@@ -1207,15 +1210,15 @@ function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessa
                     onChange={(e) => handleChange("guestCount", e.target.value)}
                     disabled={form.attending === "decline"}
                     placeholder="1"
-                    className={`${inputClassName} disabled:cursor-not-allowed disabled:bg-[#f5f0e6] disabled:text-[#a8a08f]`}
+                    className={`${inputClassName} disabled:cursor-not-allowed disabled:bg-white/30 disabled:text-[#a8a08f]`}
                     suppressHydrationWarning
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="rsvp-message" className="block text-sm font-medium text-[#5C5C4A]">Message</label>
-                <textarea id="rsvp-message" rows={4} value={form.message} onChange={(e) => handleChange("message", e.target.value)} placeholder="Leave the couple a beautiful note!" className={`${inputClassName} resize-y min-h-[7rem]`} suppressHydrationWarning />
+              <div className="space-y-2.5">
+                <label htmlFor="rsvp-message" className="block text-xs font-semibold font-sans tracking-[0.1em] uppercase text-[#5a5a5a]">Message</label>
+                <textarea id="rsvp-message" rows={4} value={form.message} onChange={(e) => handleChange("message", e.target.value)} placeholder="Leave the couple a beautiful note!" className={`${inputClassName} resize-y min-h-[8rem]`} suppressHydrationWarning />
               </div>
 
               {error ? <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-sm text-[#a0522d]" role="alert">{error}</motion.p> : null}
@@ -1225,9 +1228,9 @@ function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessa
                 type="submit"
                 suppressHydrationWarning
                 disabled={isPending}
-                whileHover={isPending ? {} : { scale: 1.02, boxShadow: "0 10px 30px rgba(197,160,89,0.3)" }}
+                whileHover={isPending ? {} : { scale: 1.02, boxShadow: "0 15px 30px rgba(197,160,89,0.3)" }}
                 whileTap={isPending ? {} : { scale: 0.97 }}
-                className="w-full rounded-xl bg-[#C5A059] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#b8904d] tracking-wide disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-xl bg-gradient-to-r from-[#C5A059] to-[#d4b477] px-6 py-4 text-sm font-semibold font-sans uppercase tracking-[0.15em] text-white shadow-lg transition-all hover:from-[#b8904d] hover:to-[#C5A059] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending ? "Sending..." : "Send RSVP with Love ♡"}
               </motion.button>
