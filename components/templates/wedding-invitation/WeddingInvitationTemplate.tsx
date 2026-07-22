@@ -515,7 +515,7 @@ function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className={`${cormorant.className} text-white text-6xl md:text-8xl lg:text-9xl mb-6 drop-shadow-2xl`}
+          className={`${cormorant.className} text-white text-5xl sm:text-6xl md:text-8xl lg:text-9xl mb-6 drop-shadow-2xl`}
         >
           Amara{" "}
           <motion.span
@@ -887,7 +887,7 @@ function ScheduleSection() {
 // ─────────────── Venue section ────────────────────────────────────────────────
 function VenueSection() {
   return (
-    <Section id="venue" className="bg-[#FFFBEB]">
+    <Section id="venue" className="bg-[#FFFBEB] overflow-hidden">
       <WeddingSectionHeading title="The Venue" subtitle="Where the magic happens" className="mb-16 md:mb-24" />
 
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 lg:flex-row">
@@ -1337,7 +1337,7 @@ export function WeddingInvitationTemplate({ clientId = "wedding-invitation" }: {
   }, []);
 
   return (
-    <main className={`relative min-h-screen w-full bg-[#FFF9F1] ${cormorant.className}`}>
+    <main className={`relative min-h-screen w-full overflow-x-hidden bg-[#FFF9F1] ${cormorant.className} selection:bg-[#C5A059]/30`}>
       <audio ref={audioRef} src="/music/wedding-invitation.mp3" loop />
       
       {/* Floating Audio Button */}
