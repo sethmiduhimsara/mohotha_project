@@ -682,7 +682,7 @@ export default function BotanicalGraceCard() {
               <div className="relative h-full w-full">
                 {/* EXACT IMAGE NAME 3 - Note the .jpeg extension! */}
                 <Image
-                  src="/images/hero/botanical-grace 3.jpg"
+                  src="/images/hero/botanical-grace 3.jpeg"
                   alt="Forest wedding venue"
                   fill
                   className="object-cover object-center transition-transform duration-[1400ms] ease-out hover:scale-105"
