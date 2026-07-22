@@ -19,7 +19,7 @@ export type RsvpSubmission = {
   attending: "accept" | "decline";
   guestCount: number;
   message: string;
-  clientId: string;
+  clientId?: string;
 };
 
 export type RsvpRecord = {
@@ -52,7 +52,7 @@ export async function submitRsvp(
         attending: data.attending,
         guestCount: data.attending === "decline" ? 0 : Math.max(1, data.guestCount),
         message: data.message.trim(),
-        clientId: data.clientId,
+        clientId: data.clientId || "default",
       },
     });
 

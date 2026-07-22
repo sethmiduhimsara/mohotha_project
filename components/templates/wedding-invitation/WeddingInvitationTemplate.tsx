@@ -1124,7 +1124,7 @@ function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessa
         guestCount,
         message: trimmedMessage,
         clientId,
-      });
+      });  
 
       if (!result.success) {
         setError(result.error ?? "Something went wrong. Please try again.");

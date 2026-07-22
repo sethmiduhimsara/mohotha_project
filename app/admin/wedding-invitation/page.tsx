@@ -10,8 +10,10 @@
 
 import { getAllRsvps } from "@/app/actions/wedding-invitation/rsvp";
 import { Cormorant_Garamond } from "next/font/google";
+import { cookies } from "next/headers";
 import DownloadCsvButton from "./DownloadCsvButton";
 import RsvpTable from "./RsvpTable";
+import ClientLoginForm from "./ClientLoginForm";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -52,8 +54,23 @@ function StatCard({
 
 // ─── Main Admin Page ───────────────────────────────────────────────────────────
 export default async function AdminPage() {
+  const CLIENT_ID = "wedding-invitation";
+  const DASHBOARD_PASSWORD = "AMARA2026"; // Hardcoded for this specific client
+  
+  // ─── Check Authentication ───────────────────────────────────────────────────
+  const cookieStore = await cookies();
+  const isAuthenticated = cookieStore.get(`auth_${CLIENT_ID}`)?.value === "true";
+  
+  if (!isAuthenticated) {
+    return (
+      <div className={`min-h-screen bg-[#FAF7F2] ${cormorant.className}`}>
+        <ClientLoginForm clientId={CLIENT_ID} correctPassword={DASHBOARD_PASSWORD} />
+      </div>
+    );
+  }
+
   // Fetch all RSVPs directly from the database for this specific client
-  const rsvps = await getAllRsvps("wedding-invitation");
+  const rsvps = await getAllRsvps(CLIENT_ID);
 
   // ─── Calculate summary stats ───────────────────────────────────────────────
   const totalAccepted = rsvps.filter((r) => r.attending === "accept").length;
