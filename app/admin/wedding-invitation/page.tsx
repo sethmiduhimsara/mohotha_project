@@ -10,6 +10,10 @@
 
 import { getAllRsvps } from "@/app/actions/wedding-invitation/rsvp";
 import { Cormorant_Garamond } from "next/font/google";
+import { cookies } from "next/headers";
+import DownloadCsvButton from "./DownloadCsvButton";
+import RsvpTable from "./RsvpTable";
+import ClientLoginForm from "./ClientLoginForm";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -50,8 +54,23 @@ function StatCard({
 
 // ─── Main Admin Page ───────────────────────────────────────────────────────────
 export default async function AdminPage() {
-  // Fetch all RSVPs directly from the database (server-side)
-  const rsvps = await getAllRsvps();
+  const CLIENT_ID = "wedding-invitation";
+  const DASHBOARD_PASSWORD = "AMARA2026"; // Hardcoded for this specific client
+  
+  // ─── Check Authentication ───────────────────────────────────────────────────
+  const cookieStore = await cookies();
+  const isAuthenticated = cookieStore.get(`auth_${CLIENT_ID}`)?.value === "true";
+  
+  if (!isAuthenticated) {
+    return (
+      <div className={`min-h-screen bg-[#FAF7F2] ${cormorant.className}`}>
+        <ClientLoginForm clientId={CLIENT_ID} correctPassword={DASHBOARD_PASSWORD} />
+      </div>
+    );
+  }
+
+  // Fetch all RSVPs directly from the database for this specific client
+  const rsvps = await getAllRsvps(CLIENT_ID);
 
   // ─── Calculate summary stats ───────────────────────────────────────────────
   const totalAccepted = rsvps.filter((r) => r.attending === "accept").length;
@@ -79,9 +98,10 @@ export default async function AdminPage() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full bg-[#C5A059]/10 px-3 py-1 text-xs font-semibold text-[#C5A059]">
+            <span className="rounded-full bg-[#C5A059]/10 px-3 py-1 text-xs font-semibold text-[#C5A059] hidden sm:inline-block">
               Amara &amp; Nayana · Dec 12, 2026
             </span>
+            <DownloadCsvButton data={rsvps} />
           </div>
         </div>
       </header>
@@ -116,102 +136,8 @@ export default async function AdminPage() {
           </div>
         </section>
 
-        {/* ── RSVP Table ───────────────────────────────────────────────── */}
-        <section>
-          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#9a9a8a]">
-            All Guest Responses ({rsvps.length})
-          </h2>
-
-          {rsvps.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[#E8DCC8] bg-white py-20 text-center">
-              <p className="text-2xl italic text-[#b0a898]">
-                No RSVPs yet. They will appear here once guests start
-                responding.
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-hidden rounded-2xl border border-[#E8DCC8] bg-white shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-[#E8DCC8] bg-[#FAF7F2]">
-                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-[#9a9a8a]">
-                        #
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-[#9a9a8a]">
-                        Guest Name
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-[#9a9a8a]">
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-[#9a9a8a]">
-                        Guests
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-[#9a9a8a]">
-                        Message
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-[#9a9a8a]">
-                        Submitted At
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rsvps.map((rsvp, index) => (
-                      <tr
-                        key={rsvp.id}
-                        className="border-b border-[#F0EBE0] transition-colors last:border-0 hover:bg-[#FFF9F1]"
-                      >
-                        {/* Row number */}
-                        <td className="px-6 py-4 text-[#b0a898]">
-                          {rsvps.length - index}
-                        </td>
-
-                        {/* Guest Name */}
-                        <td className="px-6 py-4 font-semibold text-[#2f2f2f]">
-                          {rsvp.name}
-                        </td>
-
-                        {/* Status badge */}
-                        <td className="px-6 py-4">
-                          {rsvp.attending === "accept" ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-                              <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                              Accepted
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">
-                              <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
-                              Declined
-                            </span>
-                          )}
-                        </td>
-
-                        {/* Guest count */}
-                        <td className="px-6 py-4 text-center text-[#5a5a5a]">
-                          {rsvp.attending === "accept" ? rsvp.guestCount : "—"}
-                        </td>
-
-                        {/* Love note */}
-                        <td className="max-w-xs px-6 py-4 text-[#5a5a5a]">
-                          {rsvp.message ? (
-                            <span className="italic">&ldquo;{rsvp.message}&rdquo;</span>
-                          ) : (
-                            <span className="text-[#c0b8a8]">No message</span>
-                          )}
-                        </td>
-
-                        {/* Timestamp */}
-                        <td className="whitespace-nowrap px-6 py-4 text-xs text-[#9a9a8a]">
-                          {formatDate(rsvp.submittedAt)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </section>
+        {/* ── Interactive RSVP Table ─────────────────────────────────────── */}
+        <RsvpTable rsvps={rsvps} />
       </main>
     </div>
   );

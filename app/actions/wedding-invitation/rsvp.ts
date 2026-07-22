@@ -19,6 +19,7 @@ export type RsvpSubmission = {
   attending: "accept" | "decline";
   guestCount: number;
   message: string;
+  clientId?: string;
 };
 
 export type RsvpRecord = {
@@ -28,6 +29,7 @@ export type RsvpRecord = {
   guestCount: number;
   message: string;
   submittedAt: Date;
+  clientId: string;
 };
 
 // ─── Submit a new RSVP (called from the wedding invitation page) ───────────────
@@ -50,6 +52,7 @@ export async function submitRsvp(
         attending: data.attending,
         guestCount: data.attending === "decline" ? 0 : Math.max(1, data.guestCount),
         message: data.message.trim(),
+        clientId: data.clientId || "default",
       },
     });
 
@@ -68,14 +71,30 @@ export async function submitRsvp(
 
 // ─── Get all RSVPs (called from the Admin Dashboard) ──────────────────────────
 
-export async function getAllRsvps(): Promise<RsvpRecord[]> {
+export async function getAllRsvps(clientId: string = "default"): Promise<RsvpRecord[]> {
   try {
     const rsvps = await prisma.rsvp.findMany({
+      where: { clientId },
       orderBy: { submittedAt: "desc" }, // Latest submissions appear first
     });
     return rsvps;
   } catch (error) {
     console.error("[getAllRsvps] Database error:", error);
     return [];
+  }
+}
+
+// ─── Delete an RSVP ───────────────────────────────────────────────────────────
+
+export async function deleteRsvp(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    await prisma.rsvp.delete({
+      where: { id },
+    });
+    revalidatePath("/admin/wedding-invitation");
+    return { success: true };
+  } catch (error) {
+    console.error("[deleteRsvp] Database error:", error);
+    return { success: false, error: "Failed to delete RSVP." };
   }
 }
