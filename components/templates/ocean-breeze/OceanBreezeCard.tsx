@@ -61,7 +61,7 @@ function RevealText({
   delay?: number;
 }) {
   const words = text.split(" ");
-  const Tag = as as any;
+  const Tag = as as React.ElementType;
   return (
     <Tag className={className}>
       {words.map((word, i) => (
@@ -188,32 +188,32 @@ export default function OceanBreezeCard() {
     "intro",
   );
 
-const floatAnimation: any = shouldReduceMotion
+const floatAnimation: Variants = shouldReduceMotion
     ? {}
     : {
         y: [-10, 10, -10],
         rotate: [-4, 4, -4],
         transition: { repeat: Infinity, duration: 11, ease: "easeInOut" },
       };
-  const waveAnimation: any = shouldReduceMotion
+  const waveAnimation: Variants = shouldReduceMotion
     ? {}
     : {
         x: [-18, 18, -18],
         transition: { repeat: Infinity, duration: 15, ease: "easeInOut" },
       };
-  const glowPulse: any = shouldReduceMotion
+  const glowPulse: Variants = shouldReduceMotion
     ? {}
     : {
         opacity: [0.12, 0.28, 0.12],
         transition: { repeat: Infinity, duration: 9, ease: "easeInOut" },
       };
-  const cloudDriftA: any = shouldReduceMotion
+  const cloudDriftA: Variants = shouldReduceMotion
     ? {}
     : {
         x: ["-10%", "10%", "-10%"],
         transition: { repeat: Infinity, duration: 55, ease: "easeInOut" },
       };
-  const cloudDriftB: any = shouldReduceMotion
+  const cloudDriftB: Variants = shouldReduceMotion
     ? {}
     : {
         x: ["8%", "-8%", "8%"],

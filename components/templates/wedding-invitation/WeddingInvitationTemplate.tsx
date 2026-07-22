@@ -22,7 +22,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import Button from "@/components/ui/Button";
+
 import Section from "@/components/ui/Section";
 import { FadeIn } from "./FadeIn";
 
@@ -125,6 +125,7 @@ const googleCalendarUrl = (() => {
 })();
 
 // ─────────────── Animated text that reveals character-by-character ───────────
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function SplitTextReveal({
   text,
   className = "",

@@ -60,7 +60,7 @@ function RevealText({
   delay?: number;
 }) {
   const words = text.split(" ");
-  const Tag = as as any;
+  const Tag = as as React.ElementType;
   return (
     <Tag className={className}>
       {words.map((word, i) => (
