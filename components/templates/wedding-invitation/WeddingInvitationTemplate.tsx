@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform, useMotionValue, useSpring, useInView } from "framer-motion";
-import { Great_Vibes } from "next/font/google";
+import { Cormorant_Garamond } from "next/font/google";
 import {
   Heart,
   MapPin,
@@ -25,9 +25,10 @@ import Button from "@/components/ui/Button";
 import Section from "@/components/ui/Section";
 import { FadeIn } from "./FadeIn";
 
-const greatVibes = Great_Vibes({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 type GuestMessage = {
@@ -240,8 +241,8 @@ function WeddingSectionHeading({
       <h2
         className={
           script
-            ? `${greatVibes.className} text-5xl text-[#2f2f2f] sm:text-6xl md:text-7xl`
-            : "font-heading text-4xl text-[#2f2f2f] md:text-5xl"
+            ? `${cormorant.className} text-5xl text-[#2f2f2f] sm:text-6xl md:text-7xl`
+            : `${cormorant.className} text-4xl text-[#2f2f2f] md:text-5xl`
         }
       >
         {title}
@@ -254,7 +255,7 @@ function WeddingSectionHeading({
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
       />
       {subtitle ? (
-        <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-[#5a5a5a] sm:text-base">
+        <p className={`${cormorant.className} mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-[#5a5a5a] sm:text-base`}>
           {subtitle}
         </p>
       ) : null}
@@ -310,7 +311,7 @@ function InvitationIntro({ onEnter }: { onEnter: () => void }) {
             initial={{ opacity: 0, y: 32, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1.1, delay: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
-            className="font-heading text-5xl leading-tight md:text-7xl lg:text-8xl"
+            className={`${cormorant.className} text-5xl leading-tight md:text-7xl lg:text-8xl`}
           >
             Amara <span className="text-[#C5A059] italic font-light">&amp;</span>{" "}
             Nayana
@@ -329,10 +330,10 @@ function InvitationIntro({ onEnter }: { onEnter: () => void }) {
             transition={{ duration: 0.9, delay: 0.65 }}
             className="mx-auto max-w-xl"
           >
-            <p className="text-sm uppercase tracking-[0.42em] text-[#5a5a5a] md:text-base">
+            <p className={`${cormorant.className} text-sm uppercase tracking-[0.42em] text-[#5a5a5a] md:text-base`}>
               December 12, 2026
             </p>
-            <p className="mt-6 text-base leading-relaxed text-[#5a5a5a] md:text-lg">
+            <p className={`${cormorant.className} mt-6 text-base leading-relaxed text-[#5a5a5a] md:text-lg`}>
               We are honored to invite you to witness the beginning of our
               forever. Please enter the invitation to discover every detail of
               our celebration.
@@ -379,59 +380,72 @@ function InvitationIntro({ onEnter }: { onEnter: () => void }) {
 // ─────────────── Header / nav ─────────────────────────────────────────────────
 const NAV_ITEMS = [
   { name: "Venue", href: "#venue" },
-  { name: "Attendance", href: "#rsvp" },
+  { name: "RSVP", href: "#rsvp" },
 ];
 
 function Header() {
   return (
-    <motion.header
-      initial={{ y: -40, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className="absolute top-0 left-0 right-0 z-40 w-full"
-    >
-      <nav className="flex items-center justify-center px-4 py-6">
-        <ul className="flex items-center justify-center gap-6 sm:gap-12">
+    <header className="absolute top-0 left-0 right-0 z-40 w-full bg-transparent">
+      <nav className="flex items-center justify-center px-4 py-8">
+        <ul className="flex items-center justify-center gap-8 sm:gap-16">
           {NAV_ITEMS.map((item) => (
             <li key={item.name}>
               <a
                 href={item.href}
-                className="group relative block text-[10px] md:text-xs font-semibold tracking-[0.22em] uppercase text-white/80 transition-colors duration-200 hover:text-white py-1 px-2 drop-shadow-md"
+                className={`${cormorant.className} text-[10px] md:text-xs font-medium tracking-[0.2em] uppercase text-white hover:text-[#C5A059] transition-colors drop-shadow-md`}
               >
                 {item.name}
-                <span className="pointer-events-none absolute bottom-0 left-1/2 h-[2px] w-0 -translate-x-1/2 bg-[#C5A059] transition-[width] duration-300 ease-out group-hover:w-full" />
               </a>
             </li>
           ))}
         </ul>
       </nav>
-    </motion.header>
+    </header>
   );
 }
 
 // ─────────────── Footer ───────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-[#FFFBEB] py-20 text-center">
-      <FloatingParticles count={8} />
-      <div className="mx-auto max-w-4xl px-6">
+    <footer className="relative overflow-hidden bg-[#111111] py-24 md:py-32 text-center text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(197,160,89,0.08),transparent_60%)] pointer-events-none" />
+      <FloatingParticles count={15} />
+
+      <div className="relative z-10 mx-auto max-w-4xl px-6">
         <FadeIn direction="up">
-          <motion.div
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="mb-6 flex justify-center"
-          >
-            <Heart className="h-8 w-8 text-[#C5A059]" />
-          </motion.div>
-          <h2 className="mb-4 font-heading text-4xl text-[#2f2f2f] md:text-5xl">
-            Amara &amp; Nayana
+          <div className="mb-10 flex justify-center">
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="flex items-center justify-center"
+            >
+              <Heart className="h-8 w-8 text-[#C5A059] opacity-80" />
+            </motion.div>
+          </div>
+
+          <h2 className={`${cormorant.className} mb-4 text-5xl md:text-7xl text-[#F7F4EE] tracking-wide`}>
+            Amara <span className="font-light italic text-[#C5A059]">&amp;</span> Nayana
           </h2>
-          <p className="mb-8 font-sans text-sm uppercase tracking-widest text-[#5a5a5a]">
-            Thank you for being part of our story
+
+          <p className={`${cormorant.className} mb-8 text-xs md:text-sm uppercase tracking-[0.3em] text-[#C5A059]/90`}>
+            December 12, 2026 &bull; Colombo, Sri Lanka
           </p>
-          <p className="text-xs text-[#8a8a8a]">
-            &copy; {new Date().getFullYear()} All rights reserved.
+
+          <p className={`${cormorant.className} mx-auto mb-16 max-w-md text-sm md:text-base font-light leading-relaxed text-[#A8A29E]`}>
+            Thank you for being a cherished part of our journey and celebrating the beginning of our forever.
           </p>
+
+          <div className="mx-auto mb-16 h-px w-24 bg-gradient-to-r from-transparent via-[#C5A059]/40 to-transparent" />
+
+          <div className="flex flex-col items-center justify-center gap-6">
+            <p className={`${cormorant.className} text-xs md:text-sm text-[#8C857B] tracking-wide`}>&copy; {new Date().getFullYear()} Amara &amp; Nayana. All rights reserved.</p>
+            
+            <a href="https://mohotha.com" target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-3 border-b border-transparent pb-1 transition-all duration-300 hover:border-[#C5A059]">
+              <Sparkles className="h-3.5 w-3.5 text-[#C5A059] transition-transform group-hover:rotate-12" />
+              <span className={`${cormorant.className} text-[10px] md:text-xs uppercase tracking-[0.2em] text-[#8C857B] group-hover:text-[#E5C98B] transition-colors`}>Designed &amp; Developed by</span>
+              <span className={`${cormorant.className} text-xs md:text-sm font-bold tracking-[0.25em] text-white group-hover:text-[#C5A059] transition-colors`}>MOHOTHA</span>
+            </a>
+          </div>
         </FadeIn>
       </div>
     </footer>
@@ -493,7 +507,7 @@ function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="text-white font-heading text-6xl md:text-8xl lg:text-9xl mb-6 drop-shadow-2xl"
+          className={`${cormorant.className} text-white text-6xl md:text-8xl lg:text-9xl mb-6 drop-shadow-2xl`}
         >
           Amara{" "}
           <motion.span
@@ -638,9 +652,9 @@ function BrideGroomSection() {
                 transition={{ duration: 0.3 }}
               />
             </motion.div>
-            <h3 className="mb-2 font-heading text-3xl text-[#2f2f2f]">{person.name}</h3>
-            <p className="mb-4 text-xs uppercase tracking-widest text-[#C5A059]">{person.role}</p>
-            <p className="max-w-xs text-sm font-light leading-relaxed text-[#5a5a5a]">{person.bio}</p>
+            <h3 className={`${cormorant.className} mb-2 text-3xl text-[#2f2f2f]`}>{person.name}</h3>
+            <p className={`${cormorant.className} mb-4 text-xs uppercase tracking-widest text-[#C5A059]`}>{person.role}</p>
+            <p className={`${cormorant.className} max-w-xs text-sm font-light leading-relaxed text-[#5a5a5a]`}>{person.bio}</p>
           </FadeIn>
         ))}
       </div>
@@ -692,11 +706,11 @@ function LoveStorySection() {
                   <motion.div
                     className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-[#C5A059]/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   />
-                  <span className="pointer-events-none absolute -top-10 -left-4 z-0 select-none font-heading text-7xl text-[#C5A059] opacity-15 md:-left-8 md:text-8xl">
+                  <span className={`${cormorant.className} pointer-events-none absolute -top-10 -left-4 z-0 select-none text-7xl text-[#C5A059] opacity-15 md:-left-8 md:text-8xl`}>
                     {item.year}
                   </span>
-                  <h3 className="relative z-10 mb-4 font-heading text-3xl text-[#2f2f2f]">{item.title}</h3>
-                  <p className="relative z-10 text-sm font-light leading-relaxed text-[#5a5a5a] md:text-base">{item.description}</p>
+                  <h3 className={`${cormorant.className} relative z-10 mb-4 text-3xl text-[#2f2f2f]`}>{item.title}</h3>
+                  <p className={`${cormorant.className} relative z-10 text-sm font-light leading-relaxed text-[#5a5a5a] md:text-base`}>{item.description}</p>
                 </FadeIn>
                 <div className="md:w-[45%] hidden md:block" />
               </div>
@@ -753,7 +767,7 @@ function CountdownSection() {
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={timeLeft[label]}
-                    className="mb-1 font-heading text-3xl text-[#C5A059] md:text-5xl"
+                    className={`${cormorant.className} mb-1 text-4xl text-[#C5A059] md:text-6xl`}
                     initial={{ opacity: 0, y: -12 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 12 }}
@@ -848,9 +862,9 @@ function ScheduleSection() {
                   >
                     <IconComp className="h-6 w-6 text-[#C5A059]" />
                   </motion.div>
-                  <p className="mb-3 font-sans text-xs font-semibold uppercase tracking-[0.3em] text-[#C5A059] md:text-sm">{item.time}</p>
-                  <h3 className="relative z-10 mb-4 font-heading text-3xl text-[#2f2f2f]">{item.title}</h3>
-                  <p className="relative z-10 text-sm font-light leading-relaxed text-[#5a5a5a] md:text-base">{item.description}</p>
+                  <p className={`${cormorant.className} mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#C5A059] md:text-sm`}>{item.time}</p>
+                  <h3 className={`${cormorant.className} relative z-10 mb-4 text-3xl text-[#2f2f2f]`}>{item.title}</h3>
+                  <p className={`${cormorant.className} relative z-10 text-sm font-light leading-relaxed text-[#5a5a5a] md:text-base`}>{item.description}</p>
                 </FadeIn>
                 <div className="hidden md:block md:w-[45%]" />
               </div>
@@ -873,20 +887,19 @@ function VenueSection() {
           <motion.div whileHover={{ scale: 1.2, rotate: 10 }} transition={{ duration: 0.3 }}>
             <MapPin className="mb-6 h-10 w-10 text-[#C5A059]" />
           </motion.div>
-          <h3 className="mb-4 font-heading text-3xl text-[#2f2f2f]">Waters Edge Grand Ballroom</h3>
-          <p className="mb-2 font-light text-[#5a5a5a]">316 Ethul Kotte Road,</p>
-          <p className="mb-8 font-light text-[#5a5a5a]">Battaramulla 10100, Sri Lanka.</p>
+          <h3 className={`${cormorant.className} mb-4 text-3xl text-[#2f2f2f]`}>Waters Edge Grand Ballroom</h3>
+          <p className={`${cormorant.className} mb-2 font-light text-[#5a5a5a]`}>316 Ethul Kotte Road,</p>
+          <p className={`${cormorant.className} mb-8 font-light text-[#5a5a5a]`}>Battaramulla 10100, Sri Lanka.</p>
 
-          <motion.button
-            type="button"
-            suppressHydrationWarning
-            whileHover={{ scale: 1.04, x: 4 }}
-            whileTap={{ scale: 0.97 }}
+          <a
+            href="https://www.google.com/maps/dir/?api=1&destination=Waters+Edge+Grand+Ballroom,+316+Ethul+Kotte+Road,+Battaramulla,+Sri+Lanka"
+            target="_blank"
+            rel="noopener noreferrer"
             className="group flex w-fit items-center gap-2 self-start rounded-xl border border-[#E8DCC8] bg-[#FFFBEB] px-5 py-3 text-sm text-[#5C5C4A] transition-colors hover:border-[#C9C191] hover:bg-[#FFF9F1]"
           >
             <Navigation className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
             Get Directions
-          </motion.button>
+          </a>
         </FadeIn>
 
         <FadeIn direction="left" className="relative min-h-[24rem] w-full overflow-hidden rounded-2xl border border-[#E8DCC8] bg-[#f4efe7] shadow-[0_20px_50px_rgba(197,160,89,0.08)] md:min-h-[31.25rem] lg:w-2/3">
@@ -970,7 +983,7 @@ function GallerySection() {
                       transition={{ duration: 0.4 }}
                     >
                       <motion.p
-                        className="font-heading text-2xl tracking-widest text-white"
+                        className={`${cormorant.className} text-2xl tracking-widest text-white`}
                         initial={{ y: 16 }}
                         whileHover={{ y: 0 }}
                         transition={{ duration: 0.4 }}
@@ -1055,10 +1068,10 @@ function FramedLoveNote({ message, name }: { message: string; name: string }) {
           />
         ))}
         <Heart className="mx-auto mb-4 h-5 w-5 text-[#C5A059]/40" />
-        <p className="text-center font-heading text-lg italic leading-relaxed text-[#3f3f3f] sm:text-xl md:text-[1.35rem] md:leading-[1.8]">
+        <p className={`${cormorant.className} text-center text-lg italic leading-relaxed text-[#3f3f3f] sm:text-xl md:text-[1.35rem] md:leading-[1.8]`}>
           &ldquo;{message}&rdquo;
         </p>
-        <p className="mt-8 text-center font-heading text-base text-[#5a5a5a] sm:text-lg">
+        <p className={`${cormorant.className} mt-8 text-center text-base text-[#5a5a5a] sm:text-lg`}>
           — {name}
         </p>
       </div>
@@ -1210,7 +1223,7 @@ function WordsOfLoveSection({ messages }: { messages: GuestMessage[] }) {
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <FadeIn>
           <div className="text-center">
-            <h2 className={`${greatVibes.className} text-5xl text-[#2f2f2f] sm:text-6xl md:text-7xl`}>
+            <h2 className={`${cormorant.className} text-5xl text-[#2f2f2f] sm:text-6xl md:text-7xl`}>
               Words of Love
             </h2>
             <motion.div
@@ -1315,7 +1328,7 @@ export function WeddingInvitationTemplate() {
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-background w-full">
+    <main className={`relative min-h-screen w-full bg-[#FFF9F1] ${cormorant.className}`}>
       <audio ref={audioRef} src="/music/wedding-invitation.mp3" loop />
       
       {/* Floating Audio Button */}
