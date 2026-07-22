@@ -188,32 +188,37 @@ export default function OceanBreezeCard() {
     "intro",
   );
 
-const floatAnimation: Variants = shouldReduceMotion
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const floatAnimation: any = shouldReduceMotion
     ? {}
     : {
         y: [-10, 10, -10],
         rotate: [-4, 4, -4],
         transition: { repeat: Infinity, duration: 11, ease: "easeInOut" },
       };
-  const waveAnimation: Variants = shouldReduceMotion
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const waveAnimation: any = shouldReduceMotion
     ? {}
     : {
         x: [-18, 18, -18],
         transition: { repeat: Infinity, duration: 15, ease: "easeInOut" },
       };
-  const glowPulse: Variants = shouldReduceMotion
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const glowPulse: any = shouldReduceMotion
     ? {}
     : {
         opacity: [0.12, 0.28, 0.12],
         transition: { repeat: Infinity, duration: 9, ease: "easeInOut" },
       };
-  const cloudDriftA: Variants = shouldReduceMotion
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cloudDriftA: any = shouldReduceMotion
     ? {}
     : {
         x: ["-10%", "10%", "-10%"],
         transition: { repeat: Infinity, duration: 55, ease: "easeInOut" },
       };
-  const cloudDriftB: Variants = shouldReduceMotion
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cloudDriftB: any = shouldReduceMotion
     ? {}
     : {
         x: ["8%", "-8%", "8%"],

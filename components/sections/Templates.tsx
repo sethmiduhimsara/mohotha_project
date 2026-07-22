@@ -5,15 +5,15 @@ import { motion, type Variants } from "framer-motion";
 const featuredDesigns = [
   {
     id: 1,
-    name: "Classic Wedding",
+    name: "Classic Sinhala",
     style: "Traditional",
-    href: "/wedding-invitation",
+    href: "/demo/classic-sinhala",
   },
   {
     id: 2,
     name: "Modern Minimalist",
     style: "Contemporary",
-    href: "/demo/modern-minimalist",
+    href: "/wedding-invitation",
   },
   {
     id: 3,

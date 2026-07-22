@@ -267,37 +267,45 @@ function WeddingSectionHeading({
 function InvitationIntro({ onEnter }: { onEnter: () => void }) {
   return (
     <motion.div
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeOut" } }}
-      className="fixed inset-0 z-50 overflow-hidden bg-[#FFF9F1]"
+      className="fixed inset-0 z-50 flex overflow-hidden"
+      exit={{ transition: { staggerChildren: 0.1 } }}
     >
-      <FloatingParticles count={18} />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(197,160,89,0.12),transparent_45%),linear-gradient(180deg,rgba(255,255,255,0.6),transparent_30%),#FFF9F1]" />
+      {/* LEFT CURTAIN */}
+      <motion.div 
+        className="absolute inset-y-0 left-0 w-1/2 z-10 border-r border-[#C5A059]/20 bg-[#FFF9F1]"
+        exit={{ x: "-100%", transition: { duration: 1.4, ease: [0.76, 0, 0.24, 1], delay: 0.4 } }}
+      />
+      {/* RIGHT CURTAIN */}
+      <motion.div 
+        className="absolute inset-y-0 right-0 w-1/2 z-10 border-l border-[#C5A059]/20 bg-[#FFF9F1]"
+        exit={{ x: "100%", transition: { duration: 1.4, ease: [0.76, 0, 0.24, 1], delay: 0.4 } }}
+      />
 
-      {/* Rotating rings */}
+      {/* CONTENT LAYER */}
       <motion.div
-        className="absolute inset-0 flex items-center justify-center"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+        className="absolute inset-0 z-20 flex min-h-screen items-center justify-center px-6 text-center text-[#2f2f2f]"
+        exit={{ opacity: 0, scale: 0.96, filter: "blur(8px)", transition: { duration: 0.6, ease: "easeOut" } }}
       >
-        <div className="h-[500px] w-[500px] rounded-full border border-[#C5A059]/15" />
-      </motion.div>
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center"
-        animate={{ rotate: -360 }}
-        transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-      >
-        <div className="h-[350px] w-[350px] rounded-full border border-[#C5A059]/25" />
-      </motion.div>
+        <FloatingParticles count={18} />
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(197,160,89,0.12),transparent_45%),linear-gradient(180deg,rgba(255,255,255,0.6),transparent_30%)]" />
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.1, ease: [0.21, 0.47, 0.32, 0.98] }}
-        className="relative flex min-h-screen items-center justify-center px-6 text-center text-[#2f2f2f]"
-      >
-        <div className="relative z-10 max-w-3xl">
+        {/* Rotating rings */}
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+        >
+          <div className="h-[500px] w-[500px] rounded-full border border-[#C5A059]/15" />
+        </motion.div>
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+        >
+          <div className="h-[350px] w-[350px] rounded-full border border-[#C5A059]/25" />
+        </motion.div>
+
+        <div className="relative z-30 max-w-3xl">
           <motion.p
             initial={{ opacity: 0, y: 20, letterSpacing: "0.45em" }}
             animate={{ opacity: 1, y: 0, letterSpacing: "0.3em" }}
@@ -1319,10 +1327,7 @@ export function WeddingInvitationTemplate() {
     }
   }, []);
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => handleEnterInvitation(), 5500);
-    return () => window.clearTimeout(timer);
-  }, [handleEnterInvitation]);
+  // Intro stays indefinitely until user clicks "Enter Invitation"
 
   // handleRsvpSubmit: called after a successful DB save to update the
   // local "Words of Love" section without needing a full page reload.
