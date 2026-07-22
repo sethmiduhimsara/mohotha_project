@@ -188,38 +188,37 @@ export default function OceanBreezeCard() {
     "intro",
   );
 
-  const floatAnimation = shouldReduceMotion
+const floatAnimation: any = shouldReduceMotion
     ? {}
     : {
         y: [-10, 10, -10],
         rotate: [-4, 4, -4],
         transition: { repeat: Infinity, duration: 11, ease: "easeInOut" },
       };
-  const waveAnimation = shouldReduceMotion
+  const waveAnimation: any = shouldReduceMotion
     ? {}
     : {
         x: [-18, 18, -18],
         transition: { repeat: Infinity, duration: 15, ease: "easeInOut" },
       };
-  const glowPulse = shouldReduceMotion
+  const glowPulse: any = shouldReduceMotion
     ? {}
     : {
         opacity: [0.12, 0.28, 0.12],
         transition: { repeat: Infinity, duration: 9, ease: "easeInOut" },
       };
-  const cloudDriftA = shouldReduceMotion
+  const cloudDriftA: any = shouldReduceMotion
     ? {}
     : {
         x: ["-10%", "10%", "-10%"],
         transition: { repeat: Infinity, duration: 55, ease: "easeInOut" },
       };
-  const cloudDriftB = shouldReduceMotion
+  const cloudDriftB: any = shouldReduceMotion
     ? {}
     : {
         x: ["8%", "-8%", "8%"],
         transition: { repeat: Infinity, duration: 68, ease: "easeInOut" },
       };
-
   const focusRing =
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5fa8d3]";
 
