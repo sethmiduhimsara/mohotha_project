@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { AnimatePresence, motion, useScroll, useTransform, useMotionValue, useSpring, useInView } from "framer-motion";
-import { submitRsvp } from "@/app/actions/rsvp";
+import { submitRsvp } from "@/app/actions/wedding-invitation/rsvp";
 import { Cormorant_Garamond } from "next/font/google";
 import {
   Heart,

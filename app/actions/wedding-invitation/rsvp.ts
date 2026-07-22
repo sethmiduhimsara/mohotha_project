@@ -54,7 +54,7 @@ export async function submitRsvp(
     });
 
     // Tell Next.js to refresh the admin page data automatically
-    revalidatePath("/admin");
+    revalidatePath("/admin/wedding-invitation");
 
     return { success: true };
   } catch (error) {

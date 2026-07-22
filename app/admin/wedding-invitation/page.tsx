@@ -8,7 +8,7 @@
 // This is a Next.js Server Component — it fetches data directly from the
 // database on the server and renders it. No client-side JavaScript needed.
 
-import { getAllRsvps } from "@/app/actions/rsvp";
+import { getAllRsvps } from "@/app/actions/wedding-invitation/rsvp";
 import { Cormorant_Garamond } from "next/font/google";
 
 const cormorant = Cormorant_Garamond({
@@ -70,7 +70,7 @@ export default async function AdminPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#C5A059]">
-              MOHOTHA · Admin
+              MOHOTHA · Client Dashboard
             </p>
             <h1
               className={`${cormorant.className} mt-1 text-3xl font-bold text-[#2f2f2f]`}
