@@ -52,8 +52,8 @@ function StatCard({
 
 // ─── Main Admin Page ───────────────────────────────────────────────────────────
 export default async function AdminPage() {
-  // Fetch all RSVPs directly from the database (server-side)
-  const rsvps = await getAllRsvps();
+  // Fetch all RSVPs directly from the database for this specific client
+  const rsvps = await getAllRsvps("wedding-invitation");
 
   // ─── Calculate summary stats ───────────────────────────────────────────────
   const totalAccepted = rsvps.filter((r) => r.attending === "accept").length;

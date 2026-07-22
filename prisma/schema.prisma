@@ -18,6 +18,7 @@ model Rsvp {
   guestCount  Int      @default(1)            // Number of people coming
   message     String   @default("")           // Optional love note
   submittedAt DateTime @default(now())        // When they submitted
+  clientId    String   @default("default")    // Identifies the specific client
 
   @@map("rsvps")
 }

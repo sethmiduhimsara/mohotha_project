@@ -1090,7 +1090,7 @@ function FramedLoveNote({ message, name }: { message: string; name: string }) {
 // ─────────────── RSVP section ─────────────────────────────────────────────────
 // This component now saves RSVPs to the DATABASE via a Server Action,
 // NOT to the browser's localStorage.
-function RSVPSection({ onSubmit }: { onSubmit: (submission: GuestMessage) => void }) {
+function RSVPSection({ onSubmit, clientId }: { onSubmit: (submission: GuestMessage) => void; clientId: string }) {
   const [form, setForm] = useState<RsvpFormData>(emptyRsvpForm);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -1123,6 +1123,7 @@ function RSVPSection({ onSubmit }: { onSubmit: (submission: GuestMessage) => voi
         attending: form.attending as "accept" | "decline",
         guestCount,
         message: trimmedMessage,
+        clientId,
       });
 
       if (!result.success) {
@@ -1303,7 +1304,7 @@ function WordsOfLoveSection({ messages }: { messages: GuestMessage[] }) {
 }
 
 // ─────────────── Main export ──────────────────────────────────────────────────
-export function WeddingInvitationTemplate() {
+export function WeddingInvitationTemplate({ clientId = "wedding-invitation" }: { clientId?: string }) {
   const [showIntro, setShowIntro] = useState(true);
   const [guestMessages, setGuestMessages] = useState<GuestMessage[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -1367,7 +1368,7 @@ export function WeddingInvitationTemplate() {
       <VenueSection />
       <GallerySection />
       <DressCodeSection />
-      <RSVPSection onSubmit={handleRsvpSubmit} />
+      <RSVPSection onSubmit={handleRsvpSubmit} clientId={clientId} />
       <WordsOfLoveSection messages={guestMessages} />
       <Footer />
     </main>
