@@ -53,7 +53,7 @@ export default function InvitationCardTemplate() {
       <section className="relative min-h-screen overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/images/hero/wedding-hero1.jpg"
+            src="/images/hero/diamond.gif"
             alt="Wedding hero background"
             fill
             priority
