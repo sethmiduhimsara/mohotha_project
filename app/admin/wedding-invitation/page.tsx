@@ -10,6 +10,7 @@
 
 import { getAllRsvps } from "@/app/actions/wedding-invitation/rsvp";
 import { Cormorant_Garamond } from "next/font/google";
+import DownloadCsvButton from "./DownloadCsvButton";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -79,9 +80,10 @@ export default async function AdminPage() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full bg-[#C5A059]/10 px-3 py-1 text-xs font-semibold text-[#C5A059]">
+            <span className="rounded-full bg-[#C5A059]/10 px-3 py-1 text-xs font-semibold text-[#C5A059] hidden sm:inline-block">
               Amara &amp; Nayana · Dec 12, 2026
             </span>
+            <DownloadCsvButton data={rsvps} />
           </div>
         </div>
       </header>
