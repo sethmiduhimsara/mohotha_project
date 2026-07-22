@@ -79,3 +79,18 @@ export async function getAllRsvps(): Promise<RsvpRecord[]> {
     return [];
   }
 }
+
+// ─── Delete an RSVP ───────────────────────────────────────────────────────────
+
+export async function deleteRsvp(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    await prisma.rsvp.delete({
+      where: { id },
+    });
+    revalidatePath("/admin/wedding-invitation");
+    return { success: true };
+  } catch (error) {
+    console.error("[deleteRsvp] Database error:", error);
+    return { success: false, error: "Failed to delete RSVP." };
+  }
+}
