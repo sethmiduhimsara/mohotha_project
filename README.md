@@ -55,8 +55,8 @@ mohotha_project/
 │   │  ← 📄  TEMPLATE ROUTES (Public pages for guests to visit)
 │   ├── wedding-invitation/
 │   │   └── page.tsx        → mohotha.com/wedding-invitation
-│   ├── template-1/
-│   │   └── page.tsx        → mohotha.com/template-1
+│   ├── RoyalHeritage/
+│   │   └── page.tsx        → mohotha.com/RoyalHeritage
 │   └── demo/
 │       └── page.tsx        → mohotha.com/demo
 │
@@ -68,7 +68,7 @@ mohotha_project/
 │   └── templates/          ← THE MAIN TEMPLATES (One folder per template)
 │       ├── wedding-invitation/   ← Template 1: Wedding Invitation
 │       ├── ocean-breeze/         ← Template 2: Ocean Breeze
-│       └── template-1/           ← Template 3: (next template)
+│       └── RoyalHeritage/           ← Template 3: (next template)
 │
 │  ← 🖼️  STATIC FILES (Images, music, icons)
 └── public/

@@ -17,9 +17,9 @@ const featuredDesigns = [
   },
   {
     id: 3,
-    name: "Royal Heritage",
+    name: "RoyalHeritage",
     style: "Kandyan Premium",
-    href: "/template-1",
+    href: "/RoyalHeritage",
   },
   {
     id: 4,

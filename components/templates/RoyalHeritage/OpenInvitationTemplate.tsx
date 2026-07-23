@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import InvitationCardTemplate from "@/components/templates/template-1/InvitationCardTemplate";
+import InvitationCardTemplate from "@/components/templates/RoyalHeritage/InvitationCardTemplate";
 
 export default function OpenInvitationTemplate() {
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -94,7 +94,7 @@ export default function OpenInvitationTemplate() {
                     </div>
 
                     <p className="mt-9 max-w-full text-[10px] font-semibold uppercase tracking-[0.42em] text-[#7a6570] sm:mt-10 sm:text-xs">
-                      Invite you to a royal heritage celebration
+                      Invite you to a RoyalHeritage celebration
                     </p>
 
                     <button
