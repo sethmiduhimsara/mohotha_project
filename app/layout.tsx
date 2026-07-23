@@ -27,9 +27,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning /* 🛡️ Added this to protect the HTML tag! */
       className={`${outfit.variable} ${bodoni.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#050505] text-white">
+      <body 
+        suppressHydrationWarning /* 🛡️ Added this to protect the Body tag! */
+        className="min-h-full flex flex-col bg-[#050505] text-white"
+      >
         {children}
       </body>
     </html>
