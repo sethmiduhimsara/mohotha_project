@@ -7,7 +7,7 @@ const featuredDesigns = [
     id: 1,
     name: "Classic Sinhala",
     style: "Traditional",
-    href: "/demo/classic-sinhala",
+    href: "/classic-sinhala",
   },
   {
     id: 2,
