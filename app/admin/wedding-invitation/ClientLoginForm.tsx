@@ -1,5 +1,3 @@
-//login PW = AMARA2026
-
 "use client";
 
 import { useState, useTransition } from "react";
@@ -14,7 +12,7 @@ const cormorant = Cormorant_Garamond({
   style: ["normal", "italic"],
 });
 
-export default function ClientLoginForm({ clientId, correctPassword }: { clientId: string, correctPassword?: string }) {
+export default function ClientLoginForm({ clientId }: { clientId: string }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -24,7 +22,7 @@ export default function ClientLoginForm({ clientId, correctPassword }: { clientI
     if (!password.trim()) return;
 
     startTransition(async () => {
-      const result = await loginAsClient(clientId, password, correctPassword);
+      const result = await loginAsClient(clientId, password);
       if (!result.success) {
         setError(result.error || "Login failed");
       }

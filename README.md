@@ -104,6 +104,45 @@ npx prisma studio
 
 ---
 
+## Google Sheets RSVP (client handoff)
+
+Guest RSVPs save to the database **and** append to a Google Sheet. For this step, send the couple **only** the Google Sheet link (keep `/admin/...` for future premium).
+
+### One-time Google Cloud setup
+1. Enable **Google Sheets API** in your Google Cloud project.
+2. Keep the service account JSON in the project root (gitignored). Current file: `mohotha-project-d02614dc3402.json`.
+3. Service account email: `mohotha-rsvp@mohotha-project.iam.gserviceaccount.com`
+
+### Per-client sheet (manual — required)
+Service accounts usually cannot create sheets in personal Drive, so create each sheet yourself:
+
+1. Create a Google Sheet named e.g. `Amara & Nayana — RSVPs`
+2. Row 1 headers: `Name | Attending | Guest Count | Message | Submitted At`
+3. Share → add `mohotha-rsvp@mohotha-project.iam.gserviceaccount.com` as **Editor**
+4. Also share with the couple's Gmail (Viewer or Editor)
+5. Copy the Sheet ID from the URL:
+   `https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit`
+6. Link it in MOHOTHA:
+
+```bash
+npm run link:sheet -- wedding-invitation YOUR_SHEET_ID
+npm run link:sheet -- kasun-devmini YOUR_SHEET_ID
+```
+
+7. Test:
+
+```bash
+npm run test:rsvp
+```
+
+### What to send the couple
+- Invitation URL (guests fill RSVP here), e.g. `https://yoursite.com/wedding-invitation`
+- Google Sheet URL (they watch responses here), e.g. `https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit`
+
+Do **not** send the admin dashboard / passcode in this step.
+
+---
+
 ## 🚀 Deploying to Vercel (When Ready for Real Clients)
 
 1. Create a free **Supabase** account → create a project → copy the PostgreSQL URL.

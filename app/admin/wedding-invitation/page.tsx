@@ -9,11 +9,13 @@
 // database on the server and renders it. No client-side JavaScript needed.
 
 import { getAllRsvps } from "@/app/actions/wedding-invitation/rsvp";
+import { getClient } from "@/lib/clients";
 import { Cormorant_Garamond } from "next/font/google";
 import { cookies } from "next/headers";
 import DownloadCsvButton from "./DownloadCsvButton";
 import RsvpTable from "./RsvpTable";
 import ClientLoginForm from "./ClientLoginForm";
+import OpenGoogleSheetButton from "./OpenGoogleSheetButton";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -55,21 +57,19 @@ function StatCard({
 // ─── Main Admin Page ───────────────────────────────────────────────────────────
 export default async function AdminPage() {
   const CLIENT_ID = "wedding-invitation";
-  const DASHBOARD_PASSWORD = "AMARA2026"; // Hardcoded for this specific client
-  
-  // ─── Check Authentication ───────────────────────────────────────────────────
+  const client = await getClient(CLIENT_ID);
+
   const cookieStore = await cookies();
   const isAuthenticated = cookieStore.get(`auth_${CLIENT_ID}`)?.value === "true";
-  
+
   if (!isAuthenticated) {
     return (
       <div className={`min-h-screen bg-[#FAF7F2] ${cormorant.className}`}>
-        <ClientLoginForm clientId={CLIENT_ID} correctPassword={DASHBOARD_PASSWORD} />
+        <ClientLoginForm clientId={CLIENT_ID} />
       </div>
     );
   }
 
-  // Fetch all RSVPs directly from the database for this specific client
   const rsvps = await getAllRsvps(CLIENT_ID);
 
   // ─── Calculate summary stats ───────────────────────────────────────────────
@@ -94,19 +94,36 @@ export default async function AdminPage() {
             <h1
               className={`${cormorant.className} mt-1 text-3xl font-bold text-[#2f2f2f]`}
             >
-              Wedding Invitation · RSVP Dashboard
+              {client?.displayName ?? "Wedding Invitation"} · RSVP Dashboard
             </h1>
           </div>
           <div className="flex items-center gap-3">
             <span className="rounded-full bg-[#C5A059]/10 px-3 py-1 text-xs font-semibold text-[#C5A059] hidden sm:inline-block">
               Amara &amp; Nayana · Dec 12, 2026
             </span>
+            {client?.googleSheetId && (
+              <OpenGoogleSheetButton sheetId={client.googleSheetId} />
+            )}
             <DownloadCsvButton data={rsvps} />
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-10">
+        {client?.googleSheetId ? (
+          <p className="mb-8 text-sm text-[#7a7a6a]">
+            Responses also appear in your shared Google Sheet in real time.
+            Share this sheet link with the couple (not the admin login).
+          </p>
+        ) : (
+          <p className="mb-8 rounded-xl border border-[#E8DCC8] bg-white px-4 py-3 text-sm text-[#a05050]">
+            Google Sheet not linked yet. Create a sheet, share it with{" "}
+            <code className="text-xs">mohotha-rsvp@mohotha-project.iam.gserviceaccount.com</code>{" "}
+            as Editor, then run{" "}
+            <code className="text-xs">npm run link:sheet -- wedding-invitation SHEET_ID</code>.
+          </p>
+        )}
+
         {/* ── Summary Stats ────────────────────────────────────────────── */}
         <section className="mb-10">
           <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#9a9a8a]">
@@ -137,7 +154,7 @@ export default async function AdminPage() {
         </section>
 
         {/* ── Interactive RSVP Table ─────────────────────────────────────── */}
-        <RsvpTable rsvps={rsvps} />
+        <RsvpTable rsvps={rsvps} clientId={CLIENT_ID} />
       </main>
     </div>
   );

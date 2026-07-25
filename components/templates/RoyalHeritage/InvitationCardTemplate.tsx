@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   AnimatePresence,
   motion,
@@ -22,8 +22,23 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { TargetAndTransition } from "framer-motion";
+import { submitRsvp } from "@/app/actions/wedding-invitation/rsvp";
 
 const LUX_EASE = [0.22, 1, 0.36, 1] as const;
+
+type RsvpFormData = {
+  name: string;
+  attending: "" | "accept" | "decline";
+  guestCount: string;
+  message: string;
+};
+
+const emptyRsvpForm: RsvpFormData = {
+  name: "",
+  attending: "",
+  guestCount: "1",
+  message: "",
+};
 
 const staggerContainer: Variants = {
   hidden: { opacity: 0 },
@@ -131,7 +146,11 @@ function Ornament({
   );
 }
 
-export default function InvitationCardTemplate() {
+export default function InvitationCardTemplate({
+  clientId = "royal-heritage",
+}: {
+  clientId?: string;
+}) {
   const targetDate = useMemo(
     () => new Date("2026-08-14T00:00:00").getTime(),
     [],
@@ -145,6 +164,9 @@ export default function InvitationCardTemplate() {
   const [rsvpStep, setRsvpStep] = useState<"intro" | "form" | "success">(
     "intro",
   );
+  const [rsvpForm, setRsvpForm] = useState<RsvpFormData>(emptyRsvpForm);
+  const [rsvpError, setRsvpError] = useState("");
+  const [isRsvpPending, startRsvpTransition] = useTransition();
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -824,41 +846,104 @@ export default function InvitationCardTemplate() {
                   transition={{ duration: 0.8, ease: LUX_EASE }}
                   onSubmit={(event) => {
                     event.preventDefault();
-                    setRsvpStep("success");
+                    const trimmedName = rsvpForm.name.trim();
+                    const trimmedMessage = rsvpForm.message.trim();
+
+                    if (!trimmedName) {
+                      setRsvpError("Please enter your name.");
+                      return;
+                    }
+                    if (!rsvpForm.attending) {
+                      setRsvpError("Please let us know if you will attend.");
+                      return;
+                    }
+
+                    const guestCount =
+                      rsvpForm.attending === "accept"
+                        ? Math.max(1, Number.parseInt(rsvpForm.guestCount, 10) || 1)
+                        : 0;
+
+                    setRsvpError("");
+                    startRsvpTransition(async () => {
+                      const result = await submitRsvp({
+                        name: trimmedName,
+                        attending: rsvpForm.attending as "accept" | "decline",
+                        guestCount,
+                        message: trimmedMessage,
+                        clientId,
+                      });
+
+                      if (!result.success) {
+                        setRsvpError(result.error ?? "Something went wrong. Please try again.");
+                        return;
+                      }
+
+                      setRsvpForm(emptyRsvpForm);
+                      setRsvpStep("success");
+                    });
                   }}
                   className="grid gap-5"
                 >
                   <input
                     type="text"
                     placeholder="Your name"
+                    value={rsvpForm.name}
+                    onChange={(e) => {
+                      setRsvpForm((current) => ({ ...current, name: e.target.value }));
+                      setRsvpError("");
+                    }}
                     className={`rounded-2xl border border-[#ead7ba] bg-white px-5 py-4 text-sm outline-none transition-colors duration-300 focus:border-[#b27a35] focus:ring-1 focus:ring-[#b27a35] ${focusRing}`}
                   />
                   <div className="grid gap-5 sm:grid-cols-2">
                     <select
+                      value={rsvpForm.attending}
+                      onChange={(e) => {
+                        setRsvpForm((current) => ({
+                          ...current,
+                          attending: e.target.value as RsvpFormData["attending"],
+                        }));
+                        setRsvpError("");
+                      }}
                       className={`cursor-pointer rounded-2xl border border-[#ead7ba] bg-white px-5 py-4 text-sm text-[#5d3920] outline-none transition-colors duration-300 focus:border-[#b27a35] focus:ring-1 focus:ring-[#b27a35] ${focusRing}`}
                     >
-                      <option>Will you attend?</option>
-                      <option>Joyfully Accept</option>
-                      <option>Regretfully Decline</option>
+                      <option value="">Will you attend?</option>
+                      <option value="accept">Joyfully Accept</option>
+                      <option value="decline">Regretfully Decline</option>
                     </select>
                     <input
                       type="number"
+                      min={1}
                       placeholder="Number of guests"
-                      className={`rounded-2xl border border-[#ead7ba] bg-white px-5 py-4 text-sm outline-none transition-colors duration-300 focus:border-[#b27a35] focus:ring-1 focus:ring-[#b27a35] ${focusRing}`}
+                      value={rsvpForm.guestCount}
+                      onChange={(e) => {
+                        setRsvpForm((current) => ({ ...current, guestCount: e.target.value }));
+                        setRsvpError("");
+                      }}
+                      disabled={rsvpForm.attending === "decline"}
+                      className={`rounded-2xl border border-[#ead7ba] bg-white px-5 py-4 text-sm outline-none transition-colors duration-300 focus:border-[#b27a35] focus:ring-1 focus:ring-[#b27a35] disabled:opacity-50 ${focusRing}`}
                     />
                   </div>
                   <textarea
                     rows={4}
                     placeholder="Message for the couple"
+                    value={rsvpForm.message}
+                    onChange={(e) => {
+                      setRsvpForm((current) => ({ ...current, message: e.target.value }));
+                      setRsvpError("");
+                    }}
                     className={`resize-none rounded-2xl border border-[#ead7ba] bg-white px-5 py-4 text-sm outline-none transition-colors duration-300 focus:border-[#b27a35] focus:ring-1 focus:ring-[#b27a35] ${focusRing}`}
                   />
+                  {rsvpError && (
+                    <p className="text-sm text-[#a05050]">{rsvpError}</p>
+                  )}
                   <motion.button
                     type="submit"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`mt-4 rounded-2xl bg-[#7b4b25] px-6 py-4 text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl shadow-[#7b4b25]/20 transition-colors duration-300 hover:bg-[#5d3920] ${focusRing}`}
+                    disabled={isRsvpPending}
+                    whileHover={isRsvpPending ? {} : { scale: 1.02 }}
+                    whileTap={isRsvpPending ? {} : { scale: 0.98 }}
+                    className={`mt-4 rounded-2xl bg-[#7b4b25] px-6 py-4 text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl shadow-[#7b4b25]/20 transition-colors duration-300 hover:bg-[#5d3920] disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
                   >
-                    Send RSVP
+                    {isRsvpPending ? "Sending..." : "Send RSVP"}
                   </motion.button>
                 </motion.form>
               )}

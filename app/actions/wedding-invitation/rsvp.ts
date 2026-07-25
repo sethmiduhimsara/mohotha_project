@@ -11,6 +11,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getClient } from "@/lib/clients";
+import { appendRsvpRow } from "@/lib/google-sheets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,6 +48,8 @@ export async function submitRsvp(
   }
 
   try {
+    const submittedAt = new Date();
+
     await prisma.rsvp.create({
       data: {
         name: data.name.trim(),
@@ -53,11 +57,39 @@ export async function submitRsvp(
         guestCount: data.attending === "decline" ? 0 : Math.max(1, data.guestCount),
         message: data.message.trim(),
         clientId: data.clientId || "default",
+        submittedAt,
       },
     });
 
-    // Tell Next.js to refresh the admin page data automatically
-    revalidatePath("/admin/wedding-invitation");
+    const clientId = data.clientId || "default";
+    const client = await getClient(clientId);
+
+    if (client?.googleSheetId) {
+      const sheetResult = await appendRsvpRow(client.googleSheetId, {
+        name: data.name.trim(),
+        attending: data.attending,
+        guestCount: data.attending === "decline" ? 0 : Math.max(1, data.guestCount),
+        message: data.message.trim(),
+        submittedAt,
+      });
+
+      if (!sheetResult.success) {
+        console.error(
+          `[submitRsvp] Google Sheets sync failed for client "${clientId}":`,
+          sheetResult.error
+        );
+      }
+    } else {
+      console.warn(
+        `[submitRsvp] No googleSheetId for client "${clientId}". RSVP saved to DB only. Run: npm run link:sheet -- ${clientId} SHEET_ID`
+      );
+    }
+
+    try {
+      revalidatePath(`/admin/${clientId}`);
+    } catch {
+      // revalidatePath requires a Next.js request context (safe to skip in scripts/tests)
+    }
 
     return { success: true };
   } catch (error) {
@@ -86,12 +118,26 @@ export async function getAllRsvps(clientId: string = "default"): Promise<RsvpRec
 
 // ─── Delete an RSVP ───────────────────────────────────────────────────────────
 
-export async function deleteRsvp(id: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteRsvp(
+  id: string,
+  clientId?: string
+): Promise<{ success: boolean; error?: string }> {
   try {
     await prisma.rsvp.delete({
       where: { id },
     });
-    revalidatePath("/admin/wedding-invitation");
+
+    try {
+      if (clientId) {
+        revalidatePath(`/admin/${clientId}`);
+      } else {
+        revalidatePath("/admin/wedding-invitation");
+        revalidatePath("/admin/kasun-devmini");
+      }
+    } catch {
+      // revalidatePath requires a Next.js request context (safe to skip in scripts/tests)
+    }
+
     return { success: true };
   } catch (error) {
     console.error("[deleteRsvp] Database error:", error);
