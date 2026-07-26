@@ -148,21 +148,25 @@ function KandyanPattern({ opacity = 0.04 }: { opacity?: number }) {
 }
 
 // ─── Liyawela Floral Pattern Background ────────────────────────────────────
-function LiyawelaPattern({ mode = "dark", opacity }: { mode?: "dark" | "light"; opacity?: number }) {
-  const defaultOpacity = mode === "dark" ? 0.08 : 0.05;
+function LiyawelaPattern({ mode = "dark", opacity = 1 }: { mode?: "dark" | "light"; opacity?: number }) {
+  const src = mode === "dark"
+    ? "/images/classic-sinhala/liyawela-dark.png"
+    : "/images/classic-sinhala/liyawela-light.png";
+  const fallbackBg = mode === "dark" ? "#2d0a1a" : "#fef3e2";
+  
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" style={{ opacity: opacity ?? defaultOpacity }}>
-      <Image
-        src={mode === "dark" ? "/images/classic-sinhala/liyawela-dark.jpg" : "/images/classic-sinhala/liyawela-light.jpg"}
-        alt="Liyawela floral pattern"
-        fill
-        sizes="100vw"
-        priority={mode === "dark"}
-        loading={mode === "dark" ? "eager" : "lazy"}
-        className="object-cover"
-        style={{ mixBlendMode: mode === "dark" ? "lighten" : "multiply" }}
-      />
-    </div>
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-0"
+      style={{
+        backgroundColor: fallbackBg,
+        backgroundImage: `url("${src}")`,
+        backgroundSize: "700px auto",
+        backgroundPosition: "top center",
+        backgroundRepeat: "repeat",
+        opacity: opacity,
+      }}
+    />
   );
 }
 
@@ -287,9 +291,10 @@ function InvitationIntro({ onEnter }: { onEnter: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.8 }}
             onClick={onEnter}
-            whileHover={{ backgroundColor: "#e8930a", color: "#2d0a1a", boxShadow: "0 0 45px rgba(232,147,10,0.6)", scale: 1.04 }}
+            style={{ backgroundColor: "rgba(232, 147, 10, 0.15)" }}
+            whileHover={{ backgroundColor: "rgba(232, 147, 10, 1)", color: "#2d0a1a", boxShadow: "0 0 45px rgba(232,147,10,0.6)", scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
-            className={`${noto.className} mt-9 rounded-full border-2 border-[#e8930a] bg-[#e8930a]/15 px-10 py-4 text-sm font-semibold tracking-wide text-[#e8930a] shadow-[0_0_20px_rgba(232,147,10,0.25)] backdrop-blur-md transition-all duration-300 md:text-base`}
+            className={`${noto.className} mt-9 rounded-full border-2 border-[#e8930a] px-10 py-4 text-sm font-semibold tracking-wide text-[#e8930a] shadow-[0_0_20px_rgba(232,147,10,0.25)] backdrop-blur-md transition-all duration-300 md:text-base`}
           >
             "රුවන් දොරටුවෙන් පිවිසෙමු"
           </motion.button>
@@ -302,14 +307,14 @@ function InvitationIntro({ onEnter }: { onEnter: () => void }) {
 // ─── Sun & Moon Royal Emblem Logo ───────────────────────────────────────────
 function SunAndMoonLogo() {
   return (
-    <div className="group flex items-center gap-3 drop-shadow-md">
+    <div className="group flex shrink-0 items-center gap-1.5 sm:gap-3 drop-shadow-md">
       {/* Sun on Left */}
-      <Sun className="h-5 w-5 text-[#e8930a] transition-transform duration-500 group-hover:rotate-45" />
-      <span className={`${abhaya.className} text-sm font-semibold tracking-wider text-[#e8930a] md:text-base`}>
+      <Sun className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-[#e8930a] transition-transform duration-500 group-hover:rotate-45" />
+      <span className={`${abhaya.className} whitespace-nowrap text-xs font-semibold tracking-wider text-[#e8930a] sm:text-sm md:text-base`}>
         ඉර හඳ පවතිනා තුරු
       </span>
       {/* Moon on Right */}
-      <Moon className="h-4.5 w-4.5 fill-[#e8930a] text-[#e8930a] drop-shadow-[0_0_8px_rgba(232,147,10,0.6)]" />
+      <Moon className="h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 shrink-0 fill-[#e8930a] text-[#e8930a] drop-shadow-[0_0_8px_rgba(232,147,10,0.6)]" />
     </div>
   );
 }
@@ -323,21 +328,21 @@ function Header() {
 
   return (
     <header className="absolute left-0 right-0 top-0 z-40 w-full transition-all duration-300">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 md:px-12">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-4 sm:px-6 sm:py-6 md:px-12">
         {/* Sun on Left, 'ඉර හඳ පවතිනා තුරු' in Middle, Moon on Right */}
         <SunAndMoonLogo />
 
-        {/* Clean Navigation Bar — Floating Text Links with Icons (No pill container, No background box, No border) */}
-        <nav className="flex items-center gap-6 md:gap-8">
+        {/* Clean Navigation Bar — Floating Text Links with Icons */}
+        <nav className="flex shrink-0 items-center gap-3 sm:gap-6 md:gap-8">
           {navLinks.map((i) => {
             const Icon = i.icon;
             return (
               <a
                 key={i.href}
                 href={i.href}
-                className={`${noto.className} group flex items-center gap-2 text-xs font-semibold text-[#fef3e2] transition-colors duration-300 hover:text-[#e8930a] md:text-sm drop-shadow-md`}
+                className={`${noto.className} group flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[11px] font-semibold text-[#fef3e2] transition-colors duration-300 hover:text-[#e8930a] sm:text-xs md:text-sm drop-shadow-md`}
               >
-                <Icon className="h-4 w-4 text-[#e8930a] transition-transform group-hover:scale-110" />
+                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-[#e8930a] transition-transform group-hover:scale-110" />
                 <span>{i.label}</span>
               </a>
             );
@@ -557,8 +562,8 @@ function HeroSection() {
 // ─── Invitation Section ──────────────────────────────────────────────────────
 function InvitationSection() {
   return (
-    <section className="relative overflow-hidden bg-[#fef3e2] py-24 md:py-36">
-      <LiyawelaPattern mode="light" opacity={0.15} />
+    <section className="relative overflow-hidden py-24 md:py-36">
+      <LiyawelaPattern mode="light" />
       <div className="relative mx-auto max-w-7xl px-8 md:px-16">
         <FadeIn direction="right">
           <div className="grid items-center gap-16 md:grid-cols-2">
@@ -703,8 +708,8 @@ function BrideGroomSection() {
   ];
 
   return (
-    <section id="couple" className="relative overflow-hidden bg-[#2d0a1a] py-24 md:py-36">
-      <LiyawelaPattern mode="dark" opacity={0.25} />
+    <section id="couple" className="relative overflow-hidden py-24 md:py-36">
+      <LiyawelaPattern mode="dark" />
       
       {/* Background ambient lighting */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e8930a]/10 blur-[180px]" />
@@ -733,20 +738,25 @@ function BrideGroomSection() {
                 whileHover={{ y: -8 }}
               >
                 {/* Gold Arch Frame Overlay */}
-                <div className="relative h-[480px] w-full overflow-hidden rounded-t-[130px] rounded-b-2xl">
+                <div className="relative h-[540px] md:h-[580px] w-full overflow-hidden rounded-t-[130px] rounded-b-2xl border-2 border-[#e8930a]/40 bg-gradient-to-b from-[#3d1020] via-[#2d0a1a] to-[#1e0611] shadow-[0_0_30px_rgba(232,147,10,0.15)]">
+                  {/* Ambient Spotlight Glow behind portrait */}
+                  <div className="pointer-events-none absolute left-1/2 top-1/2 h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e8930a]/20 blur-[70px]" />
+
                   <Image
                     src={p.src}
                     alt={p.alt}
                     fill
-                    className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    priority
+                    unoptimized
+                    className="object-cover object-[center_10%] transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
-                  {/* Subtle vignette gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1e0611] via-[#1e0611]/30 to-transparent" />
+                  {/* Ultra-gentle bottom shadow gradient for maximum photo clarity */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1e0611]/80 via-transparent to-transparent opacity-30" />
                   
-                  {/* Floating Gold Sparkle Accent */}
-                  <div className="absolute top-6 right-6">
-                    <Sparkles className="h-5 w-5 text-[#e8930a]/70 transition-transform group-hover:rotate-45" />
+                  {/* Floating Gold Sparkle Accent Badge */}
+                  <div className="absolute top-5 right-5 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-[#e8930a]/40 bg-[#2d0a1a]/60 shadow-md backdrop-blur-sm">
+                    <Sparkles className="h-4.5 w-4.5 text-[#e8930a] drop-shadow-md transition-transform group-hover:rotate-45" />
                   </div>
                 </div>
 
@@ -778,8 +788,8 @@ function BrideGroomSection() {
 // ─── Love Story — Luxury Parchment Timeline ─────────────────────────
 function LoveStorySection() {
   return (
-    <Section id="story" className="relative overflow-hidden bg-[#fdfaf4] py-24 md:py-36">
-      <LiyawelaPattern mode="light" opacity={0.12} />
+    <Section id="story" className="relative overflow-hidden py-24 md:py-36">
+      <LiyawelaPattern mode="light" />
       <div className="relative mx-auto max-w-5xl px-8 md:px-16">
         <FadeIn direction="up">
           <div className="mb-16 text-center">
@@ -795,10 +805,10 @@ function LoveStorySection() {
           </div>
         </FadeIn>
 
-        <div className="relative pl-6 md:pl-12">
-          {/* Glowing Vertical Line */}
+        <div className="relative pl-1 sm:pl-6 md:pl-12">
+          {/* Glowing Vertical Line passing through badge centers */}
           <motion.div
-            className="absolute left-6 top-4 h-full w-[2px] bg-gradient-to-b from-[#e8930a] via-[#e8930a]/40 to-transparent md:left-12"
+            className="absolute left-[21px] sm:left-[49px] md:left-[71px] top-6 bottom-6 w-[2px] bg-gradient-to-b from-[#e8930a] via-[#e8930a]/40 to-transparent"
             initial={{ scaleY: 0 }}
             whileInView={{ scaleY: 1 }}
             viewport={{ once: true }}
@@ -806,37 +816,37 @@ function LoveStorySection() {
             style={{ transformOrigin: "top" }}
           />
 
-          <div className="space-y-16">
+          <div className="space-y-8 sm:space-y-12 md:space-y-16">
             {timeline.map((item, i) => (
               <FadeIn key={item.num} direction="up" delay={i * 0.2}>
-                <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
+                <div className="relative flex items-start gap-3 sm:gap-6 md:gap-8">
                   {/* Left Seal Badge */}
                   <motion.div
-                    className="relative z-10 flex h-14 w-14 shrink-0 -translate-x-[27px] items-center justify-center rounded-full border-2 border-[#e8930a] bg-[#2d0a1a] shadow-[0_0_20px_rgba(232,147,10,0.3)] md:-translate-x-[35px]"
+                    className="relative z-10 flex h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 shrink-0 items-center justify-center rounded-full border-2 border-[#e8930a] bg-[#2d0a1a] shadow-[0_0_20px_rgba(232,147,10,0.3)] mt-1"
                     whileHover={{ rotate: 180, scale: 1.1 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <span className={`${abhaya.className} text-lg font-bold text-[#e8930a]`}>
+                    <span className={`${abhaya.className} text-sm sm:text-base md:text-lg font-bold text-[#e8930a]`}>
                       {item.num}
                     </span>
                   </motion.div>
 
                   {/* Card Content — Soft parchment card without harsh borders */}
                   <motion.div
-                    className="group flex-1 rounded-2xl bg-white/80 backdrop-blur-sm p-8 shadow-[0_10px_30px_rgba(45,10,26,0.03)] transition-all duration-300 hover:bg-white hover:shadow-[0_15px_40px_rgba(232,147,10,0.12)]"
+                    className="group flex-1 rounded-2xl bg-white/80 backdrop-blur-sm p-5 sm:p-6 md:p-8 shadow-[0_10px_30px_rgba(45,10,26,0.03)] transition-all duration-300 hover:bg-white hover:shadow-[0_15px_40px_rgba(232,147,10,0.12)]"
                     whileHover={{ x: 6 }}
                   >
                     <div className="mb-2 flex items-center justify-between">
-                      <span className={`${noto.className} rounded-md bg-[#2d0a1a] px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-[#e8930a]`}>
+                      <span className={`${noto.className} rounded-md bg-[#2d0a1a] px-3 py-0.5 sm:px-3.5 sm:py-1 text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-[#e8930a]`}>
                         {item.year}
                       </span>
                       <Heart className="h-4 w-4 text-[#e8930a]/60 transition-transform group-hover:scale-125 group-hover:text-[#e8930a]" />
                     </div>
 
-                    <h3 className={`${abhaya.className} mb-3 text-3xl font-bold text-[#2d0a1a] group-hover:text-[#e8930a] transition-colors`}>
+                    <h3 className={`${abhaya.className} mb-2 sm:mb-3 text-2xl sm:text-3xl font-bold text-[#2d0a1a] group-hover:text-[#e8930a] transition-colors`}>
                       {item.title}
                     </h3>
-                    <p className={`${noto.className} text-sm font-medium leading-relaxed text-[#3d1020]`}>
+                    <p className={`${noto.className} text-xs sm:text-sm font-medium leading-relaxed text-[#3d1020]`}>
                       {item.desc}
                     </p>
 
@@ -881,7 +891,7 @@ function CountdownSection() {
 
   return (
     <section className="relative overflow-hidden bg-[#2d0a1a] py-24 md:py-36 text-center">
-      <KandyanPattern opacity={0.05} />
+      <LiyawelaPattern mode="dark" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#e8930a]/10 via-transparent to-[#e8930a]/10" />
 
       <div className="relative mx-auto max-w-6xl px-8 md:px-16">
@@ -959,25 +969,16 @@ function ScheduleSection() {
   };
 
   return (
-    <Section id="schedule" className="relative overflow-hidden bg-[#2d0a1a] py-24 md:py-36">
-      {/* Shaded Background Image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/classic-sinhala/schedule-bg.jpg"
-          alt="Vintage background pattern"
-          fill
-          className="object-cover opacity-60"
-          style={{ mixBlendMode: "lighten" }}
-        />
-        {/* Gradients to blend into sections above/below and darken edges */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#2d0a1a] via-transparent to-[#2d0a1a]" />
-        <div className="absolute inset-0 bg-[#2d0a1a]/40" />
-      </div>
+    <Section id="schedule" className="relative overflow-hidden py-24 md:py-36">
+      <LiyawelaPattern mode="light" />
+      
+      {/* Background ambient lighting */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e8930a]/10 blur-[180px]" />
 
       <div className="relative z-10 mx-auto max-w-3xl px-6 md:px-12">
         <FadeIn>
           <div className="flex flex-col items-center text-center">
-            <h2 className={`${abhaya.className} mb-6 text-5xl font-bold text-[#fef3e2] md:text-6xl drop-shadow-lg`}>
+            <h2 className={`${abhaya.className} mb-6 text-5xl font-bold text-[#2d0a1a] md:text-6xl drop-shadow-sm`}>
               සොඳුරු දින චාරිත්‍ර පෙළගැස්ම!
             </h2>
             <motion.div 
@@ -993,7 +994,7 @@ function ScheduleSection() {
         <div className="relative">
           {/* Central animated vertical line */}
           <motion.div 
-            className="absolute left-[39px] md:left-[79px] top-8 bottom-4 w-px bg-gradient-to-b from-[#e8930a]/80 via-[#e8930a]/20 to-transparent origin-top"
+            className="absolute left-[39px] md:left-[79px] top-8 bottom-4 w-px bg-gradient-to-b from-[#e8930a]/80 via-[#e8930a]/30 to-transparent origin-top"
             initial={{ scaleY: 0 }}
             whileInView={{ scaleY: 1 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -1010,24 +1011,24 @@ function ScheduleSection() {
               className="relative flex items-center group mb-8 last:mb-0"
             >
               {/* Far Left Icon (Hidden on very small screens, visible md+) */}
-              <div className="hidden md:flex w-[60px] shrink-0 justify-end mr-8 text-[#c4a882] transition-transform duration-500 group-hover:scale-110 group-hover:text-[#e8930a] drop-shadow-md">
+              <div className="hidden md:flex w-[60px] shrink-0 justify-end mr-8 text-[#7a4a2a] transition-transform duration-500 group-hover:scale-110 group-hover:text-[#e8930a] drop-shadow-sm">
                 {getIcon(i)}
               </div>
 
               {/* Node Heart on line */}
-              <div className="relative z-10 w-10 h-10 shrink-0 flex items-center justify-center mr-6 md:mr-8 bg-[#2d0a1a] rounded-full border border-[#e8930a]/30 shadow-[0_0_15px_rgba(232,147,10,0.15)] transition-all duration-300 group-hover:bg-[#e8930a]/10 group-hover:border-[#e8930a] group-hover:shadow-[0_0_20px_rgba(232,147,10,0.4)]">
-                <Heart className="h-4 w-4 text-[#e8930a] fill-[#e8930a] drop-shadow-lg" />
+              <div className="relative z-10 w-10 h-10 shrink-0 flex items-center justify-center mr-6 md:mr-8 bg-[#2d0a1a] rounded-full border border-[#e8930a]/40 shadow-[0_0_15px_rgba(45,10,26,0.2)] transition-all duration-300 group-hover:bg-[#e8930a] group-hover:border-[#e8930a]">
+                <Heart className="h-4 w-4 text-[#e8930a] fill-[#e8930a] group-hover:text-[#2d0a1a] group-hover:fill-[#2d0a1a] drop-shadow-md transition-colors" />
               </div>
 
-              {/* Glassmorphism Content Card */}
-              <div className="flex-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl transition-all duration-500 group-hover:bg-white/10 group-hover:-translate-y-1 group-hover:shadow-2xl">
-                <p className={`${noto.className} text-xs uppercase tracking-[0.2em] text-[#e8930a] mb-2 font-medium`}>
+              {/* Light Parchment Content Card */}
+              <div className="flex-1 bg-white/80 backdrop-blur-md border border-[#e8930a]/20 rounded-2xl p-6 shadow-md transition-all duration-500 group-hover:bg-white group-hover:border-[#e8930a]/50 group-hover:-translate-y-1 group-hover:shadow-xl">
+                <p className={`${noto.className} text-xs uppercase tracking-[0.2em] text-[#e8930a] mb-2 font-semibold`}>
                   {item.time}
                 </p>
-                <h3 className={`${abhaya.className} text-2xl md:text-3xl font-bold text-[#fef3e2] mb-3`}>
+                <h3 className={`${abhaya.className} text-2xl md:text-3xl font-bold text-[#2d0a1a] group-hover:text-[#e8930a] transition-colors mb-3`}>
                   {item.title}
                 </h3>
-                <p className={`${noto.className} text-sm font-light leading-relaxed text-[#f5e6cc]/80`}>
+                <p className={`${noto.className} text-sm font-medium leading-relaxed text-[#3d1020]`}>
                   {item.desc}
                 </p>
               </div>
@@ -1042,8 +1043,8 @@ function ScheduleSection() {
 // ─── Venue — Luxury Card & Interactive Map ─────────────────────────────
 function VenueSection() {
   return (
-    <Section id="venue" className="relative overflow-hidden bg-[#fdfaf4] py-24 md:py-36">
-      <LiyawelaPattern mode="light" opacity={0.12} />
+    <Section id="venue" className="relative overflow-hidden py-24 md:py-36">
+      <LiyawelaPattern mode="dark" />
       <div className="relative mx-auto max-w-7xl px-8 md:px-16">
         <FadeIn>
           <div className="mb-16 flex flex-col items-center text-center">
@@ -1053,7 +1054,7 @@ function VenueSection() {
                 උත්සව භූමිය
               </span>
             </div>
-            <h2 className={`${abhaya.className} text-5xl font-bold text-[#2d0a1a] md:text-6xl`}>
+            <h2 className={`${abhaya.className} text-5xl font-bold text-[#fef3e2] md:text-6xl drop-shadow-md`}>
               මංගල සාදය පැවැත්වෙන ස්ථානය
             </h2>
             <div className="mt-4 h-[2px] w-20 bg-gradient-to-r from-transparent via-[#e8930a] to-transparent" />
@@ -1155,8 +1156,8 @@ function GallerySection() {
   }, [selectedIndex, handlePrev, handleNext]);
 
   return (
-    <Section id="gallery" className="relative overflow-hidden bg-[#fef3e2] py-24 md:py-36">
-      <LiyawelaPattern mode="light" opacity={0.15} />
+    <Section id="gallery" className="relative overflow-hidden py-24 md:py-36">
+      <LiyawelaPattern mode="light" />
 
       {/* Ambient Lighting */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e8930a]/10 blur-[150px]" />
@@ -1179,6 +1180,7 @@ function GallerySection() {
             {/* Scroll Navigation Buttons */}
             <div className="flex items-center gap-3">
               <button
+                suppressHydrationWarning
                 onClick={scrollLeft}
                 className="flex h-12 w-12 items-center justify-center rounded-full border border-[#e8930a]/40 bg-[#2d0a1a] text-[#e8930a] shadow-lg transition-all hover:scale-110 hover:bg-[#e8930a] hover:text-[#2d0a1a]"
                 title="පෙර සේයා රූ"
@@ -1186,6 +1188,7 @@ function GallerySection() {
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <button
+                suppressHydrationWarning
                 onClick={scrollRight}
                 className="flex h-12 w-12 items-center justify-center rounded-full border border-[#e8930a]/40 bg-[#2d0a1a] text-[#e8930a] shadow-lg transition-all hover:scale-110 hover:bg-[#e8930a] hover:text-[#2d0a1a]"
                 title="ඊළඟ සේයා රූ"
@@ -1336,8 +1339,8 @@ function GallerySection() {
 // ─── Dress Code — Luxury Palette Guide ──────────────────────────────────
 function DressCodeSection() {
   return (
-    <Section id="dress-code" className="relative overflow-hidden bg-[#2d0a1a] py-24 md:py-36 text-[#fef3e2]">
-      <LiyawelaPattern mode="dark" opacity={0.25} />
+    <Section id="dress-code" className="relative overflow-hidden py-24 md:py-36 text-[#fef3e2]">
+      <LiyawelaPattern mode="dark" />
       
       {/* Background Ambient Glow */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e8930a]/10 blur-[160px]" />
@@ -1468,11 +1471,11 @@ function RSVPSection({
     });
   };
 
-  const input = `${noto.className} w-full border-b-2 border-[#e8930a]/40 bg-transparent pb-3 pt-2 text-sm text-[#2d0a1a] outline-none transition-all placeholder:text-[#c4a882] focus:border-[#e8930a]`;
+  const input = `${noto.className} w-full border-b-2 border-[#e8930a]/40 bg-transparent pb-3 pt-2 text-sm text-[#2d0a1a] outline-none transition-all placeholder:text-[#7a4a2a]/70 focus:border-[#e8930a]`;
 
   return (
-    <section id="rsvp" className="relative overflow-hidden bg-[#fdfaf4] py-24 md:py-36">
-      <LiyawelaPattern mode="light" opacity={0.12} />
+    <section id="rsvp" className="relative overflow-hidden py-24 md:py-36">
+      <LiyawelaPattern mode="light" />
       <div className="relative mx-auto max-w-5xl px-8 md:px-16">
         <div className="rounded-3xl border border-[#e8930a]/30 bg-[#fef3e2] p-8 shadow-[0_20px_60px_rgba(45,10,26,0.08)] md:p-16">
           <div className="grid gap-12 md:grid-cols-2 md:gap-16">
@@ -1610,8 +1613,8 @@ function WordsOfLoveSection({ messages }: { messages: GuestMessage[] }) {
   const notes = messages.filter((e) => e.message.trim());
 
   return (
-    <section className="relative overflow-hidden bg-[#2d0a1a] py-24 md:py-36">
-      <LiyawelaPattern mode="dark" opacity={0.25} />
+    <section className="relative overflow-hidden py-24 md:py-36">
+      <LiyawelaPattern mode="dark" />
       <div className="relative mx-auto max-w-7xl px-8 md:px-16">
         <FadeIn>
           <div className="mb-16 flex flex-col items-center text-center">
@@ -1650,7 +1653,7 @@ function WordsOfLoveSection({ messages }: { messages: GuestMessage[] }) {
                   <div className="pointer-events-none absolute right-3 bottom-3 h-5 w-5 border-r border-b border-[#e8930a]/60" />
                   
                   <Heart className="mb-4 h-5 w-5 text-[#e8930a] fill-[#e8930a]/30" />
-                  <p className={`${noto.className} mb-6 text-sm italic leading-relaxed text-[#f5e6cc]`}>
+                  <p className={`${noto.className} mb-6 text-sm italic leading-relaxed text-[#fdfaf4]`}>
                     &ldquo;{entry.message}&rdquo;
                   </p>
                   <p className={`${abhaya.className} text-lg font-bold text-[#e8930a]`}>
@@ -1815,7 +1818,7 @@ export function ClassicSinhalaTemplate({ clientId = "classic-sinhala" }: { clien
           transition={{ duration: 0.5, delay: 1 }}
           suppressHydrationWarning
           onClick={toggleAudio}
-          className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#e8930a] text-[#2d0a1a] shadow-[0_10px_30px_rgba(232,147,10,0.4)] transition-transform hover:scale-110"
+          className="fixed bottom-4 right-4 z-50 flex h-11 w-11 sm:bottom-6 sm:right-6 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#e8930a] text-[#2d0a1a] shadow-[0_10px_30px_rgba(232,147,10,0.4)] transition-transform hover:scale-110"
           aria-label={isPlaying ? "සංගීතය නතර කරන්න" : "සංගීතය වාදනය කරන්න"}
         >
           {isPlaying ? <Volume2 className="h-6 w-6" /> : <VolumeX className="h-6 w-6" />}

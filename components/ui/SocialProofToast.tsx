@@ -35,18 +35,23 @@ const activities = [
 ];
 
 export default function SocialProofToast() {
+  const [mounted, setMounted] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    if (dismissed) return;
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || dismissed) return;
     const interval = setInterval(() => {
       setCurrentIdx((prev) => (prev + 1) % activities.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, [dismissed]);
+  }, [mounted, dismissed]);
 
-  if (dismissed) return null;
+  if (!mounted || dismissed) return null;
 
   const current = activities[currentIdx];
   const Icon = current.icon;

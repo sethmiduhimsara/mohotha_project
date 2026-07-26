@@ -96,7 +96,7 @@ export default function Footer() {
         
         {/* Bottom copyright */}
         <div className="flex flex-col items-center justify-between gap-4 py-8 sm:flex-row">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[#666666]">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-[#666666]" suppressHydrationWarning>
             © {new Date().getFullYear()} MOHOTHA STUDIO. ALL RIGHTS RESERVED.
           </p>
           <div className="flex items-center gap-2">
