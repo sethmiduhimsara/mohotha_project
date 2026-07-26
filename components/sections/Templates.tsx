@@ -2,14 +2,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-<<<<<<< HEAD
-import { motion, type Variants } from "framer-motion";
-=======
 import { motion, type Variants, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 
 const categories = ["All Collection", "Kandyan Royal", "Modern Minimalist", "Botanical & Coastal"];
->>>>>>> cda349f70a032a655b1fa1e05fcd18641c9949c3
 
 const featuredDesigns = [
   {
@@ -18,12 +14,8 @@ const featuredDesigns = [
     category: "Kandyan Royal",
     style: "Traditional Cultural",
     href: "/classic-sinhala",
-<<<<<<< HEAD
-    image: "/images/classic-sinhala/hero-couple.jpg",
-=======
     image: "/images/classic-sinhala/classic-sinhala-couple1.png",
     tags: ["Multilingual", "Google RSVP", "Music"],
->>>>>>> cda349f70a032a655b1fa1e05fcd18641c9949c3
   },
   {
     id: 2,
@@ -31,27 +23,17 @@ const featuredDesigns = [
     category: "Modern Minimalist",
     style: "Contemporary Chic",
     href: "/wedding-invitation",
-<<<<<<< HEAD
-    image: "/images/wedding-invitation/hero1.png",
-=======
     image: "/images/wedding-invitation/hero2.png",
     tags: ["Clean Lines", "Live Maps", "RSVP"],
->>>>>>> cda349f70a032a655b1fa1e05fcd18641c9949c3
   },
   {
     id: 3,
     name: "Royal Heritage",
-<<<<<<< HEAD
-    style: "Kandyan Premium",
-    href: "/RoyalHeritage",
-    image: "/images/hero/wedding-hero.jpg",
-=======
     category: "Kandyan Royal",
     style: "Kandyan Luxury",
     href: "/RoyalHeritage",
     image: "/images/hero/wedding-hero1.jpg",
     tags: ["Gold Foil", "Custom Typography"],
->>>>>>> cda349f70a032a655b1fa1e05fcd18641c9949c3
   },
   {
     id: 4,
@@ -60,10 +42,7 @@ const featuredDesigns = [
     style: "Floral & Organic",
     href: "/demo/botanical-grace",
     image: "/images/hero/botanical-grace 1.jpg",
-<<<<<<< HEAD
-=======
     tags: ["Garden Vibe", "Photo Gallery"],
->>>>>>> cda349f70a032a655b1fa1e05fcd18641c9949c3
   },
   {
     id: 5,
@@ -72,15 +51,6 @@ const featuredDesigns = [
     style: "Destination Beach",
     href: "/demo/ocean-breeze",
     image: "/images/hero/ocean-breeze 1.png",
-<<<<<<< HEAD
-  },
-  {
-    id: 6,
-    name: "Golden Velvet",
-    style: "High Fashion",
-    href: "/demo/golden-velvet",
-    image: "/images/hero/dark.png",
-=======
     tags: ["Seaside Luxe", "Interactive Map"],
   },
   {
@@ -91,7 +61,6 @@ const featuredDesigns = [
     href: "/wedding-invitation",
     image: "/images/hero/dark4.jpg",
     tags: ["Obsidian Theme", "Gold Foil"],
->>>>>>> cda349f70a032a655b1fa1e05fcd18641c9949c3
   },
 ];
 
@@ -179,32 +148,6 @@ export default function Templates() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4 }}
               >
-<<<<<<< HEAD
-                <div className="absolute inset-0 bg-linear-to-b from-[#151515] to-[#0a0a0a] group-hover:scale-105 transition-transform duration-700 ease-out" />
-
-                <Image
-                  src={design.image}
-                  alt={design.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover opacity-30 group-hover:scale-105 group-hover:opacity-50 transition-all duration-700 ease-out"
-                />
-
-                <div
-                  className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-500"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)",
-                    backgroundSize: "20px 20px",
-                  }}
-                />
-
-                <div className="absolute top-8 left-8 right-8 bottom-8 border border-[#222222]/50 transition-colors duration-500 group-hover:border-[#CBA365]/20" />
-
-                <div className="absolute inset-0 flex flex-col justify-between p-12">
-                  <div>
-                    <span className="inline-block px-3 py-1 border border-[#333333] text-[#a3a3a3] text-[10px] tracking-[0.2em] uppercase rounded-full group-hover:border-[#CBA365]/30 group-hover:text-[#CBA365] transition-colors duration-500">
-=======
                 <Link
                   href={design.href}
                   className="group block relative rounded-2xl overflow-hidden bg-[#0c0c0c] border border-[#1e1e1e] transition-all duration-500 hover:border-[#CBA365]/60 hover:shadow-2xl hover:shadow-[#CBA365]/10 flex flex-col h-full"
@@ -221,7 +164,6 @@ export default function Templates() {
                     
                     {/* Badge */}
                     <div className="absolute top-4 left-4 border border-[#ffffff]/10 bg-[#050505]/70 backdrop-blur-md px-3 py-1 rounded-full text-[10px] tracking-widest text-[#CBA365] uppercase">
->>>>>>> cda349f70a032a655b1fa1e05fcd18641c9949c3
                       {design.style}
                     </div>
 
