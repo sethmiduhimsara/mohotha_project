@@ -1,36 +1,43 @@
 "use client";
 import { motion, type Variants } from "framer-motion";
+import { Sparkles, Smartphone, Database, MapPin, Music, QrCode, Share2, ShieldCheck } from "lucide-react";
 
 const features = [
   {
-    icon: "I",
-    title: "Curated Aesthetics",
-    description: "Our collections are deeply inspired by Sri Lankan heritage, transformed into minimalist, contemporary digital formats.",
+    icon: Sparkles,
+    numeral: "01",
+    title: "Curated Heritage Aesthetics",
+    description: "Deeply inspired by Sri Lankan cultural motifs, reimagined into contemporary digital perfection.",
   },
   {
-    icon: "II",
-    title: "Absolute Precision",
-    description: "Every template is engineered to display perfectly across all devices. No layout shifts, no compromises on mobile.",
+    icon: Smartphone,
+    numeral: "02",
+    title: "Flawless Mobile Display",
+    description: "Engineered specifically for smartphone displays. Fast loading, responsive layouts with zero shifted elements.",
   },
   {
-    icon: "III",
-    title: "Intelligent RSVP",
-    description: "An elegant backend dashboard tracks attendances and dietary requirements with uncompromising clarity.",
+    icon: Database,
+    numeral: "03",
+    title: "Google Sheets Auto-Sync",
+    description: "Guest RSVPs automatically sync directly to your private Google Sheet in real time. No manual export needed.",
   },
   {
-    icon: "IV",
-    title: "Seamless Navigation",
-    description: "Integrated maps guide your guests to the ceremony and reception with a single, frictionless tap.",
+    icon: MapPin,
+    numeral: "04",
+    title: "1-Tap GPS Venue Maps",
+    description: "Embedded Google Maps buttons take your guests directly to your wedding & reception halls without confusion.",
   },
   {
-    icon: "V",
-    title: "Auditory Ambience",
-    description: "Enhance the reveal with high-fidelity, curated instrumental pieces that play softly in the background.",
+    icon: Music,
+    numeral: "05",
+    title: "Auditory Soundscape",
+    description: "Enhance the reveal with high-fidelity, curated instrumental background audio playing softly on reveal.",
   },
   {
-    icon: "VI",
-    title: "Digital Registry",
-    description: "A discreet and elegant integration for receiving blessings digitally via secure QR code placements.",
+    icon: Share2,
+    numeral: "06",
+    title: "Instant WhatsApp Share",
+    description: "Includes rich social graph cards when sent via WhatsApp, Viber, or iMessage with custom couple thumbnail.",
   },
 ];
 
@@ -48,25 +55,30 @@ export default function Features() {
     show: { 
       opacity: 1, 
       y: 0, 
-      transition: { type: "spring" as const, stiffness: 40, damping: 20, duration: 1.2 } 
+      transition: { type: "spring" as const, stiffness: 45, damping: 20 } 
     },
   };
 
   return (
-    <section id="features" className="py-24 lg:py-36 bg-[#050505] border-t border-[#111111]">
+    <section id="features" className="py-24 lg:py-36 bg-[#070707] border-t border-[#141414]">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1 }}
-          className="mb-20 text-center"
+          transition={{ duration: 0.8 }}
+          className="mb-20 text-center max-w-3xl mx-auto"
         >
-          <span className="text-xs font-medium tracking-[0.3em] text-[#5c5c5c] uppercase">The Platform</span>
-          <h2 className="heading-font mt-6 text-4xl font-normal text-white md:text-5xl lg:text-6xl">
-            Uncompromising <span className="text-[#CBA365] italic">Detail</span>
+          <span className="text-[11px] font-semibold tracking-[0.3em] text-[#CBA365] uppercase block mb-3">
+            Platform Capabilities
+          </span>
+          <h2 className="heading-font text-4xl sm:text-5xl lg:text-6xl font-normal text-white">
+            Uncompromising <span className="text-[#CBA365] italic">Detail &amp; Craft</span>
           </h2>
+          <p className="mt-4 text-[#a3a3a3] text-sm sm:text-base font-light">
+            Every component is built to deliver an effortless experience for both you and your guests.
+          </p>
         </motion.div>
 
         <motion.div 
@@ -74,26 +86,41 @@ export default function Features() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {features.map((f, index) => (
-            <motion.div key={index} variants={itemVariants} className="group flex flex-col items-start">
-              {/* Minimalist Icon / Numeral */}
-              <div className="heading-font text-4xl text-[#333333] mb-6 group-hover:text-[#CBA365] transition-colors duration-500">
-                {f.icon}.
-              </div>
-              
-              <h3 className="text-lg font-medium text-white mb-4 tracking-wide">
-                {f.title}
-              </h3>
-              
-              <p className="text-[#a3a3a3] text-sm leading-relaxed font-light">
-                {f.description}
-              </p>
-              
-              <div className="mt-8 w-12 h-px bg-[#222222] group-hover:w-full group-hover:bg-[#CBA365]/30 transition-all duration-700 ease-in-out" />
-            </motion.div>
-          ))}
+          {features.map((f, index) => {
+            const Icon = f.icon;
+            return (
+              <motion.div 
+                key={index} 
+                variants={itemVariants} 
+                className="group relative p-8 rounded-2xl border border-[#1a1a1a] bg-[#0c0c0c] transition-all duration-500 hover:border-[#CBA365]/50 hover:bg-[#101010] hover:shadow-xl hover:shadow-[#CBA365]/5 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-12 h-12 rounded-xl border border-[#222222] bg-[#141414] flex items-center justify-center text-[#CBA365] group-hover:border-[#CBA365] group-hover:bg-[#CBA365]/10 transition-colors duration-500">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <span className="heading-font text-xl text-[#333333] group-hover:text-[#CBA365] transition-colors duration-500 font-semibold">
+                      {f.numeral}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-lg font-medium text-white mb-3 tracking-wide group-hover:text-[#CBA365] transition-colors">
+                    {f.title}
+                  </h3>
+                  
+                  <p className="text-[#999999] text-xs sm:text-sm leading-relaxed font-light">
+                    {f.description}
+                  </p>
+                </div>
+                
+                <div className="mt-8 pt-4 border-t border-[#161616]">
+                  <div className="w-8 h-[2px] bg-[#222222] group-hover:w-full group-hover:bg-[#CBA365] transition-all duration-500" />
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
         
       </div>

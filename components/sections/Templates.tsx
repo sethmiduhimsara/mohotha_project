@@ -1,47 +1,77 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import Image from "next/image";
+import { motion, type Variants, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, Sparkles } from "lucide-react";
+
+const categories = ["All Collection", "Kandyan Royal", "Modern Minimalist", "Botanical & Coastal"];
 
 const featuredDesigns = [
   {
     id: 1,
     name: "Classic Sinhala",
-    style: "Traditional",
+    category: "Kandyan Royal",
+    style: "Traditional Cultural",
     href: "/classic-sinhala",
+    image: "/images/classic-sinhala/classic-sinhala-couple1.png",
+    tags: ["Multilingual", "Google RSVP", "Music"],
   },
   {
     id: 2,
     name: "Modern Minimalist",
-    style: "Contemporary",
+    category: "Modern Minimalist",
+    style: "Contemporary Chic",
     href: "/wedding-invitation",
+    image: "/images/wedding-invitation/hero2.png",
+    tags: ["Clean Lines", "Live Maps", "RSVP"],
   },
   {
     id: 3,
-    name: "RoyalHeritage",
-    style: "Kandyan Premium",
+    name: "Royal Heritage",
+    category: "Kandyan Royal",
+    style: "Kandyan Luxury",
     href: "/RoyalHeritage",
+    image: "/images/hero/wedding-hero1.jpg",
+    tags: ["Gold Foil", "Custom Typography"],
   },
   {
     id: 4,
     name: "Botanical Grace",
-    style: "Floral Elegant",
-    href: "/demo/botanical-grace",
+    category: "Botanical & Coastal",
+    style: "Floral & Organic",
+    href: "/wedding-invitation",
+    image: "/images/hero/botanical-grace 1.jpg",
+    tags: ["Garden Vibe", "Photo Gallery"],
   },
   {
     id: 5,
     name: "Ocean Breeze",
-    style: "Beach Wedding",
-    href: "/demo/ocean-breeze",
+    category: "Botanical & Coastal",
+    style: "Destination Beach",
+    href: "/wedding-invitation",
+    image: "/images/hero/ocean-breeze 1.png",
+    tags: ["Seaside Luxe", "Interactive Map"],
   },
   {
     id: 6,
-    name: "Golden Velvet",
-    style: "High Fashion",
-    href: "/demo/golden-velvet",
+    name: "Obsidian Gold",
+    category: "Modern Minimalist",
+    style: "High Fashion Black",
+    href: "/wedding-invitation",
+    image: "/images/hero/dark4.jpg",
+    tags: ["Obsidian Theme", "Gold Foil"],
   },
 ];
 
 export default function Templates() {
+  const [selectedCategory, setSelectedCategory] = useState("All Collection");
+
+  const filteredDesigns = featuredDesigns.filter((item) => {
+    if (selectedCategory === "All Collection") return true;
+    return item.category === selectedCategory;
+  });
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
@@ -51,108 +81,141 @@ export default function Templates() {
   };
 
   const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 40 },
+    hidden: { opacity: 0, y: 30 },
     show: {
       opacity: 1,
       y: 0,
-      transition: { type: "spring" as const, stiffness: 40, damping: 20, duration: 1.2 },
+      transition: { type: "spring" as const, stiffness: 45, damping: 20 },
     },
   };
 
   return (
-    <section
-      id="templates"
-      className="py-24 lg:py-36 bg-[#050505] relative overflow-hidden"
-    >
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-100 bg-[radial-gradient(ellipse_at_top,rgba(203,163,101,0.05)_0%,rgba(5,5,5,0)_70%)] pointer-events-none" />
+    <section id="templates" className="py-24 lg:py-36 bg-[#050505] relative overflow-hidden border-t border-[#141414]">
+      {/* Subtle radial ambient lighting */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(203,163,101,0.08)_0%,rgba(5,5,5,0)_70%)] pointer-events-none" />
 
       <div className="mx-auto max-w-7xl px-4 lg:px-8 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1 }}
-          className="mb-20 flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-[#222222] pb-10"
-        >
+        
+        {/* Section Title & Description */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-[#1c1c1c] pb-10 mb-12">
           <div className="max-w-2xl">
-            <h2 className="heading-font text-5xl font-normal text-white md:text-6xl lg:text-7xl">
+            <span className="text-[11px] font-semibold tracking-[0.3em] text-[#CBA365] uppercase block mb-3">
+              The Collection
+            </span>
+            <h2 className="heading-font text-4xl sm:text-5xl lg:text-7xl font-normal text-white">
               Featured <span className="text-[#CBA365] italic">Designs</span>
             </h2>
           </div>
-          <p className="text-[#a3a3a3] max-w-sm lg:text-right leading-relaxed text-sm md:text-base">
-            Explore our curated collection of premium digital invitation
-            templates. Designed specifically for Sri Lankan weddings, blending
-            tradition with modern elegance.
+          <p className="text-[#a3a3a3] max-w-md lg:text-right leading-relaxed text-sm font-light">
+            Explore our curated suite of luxury digital invitation templates. 
+            Blending Sri Lankan cultural motifs with modern high-fashion design.
           </p>
-        </motion.div>
+        </div>
 
+        {/* Category Filters */}
+        <div className="flex flex-wrap items-center gap-3 mb-14">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-5 py-2 rounded-full text-xs font-medium tracking-[0.15em] uppercase transition-all duration-300 ${
+                selectedCategory === cat
+                  ? "bg-[#CBA365] text-[#050505] shadow-lg shadow-[#CBA365]/20 font-semibold"
+                  : "bg-[#0c0c0c] border border-[#222222] text-[#888888] hover:border-[#CBA365]/40 hover:text-white"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Templates Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {featuredDesigns.map((design) => (
-            <motion.div key={design.id} variants={cardVariants}>
-              <Link
-                href={design.href}
-                className="group block relative aspect-3/4 overflow-hidden bg-[#111111] border border-[#222222] transition-all duration-500 hover:border-[#CBA365]/40"
+          <AnimatePresence mode="popLayout">
+            {filteredDesigns.map((design) => (
+              <motion.div
+                key={design.id}
+                layout
+                variants={cardVariants}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
               >
-                <div className="absolute inset-0 bg-linear-to-b from-[#151515] to-[#0a0a0a] group-hover:scale-105 transition-transform duration-700 ease-out" />
-
-                <div
-                  className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-500"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)",
-                    backgroundSize: "20px 20px",
-                  }}
-                />
-
-                <div className="absolute top-8 left-8 right-8 bottom-8 border border-[#222222]/50 transition-colors duration-500 group-hover:border-[#CBA365]/20" />
-
-                <div className="absolute inset-0 flex flex-col justify-between p-12">
-                  <div>
-                    <span className="inline-block px-3 py-1 border border-[#333333] text-[#a3a3a3] text-[10px] tracking-[0.2em] uppercase rounded-full group-hover:border-[#CBA365]/30 group-hover:text-[#CBA365] transition-colors duration-500">
+                <Link
+                  href={design.href}
+                  className="group block relative rounded-2xl overflow-hidden bg-[#0c0c0c] border border-[#1e1e1e] transition-all duration-500 hover:border-[#CBA365]/60 hover:shadow-2xl hover:shadow-[#CBA365]/10 flex flex-col h-full"
+                >
+                  {/* Card Thumbnail Image */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#111111]">
+                    <Image
+                      src={design.image}
+                      alt={design.name}
+                      fill
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-108 opacity-80 group-hover:opacity-100"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent opacity-90" />
+                    
+                    {/* Badge */}
+                    <div className="absolute top-4 left-4 border border-[#ffffff]/10 bg-[#050505]/70 backdrop-blur-md px-3 py-1 rounded-full text-[10px] tracking-widest text-[#CBA365] uppercase">
                       {design.style}
-                    </span>
-                  </div>
+                    </div>
 
-                  <div>
-                    <h3 className="heading-font text-3xl text-white mb-4 group-hover:text-[#CBA365] transition-colors duration-500">
-                      {design.name}
-                    </h3>
-                    <div className="flex items-center gap-3 text-xs tracking-widest text-[#a3a3a3] uppercase">
-                      <span className="h-px w-8 bg-[#333333] group-hover:bg-[#CBA365] group-hover:w-12 transition-all duration-500" />
-                      <span className="-translate-x-2.5 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
-                        View Demo
-                      </span>
+                    <div className="absolute top-4 right-4 w-9 h-9 rounded-full border border-white/20 bg-black/60 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-45">
+                      <ArrowUpRight className="w-4 h-4 text-[#CBA365]" />
                     </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+
+                  {/* Card Info Content */}
+                  <div className="p-6 flex flex-col justify-between flex-1">
+                    <div>
+                      <h3 className="heading-font text-2xl text-white mb-2 group-hover:text-[#CBA365] transition-colors duration-300">
+                        {design.name}
+                      </h3>
+                      
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {design.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[9px] tracking-wider uppercase px-2.5 py-1 rounded-md bg-[#161616] text-[#888888] border border-[#222222]"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-[#1a1a1a] flex items-center justify-between text-xs tracking-widest text-[#a3a3a3] uppercase font-medium">
+                      <span>Explore Demo</span>
+                      <span className="text-[#CBA365] group-hover:translate-x-1 transition-transform">→</span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="mt-20 text-center"
-        >
-          <p className="text-[#5c5c5c] text-sm">
-            More premium designs coming soon. <br className="md:hidden" />
+        {/* Custom Order Callout */}
+        <div className="mt-16 text-center border border-[#1e1e1e] bg-[#090909] p-8 rounded-2xl max-w-3xl mx-auto">
+          <p className="text-sm text-[#cccccc] font-light">
+            Need a completely unique theme or custom Sinhala typography? <br className="hidden sm:inline" />
             <Link
-              href="#"
-              className="text-[#a3a3a3] hover:text-[#CBA365] underline decoration-[#333333] underline-offset-4 transition-colors"
+              href="#pricing"
+              className="text-[#CBA365] font-medium hover:underline ml-1 inline-flex items-center gap-1"
             >
-              Contact us for custom bespoke designs.
+              <Sparkles className="w-3.5 h-3.5" /> Contact Studio for custom bespoke design.
             </Link>
           </p>
-        </motion.div>
+        </div>
+
       </div>
     </section>
   );
