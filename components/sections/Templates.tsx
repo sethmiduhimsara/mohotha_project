@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 
 const featuredDesigns = [
@@ -8,36 +9,42 @@ const featuredDesigns = [
     name: "Classic Sinhala",
     style: "Traditional",
     href: "/classic-sinhala",
+    image: "/images/classic-sinhala/hero-couple.jpg",
   },
   {
     id: 2,
     name: "Modern Minimalist",
     style: "Contemporary",
     href: "/wedding-invitation",
+    image: "/images/wedding-invitation/hero1.png",
   },
   {
     id: 3,
-    name: "RoyalHeritage",
+    name: "Royal Heritage",
     style: "Kandyan Premium",
     href: "/RoyalHeritage",
+    image: "/images/hero/wedding-hero.jpg",
   },
   {
     id: 4,
     name: "Botanical Grace",
     style: "Floral Elegant",
     href: "/demo/botanical-grace",
+    image: "/images/hero/botanical-grace 1.jpg",
   },
   {
     id: 5,
     name: "Ocean Breeze",
     style: "Beach Wedding",
     href: "/demo/ocean-breeze",
+    image: "/images/hero/ocean-breeze 1.png",
   },
   {
     id: 6,
     name: "Golden Velvet",
     style: "High Fashion",
     href: "/demo/golden-velvet",
+    image: "/images/hero/dark.png",
   },
 ];
 
@@ -100,6 +107,14 @@ export default function Templates() {
                 className="group block relative aspect-3/4 overflow-hidden bg-[#111111] border border-[#222222] transition-all duration-500 hover:border-[#CBA365]/40"
               >
                 <div className="absolute inset-0 bg-linear-to-b from-[#151515] to-[#0a0a0a] group-hover:scale-105 transition-transform duration-700 ease-out" />
+
+                <Image
+                  src={design.image}
+                  alt={design.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover opacity-30 group-hover:scale-105 group-hover:opacity-50 transition-all duration-700 ease-out"
+                />
 
                 <div
                   className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-500"

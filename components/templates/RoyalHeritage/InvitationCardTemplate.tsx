@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
   AnimatePresence,
   motion,
@@ -20,6 +21,8 @@ import {
   Mail,
   MapPin,
   Sparkles,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import type { TargetAndTransition } from "framer-motion";
 import { submitRsvp } from "@/app/actions/wedding-invitation/rsvp";
@@ -200,6 +203,110 @@ export default function InvitationCardTemplate({
     { value: timeLeft.seconds, label: "Seconds" },
   ];
 
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const autoScrollRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const audioSrc = "/music/botanical-grace.mp3";
+    const audio = new Audio(audioSrc);
+    audio.loop = true;
+    audio.volume = 0.6;
+    audio.preload = "auto";
+    audioRef.current = audio;
+
+    const handleError = () => {
+      console.error(
+        "Background music failed to load. Check that the file exists at",
+        audioSrc,
+        "inside your /public folder (path is case-sensitive).",
+      );
+    };
+    audio.addEventListener("error", handleError);
+
+    const startMusic = () => {
+      if (audio.paused) {
+        audio
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch((err) => console.log("Browser blocked autoplay:", err));
+      }
+
+      ["click", "scroll", "touchstart", "mousemove"].forEach((evt) =>
+        document.removeEventListener(evt, startMusic),
+      );
+    };
+
+    ["click", "scroll", "touchstart", "mousemove"].forEach((evt) =>
+      document.addEventListener(evt, startMusic, { once: true }),
+    );
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener("error", handleError);
+      audioRef.current = null;
+      ["click", "scroll", "touchstart", "mousemove"].forEach((evt) =>
+        document.removeEventListener(evt, startMusic),
+      );
+    };
+  }, []);
+
+  const toggleMusic = useCallback(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch((err) =>
+          console.log("Playback failed:", err),
+        );
+      }
+      setIsPlaying(!isPlaying);
+    }
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (!isAutoScrolling) {
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current);
+        autoScrollRef.current = null;
+      }
+      return;
+    }
+
+    const handleUserScroll = () => {
+      setIsAutoScrolling(false);
+    };
+
+    window.addEventListener("wheel", handleUserScroll, { passive: true });
+    window.addEventListener("touchmove", handleUserScroll, { passive: true });
+
+    const maxScroll =
+      document.documentElement.scrollHeight - window.innerHeight;
+
+    autoScrollRef.current = window.setInterval(() => {
+      const currentScroll = window.scrollY;
+      if (currentScroll >= maxScroll - 5) {
+        setIsAutoScrolling(false);
+        return;
+      }
+      window.scrollBy({ top: 1.5, behavior: "auto" });
+    }, 30);
+
+    return () => {
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current);
+        autoScrollRef.current = null;
+      }
+      window.removeEventListener("wheel", handleUserScroll);
+      window.removeEventListener("touchmove", handleUserScroll);
+    };
+  }, [isAutoScrolling]);
+
+  const toggleAutoScroll = useCallback(() => {
+    setIsAutoScrolling((prev) => !prev);
+  }, []);
+
   const shouldReduceMotion = useReducedMotion();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroProgress } = useScroll({
@@ -231,7 +338,8 @@ export default function InvitationCardTemplate({
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b27a35]";
 
   return (
-    <section className="min-h-screen overflow-hidden bg-[#fffaf4] text-[#5d3920]">
+    <>
+      <section className="min-h-screen overflow-hidden bg-[#fffaf4] text-[#5d3920]">
       <JourneyProgress />
 
       <section ref={heroRef} className="relative min-h-screen overflow-hidden">
@@ -984,5 +1092,38 @@ export default function InvitationCardTemplate({
 
       <div className="h-12 bg-white" />
     </section>
+
+    {createPortal(
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        <motion.button
+          onClick={toggleMusic}
+          aria-label={isPlaying ? "Pause background music" : "Play background music"}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="flex h-14 w-14 items-center justify-center rounded-full border border-[#d9bb71]/70 bg-[linear-gradient(180deg,#6f2538_0%,#4a1828_58%,#34101b_100%)] text-[#fff8e9] shadow-[0_16px_30px_rgba(74,24,40,0.28)] backdrop-blur-xl"
+        >
+          {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
+        </motion.button>
+        <motion.button
+          onClick={toggleAutoScroll}
+          aria-label={isAutoScrolling ? "Stop auto scroll" : "Start auto scroll"}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.7 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-[#d9bb71]/70 bg-[linear-gradient(180deg,#6f2538_0%,#4a1828_58%,#34101b_100%)] text-[#fff8e9] shadow-[0_16px_30px_rgba(74,24,40,0.28)] backdrop-blur-xl"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M5 12l7 7 7-7" />
+          </svg>
+        </motion.button>
+       </div>,
+       document.body,
+     )}
+    </>
   );
 }
