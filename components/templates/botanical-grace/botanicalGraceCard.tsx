@@ -570,6 +570,91 @@ function GrowingVine() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  TrailingVineFlower — An animated vine growing down with a bloom   */
+/* ------------------------------------------------------------------ */
+function TrailingVineFlower({ className = "", delay = 0 }: { className?: string, delay?: number }) {
+  return (
+    <motion.svg
+      viewBox="0 0 100 250"
+      width="100"
+      height="250"
+      className={className}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-10%" }}
+    >
+      {/* The Vine curving and growing downwards */}
+      <motion.path
+        d="M50,0 C20,60 80,120 50,190"
+        fill="none"
+        stroke="#8fa992" // Earthy green stem
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        variants={{
+          hidden: { pathLength: 0 },
+          show: {
+            pathLength: 1,
+            transition: { duration: 2, ease: LUX_EASE, delay: delay }
+          }
+        }}
+      />
+
+      {/* Sprouting Leaf 1 */}
+      <motion.path
+        d="M50,60 C70,50 80,70 50,75"
+        fill="#8fa992"
+        style={{ transformOrigin: "50px 60px" }}
+        variants={{
+          hidden: { scale: 0, opacity: 0 },
+          show: { scale: 1, opacity: 1, transition: { duration: 0.6, delay: delay + 0.6 } }
+        }}
+      />
+
+      {/* Sprouting Leaf 2 */}
+      <motion.path
+        d="M62,120 C35,115 30,135 55,140"
+        fill="#8fa992"
+        style={{ transformOrigin: "62px 120px" }}
+        variants={{
+          hidden: { scale: 0, opacity: 0 },
+          show: { scale: 1, opacity: 1, transition: { duration: 0.6, delay: delay + 1.2 } }
+        }}
+      />
+
+      {/* The Flower Blooming at the tip */}
+      <motion.g
+        variants={{
+          hidden: { scale: 0, opacity: 0, rotate: -30 },
+          show: {
+            scale: 1,
+            opacity: 1,
+            rotate: 0,
+            transition: { duration: 1, ease: LUX_EASE, delay: delay + 1.8 }
+          }
+        }}
+        style={{ transformOrigin: "50px 190px" }}
+      >
+        {/* 5 Petals */}
+        {[0, 72, 144, 216, 288].map((deg) => (
+          <ellipse
+            key={deg}
+            cx="50"
+            cy="178"
+            rx="7"
+            ry="15"
+            fill="#d98a92" // Blush rose petal
+            fillOpacity="0.88"
+            transform={`rotate(${deg} 50 190)`}
+          />
+        ))}
+        {/* Flower Center */}
+        <circle cx="50" cy="190" r="6" fill="#fbe9dd" />
+      </motion.g>
+    </motion.svg>
+  );
+}
+
 export default function BotanicalGraceCard() {
   // Background music state & ref
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -735,6 +820,8 @@ export default function BotanicalGraceCard() {
       },
     };
 
+
+
   const fallingPetalB: Variants = shouldReduceMotion
     ? {}
     : {
@@ -774,7 +861,7 @@ export default function BotanicalGraceCard() {
       <ForestBubbleButton isPlaying={isPlaying} onToggle={toggleMusic} />
 
       {/* 🎬 HERO — cinematic opening sequence 🎬 */}
-      <section ref={heroRef} className="relative min-h-screen overflow-hidden">
+      <section ref={heroRef} className="relative min-h-,,screen overflow-hidden">
         <motion.div
           initial={{ opacity: 0, filter: "blur(16px)" }}
           animate={{ opacity: 1, filter: "blur(0px)" }}
@@ -808,6 +895,17 @@ export default function BotanicalGraceCard() {
           animate="animate"
           className="absolute left-1/2 top-1/3 z-10 h-[300px] w-[300px] sm:h-[420px] sm:w-[420px] -translate-x-1/2 rounded-full bg-[#e8f2d5] blur-[120px] pointer-events-none"
         />
+
+        {/* 🌿 TRAILING VINES HANGING FROM THE TOP 🌿 */}
+        <div className="absolute top-0 left-4 sm:left-[10%] z-20 pointer-events-none opacity-90">
+          <TrailingVineFlower delay={0.5} />
+        </div>
+
+        <div className="absolute top-0 right-4 sm:right-[15%] z-20 pointer-events-none opacity-80" style={{ transform: "scaleX(-1)" }}>
+          <TrailingVineFlower delay={1.2} />
+        </div>
+
+
 
         {/* Falling leaves + petals instead of drifting clouds */}
         <motion.div
