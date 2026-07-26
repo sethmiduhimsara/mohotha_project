@@ -23,7 +23,13 @@ function formatDate(date: Date): string {
   });
 }
 
-export default function RsvpTable({ rsvps }: { rsvps: GuestMessage[] }) {
+export default function RsvpTable({
+  rsvps,
+  clientId,
+}: {
+  rsvps: GuestMessage[];
+  clientId: string;
+}) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "accept" | "decline">("all");
   const [isPending, startTransition] = useTransition();
@@ -31,7 +37,7 @@ export default function RsvpTable({ rsvps }: { rsvps: GuestMessage[] }) {
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this RSVP?")) {
       startTransition(async () => {
-        await deleteRsvp(id);
+        await deleteRsvp(id, clientId);
       });
     }
   };

@@ -11,6 +11,16 @@ datasource db {
   provider = "sqlite"
 }
 
+model Client {
+  id            String   @id
+  displayName   String
+  googleSheetId String?
+  adminPasscode String
+  createdAt     DateTime @default(now())
+
+  @@map("clients")
+}
+
 model Rsvp {
   id          String   @id @default(cuid())
   name        String                          // Guest's full name
