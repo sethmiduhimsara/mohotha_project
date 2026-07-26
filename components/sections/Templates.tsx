@@ -55,12 +55,12 @@ const featuredDesigns = [
   },
   {
     id: 6,
-    name: "Obsidian Gold",
-    category: "Modern Minimalist",
-    style: "High Fashion Black",
-    href: "/wedding-invitation",
-    image: "/images/hero/dark4.jpg",
-    tags: ["Obsidian Theme", "Gold Foil"],
+    name: "Swarna Heritage",
+    category: "Kandyan Royal",
+    style: "Sinhala Luxury",
+    href: "/demo/swarna-heritage", // <-- Added /demo right here!
+    image: "/images/hero/dark4.jpg", 
+    tags: ["Royal Theme", "Gold Foil"],
   },
 ];
 
