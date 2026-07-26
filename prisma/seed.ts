@@ -37,7 +37,7 @@ async function main() {
       updateData.googleSheetId = client.googleSheetId;
     }
 
-    await prisma.client.upsert({
+    await (prisma as any).client.upsert({
       where: { id: client.id },
       update: updateData,
       create: {
