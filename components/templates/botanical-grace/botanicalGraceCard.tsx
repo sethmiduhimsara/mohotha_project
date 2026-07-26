@@ -610,7 +610,7 @@ function TrailingVineFlower({ className = "", delay = 0 }: { className?: string,
           show: { scale: 1, opacity: 1, transition: { duration: 0.6, delay: delay + 0.6 } }
         }}
       />
-      
+
       {/* Sprouting Leaf 2 */}
       <motion.path
         d="M62,120 C35,115 30,135 55,140"
@@ -861,7 +861,7 @@ export default function BotanicalGraceCard() {
       <ForestBubbleButton isPlaying={isPlaying} onToggle={toggleMusic} />
 
       {/* 🎬 HERO — cinematic opening sequence 🎬 */}
-      <section ref={heroRef} className="relative min-h-screen overflow-hidden">
+      <section ref={heroRef} className="relative min-h-,,screen overflow-hidden">
         <motion.div
           initial={{ opacity: 0, filter: "blur(16px)" }}
           animate={{ opacity: 1, filter: "blur(0px)" }}
@@ -900,7 +900,7 @@ export default function BotanicalGraceCard() {
         <div className="absolute top-0 left-4 sm:left-[10%] z-20 pointer-events-none opacity-90">
           <TrailingVineFlower delay={0.5} />
         </div>
-        
+
         <div className="absolute top-0 right-4 sm:right-[15%] z-20 pointer-events-none opacity-80" style={{ transform: "scaleX(-1)" }}>
           <TrailingVineFlower delay={1.2} />
         </div>
