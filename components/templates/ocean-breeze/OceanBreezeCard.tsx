@@ -209,6 +209,36 @@ function OceanBubbleButton({
   return createPortal(button, document.body);
 }
 
+/* ------------------------------------------------------------------ */
+/*  SoaringSeagulls — A flock of birds for the beach sky 🌊🕊️          */
+/* ------------------------------------------------------------------ */
+function SoaringSeagulls({ size = 80, color = "#fff", className = "" }: { size?: number, color?: string, className?: string }) {
+  return (
+    <svg viewBox="0 0 100 50" width={size} className={className} stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M 10 25 Q 15 15 25 25 Q 35 15 40 25" />
+      <path d="M 50 15 Q 55 5 65 15 Q 75 5 80 15" />
+      <path d="M 70 35 Q 75 25 85 35 Q 95 25 100 35" />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  AnimatedStarfish — Draws itself into view on scroll 🌟🐚         */
+/* ------------------------------------------------------------------ */
+function AnimatedStarfish({ size = 80, color = "#5fa8d3", className = "", delay = 0 }: { size?: number, color?: string, className?: string, delay?: number }) {
+  return (
+    <motion.svg viewBox="0 0 100 100" width={size} className={className} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <motion.path
+        d="M50 10 L62 40 L95 40 L68 60 L78 90 L50 70 L22 90 L32 60 L5 40 L38 40 Z"
+        initial={{ pathLength: 0, opacity: 0, rotate: -45 }}
+        whileInView={{ pathLength: 1, opacity: 1, rotate: 0 }}
+        transition={{ duration: 2, ease: LUX_EASE, delay }}
+        viewport={{ once: true, margin: "-10%" }}
+      />
+    </motion.svg>
+  );
+}
+
 export default function OceanBreezeCard() {
   // Audio state & ref
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -375,6 +405,16 @@ export default function OceanBreezeCard() {
       x: ["8%", "-8%", "8%"],
       transition: { repeat: Infinity, duration: 68, ease: "easeInOut" },
     };
+  // 🕊️ Coastal Seagull Animation 🕊️
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const seagullFlight: any = shouldReduceMotion
+    ? {}
+    : {
+        x: ["-10vw", "110vw"],
+        y: [0, -15, 10, -10, 0],
+        opacity: [0, 0.7, 0.9, 0.7, 0],
+        transition: { repeat: Infinity, duration: 35, ease: "linear" },
+      };
   const focusRing =
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5fa8d3]";
 
@@ -421,7 +461,14 @@ export default function OceanBreezeCard() {
             className="absolute left-1/2 top-1/3 z-10 h-[300px] w-[300px] sm:h-[420px] sm:w-[420px] -translate-x-1/2 rounded-full bg-[#ffe9b8] blur-[100px] pointer-events-none"
           />
 
-          {/* Gentle drifting clouds */}
+          {/* Gentle drifting clouds & Seagulls */}
+          <motion.div
+            animate={seagullFlight}
+            className="absolute top-[20%] left-0 z-10 pointer-events-none"
+          >
+            <SoaringSeagulls size={120} color="rgba(255, 255, 255, 0.45)" />
+          </motion.div>
+          
           <motion.div
             animate={cloudDriftA}
             className="absolute top-16 left-[8%] z-10 text-white/50 pointer-events-none hidden sm:block"
@@ -550,17 +597,10 @@ export default function OceanBreezeCard() {
         >
           <div className="absolute top-0 right-0 w-72 h-72 sm:w-96 sm:h-96 bg-[#eaf4f4] rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 0.18 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.8 }}
-            className="absolute bottom-16 left-8 text-[#5fa8d3] pointer-events-none hidden lg:block"
-          >
-            <motion.div animate={floatAnimation}>
-              <Shell size={90} strokeWidth={1} />
-            </motion.div>
-          </motion.div>
+          {/* 🌟 Animated Starfish Accent 🌟 */}
+          <div className="absolute bottom-16 left-8 text-[#5fa8d3] pointer-events-none hidden lg:block opacity-60">
+            <AnimatedStarfish size={100} delay={0.2} />
+          </div>
 
           <motion.div
             initial="hidden"
