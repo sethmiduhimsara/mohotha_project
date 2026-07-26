@@ -9,7 +9,7 @@ export type ClientRecord = {
 
 export async function getClient(clientId: string): Promise<ClientRecord | null> {
   try {
-    return await prisma.client.findUnique({ where: { id: clientId } });
+    return await (prisma as any).client.findUnique({ where: { id: clientId } });
   } catch (error) {
     console.error("[getClient] Database error:", error);
     return null;

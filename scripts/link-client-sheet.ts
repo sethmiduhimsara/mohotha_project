@@ -27,7 +27,7 @@ async function main() {
     process.exit(1);
   }
 
-  const client = await prisma.client.findUnique({ where: { id: clientId } });
+  const client = await (prisma as any).client.findUnique({ where: { id: clientId } });
   if (!client) {
     console.error(`Client "${clientId}" not found. Run: npm run db:seed`);
     process.exit(1);
@@ -53,7 +53,7 @@ async function main() {
     process.exit(1);
   }
 
-  await prisma.client.update({
+  await (prisma as any).client.update({
     where: { id: clientId },
     data: { googleSheetId: sheetId },
   });

@@ -8,7 +8,7 @@ import { prisma } from "../lib/prisma";
 import { createRsvpSpreadsheet } from "../lib/google-sheets";
 
 async function main() {
-  const clients = await prisma.client.findMany({
+  const clients = await (prisma as any).client.findMany({
     orderBy: { id: "asc" },
   });
 
@@ -35,7 +35,7 @@ async function main() {
       continue;
     }
 
-    await prisma.client.update({
+    await (prisma as any).client.update({
       where: { id: client.id },
       data: { googleSheetId: result.sheetId },
     });
