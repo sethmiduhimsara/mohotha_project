@@ -2,24 +2,31 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { getClient } from "@/lib/clients";
 
 export async function loginAsClient(
   clientId: string,
-  passwordAttempt: string,
-  correctPassword: string = "AMARA2026"
+  passwordAttempt: string
 ): Promise<{ success: boolean; error?: string }> {
-  
-  if (passwordAttempt === correctPassword) {
-    // Set a secure, HTTP-only cookie that expires in 7 days
+  const client = await getClient(clientId);
+
+  if (!client) {
+    return { success: false, error: "Client not found." };
+  }
+
+  if (passwordAttempt === client.adminPasscode) {
     (await cookies()).set(`auth_${clientId}`, "true", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
-    
-    // Refresh the admin page so it reads the new cookie
-    revalidatePath(`/admin/${clientId}`);
+
+    try {
+      revalidatePath(`/admin/${clientId}`);
+    } catch {
+      // revalidatePath requires a Next.js request context
+    }
     return { success: true };
   }
 

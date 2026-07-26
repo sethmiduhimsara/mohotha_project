@@ -79,7 +79,7 @@ export default function OpenInvitationTemplate() {
 
                     <div className="mt-12 flex flex-col items-center gap-3 text-[#9a7b39] sm:mt-14 sm:gap-4">
                       <p className="font-serif text-[54px] italic leading-none text-[#4a1828] drop-shadow-[0_10px_20px_rgba(74,24,40,0.15)] sm:text-[74px]">
-                        Umidu
+                        Umiduss
                       </p>
                       <div className="font-serif text-4xl leading-none text-[#b88a2f]">&amp;</div>
                       <p className="font-serif text-[54px] italic leading-none text-[#4a1828] drop-shadow-[0_10px_20px_rgba(74,24,40,0.15)] sm:text-[74px]">
@@ -119,7 +119,7 @@ export default function OpenInvitationTemplate() {
               transition={{ duration: 0.9, ease: [0.21, 0.47, 0.32, 0.98] }}
               className="relative z-10"
             >
-              <InvitationCardTemplate />
+              <InvitationCardTemplate clientId="royal-heritage" />
             </motion.div>
           )}
         </AnimatePresence>

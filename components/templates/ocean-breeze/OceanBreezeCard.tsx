@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   motion,
@@ -128,6 +129,11 @@ function JourneyProgress() {
 
 /* ------------------------------------------------------------------ */
 /*  OceanBubbleButton — Fixed floating toggle that NEVER disappears!  */
+/*  Rendered through a Portal directly into document.body so that     */
+/*  no ancestor's CSS `transform` (which Framer Motion adds to nearly */
+/*  every animated element) can ever hijack its `position: fixed`     */
+/*  containing block. This is what makes it stay pinned to the real   */
+/*  viewport at all times instead of only showing near the bottom.    */
 /* ------------------------------------------------------------------ */
 function OceanBubbleButton({
   isPlaying,
@@ -137,8 +143,15 @@ function OceanBubbleButton({
   onToggle: () => void;
 }) {
   const shouldReduceMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  // document.body only exists on the client, so we wait for mount
+  // before portaling (avoids Next.js SSR hydration errors).
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const button = (
     <motion.button
       onClick={onToggle}
       aria-label={isPlaying ? "Pause background music" : "Play background music"}
@@ -147,10 +160,10 @@ function OceanBubbleButton({
         shouldReduceMotion
           ? { opacity: 1, scale: 1 }
           : {
-              opacity: 1,
-              scale: 1,
-              y: [-4, 4, -4],
-            }
+            opacity: 1,
+            scale: 1,
+            y: [-4, 4, -4],
+          }
       }
       transition={{
         y: { repeat: Infinity, duration: 4.5, ease: "easeInOut" },
@@ -159,14 +172,16 @@ function OceanBubbleButton({
       }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
-      // 📌 position: fixed + very high z-index (99999), rendered at the root
-      className="fixed bottom-6 right-6 z-[99999] flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-white/60 bg-white/40 shadow-[inset_0_4px_10px_rgba(255,255,255,0.9),0_15px_35px_rgba(26,91,115,0.2)] backdrop-blur-xl overflow-hidden focus:outline-none"
+      // position: fixed + very high z-index, now portaled to <body>
+      // so it always sits relative to the real viewport.
+      style={{ position: "fixed", bottom: "1.5rem", right: "1.5rem", zIndex: 99999 }}
+      className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-white/60 bg-white/40 shadow-[inset_0_4px_10px_rgba(255,255,255,0.9),0_15px_35px_rgba(26,91,115,0.2)] backdrop-blur-xl overflow-hidden focus:outline-none"
     >
-      {/* ✨ Glossy bubble reflection glare ✨ */}
+      {/* Glossy bubble reflection glare */}
       <div className="absolute top-1 left-2 h-3 w-5 rounded-full bg-white/80 blur-[1px] rotate-[-25deg] pointer-events-none" />
       <div className="absolute bottom-1 right-2 h-1.5 w-2.5 rounded-full bg-white/50 blur-[1px] pointer-events-none" />
 
-      {/* Rippling "sound wave" ring while playing 🌊 */}
+      {/* Rippling "sound wave" ring while playing */}
       {isPlaying && !shouldReduceMotion && (
         <motion.div
           animate={{ scale: [1, 1.7, 1], opacity: [0.5, 0, 0.5] }}
@@ -189,40 +204,61 @@ function OceanBubbleButton({
       </div>
     </motion.button>
   );
+
+  if (!mounted) return null;
+  return createPortal(button, document.body);
 }
 
 export default function OceanBreezeCard() {
-  // 🎵 Audio state & ref 🎵
+  // Audio state & ref
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    // 🎵 Initialize your track
-    const audio = new Audio("/music/ocean breeze.mp3");
+    // IMPORTANT: the filename has a space in it, which browsers can
+    // fail to resolve when passed raw into `new Audio()` — that's what
+    // was throwing "The element has no supported sources." Encode it
+    // (or, better, rename the actual file to remove the space, e.g.
+    // "ocean-breeze.mp3", and update this path to match).
+    const audioSrc = encodeURI("/music/ocean breeze.mp3");
+    const audio = new Audio(audioSrc);
     audio.loop = true;
     audio.volume = 0.6;
+    audio.preload = "auto";
     audioRef.current = audio;
+
+    const handleError = () => {
+      console.error(
+        "Background music failed to load. Check that the file exists at",
+        audioSrc,
+        "inside your /public folder (path is case-sensitive)."
+      );
+    };
+    audio.addEventListener("error", handleError);
 
     const startMusic = () => {
       if (audio.paused) {
-        audio.play()
+        audio
+          .play()
           .then(() => setIsPlaying(true))
           .catch((err) => console.log("Browser blocked autoplay:", err));
       }
-      
-      // Remove the listeners once the music starts so it doesn't keep firing! 🛑
+
+      // Remove the listeners once the music starts so it doesn't keep firing
       ["click", "scroll", "touchstart", "mousemove"].forEach((evt) =>
         document.removeEventListener(evt, startMusic)
       );
     };
 
-    // Listen for the absolute first thing the user does to bypass the browser block! 🧠
+    // Listen for the first user interaction to bypass the browser's
+    // autoplay-with-sound block.
     ["click", "scroll", "touchstart", "mousemove"].forEach((evt) =>
       document.addEventListener(evt, startMusic, { once: true })
     );
 
     return () => {
       audio.pause();
+      audio.removeEventListener("error", handleError);
       audioRef.current = null;
       ["click", "scroll", "touchstart", "mousemove"].forEach((evt) =>
         document.removeEventListener(evt, startMusic)
@@ -235,7 +271,9 @@ export default function OceanBreezeCard() {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
-        audioRef.current.play();
+        audioRef.current.play().catch((err) =>
+          console.log("Playback failed:", err)
+        );
       }
       setIsPlaying(!isPlaying);
     }
@@ -305,54 +343,48 @@ export default function OceanBreezeCard() {
   const floatAnimation: any = shouldReduceMotion
     ? {}
     : {
-        y: [-10, 10, -10],
-        rotate: [-4, 4, -4],
-        transition: { repeat: Infinity, duration: 11, ease: "easeInOut" },
-      };
+      y: [-10, 10, -10],
+      rotate: [-4, 4, -4],
+      transition: { repeat: Infinity, duration: 11, ease: "easeInOut" },
+    };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const waveAnimation: any = shouldReduceMotion
     ? {}
     : {
-        x: [-18, 18, -18],
-        transition: { repeat: Infinity, duration: 15, ease: "easeInOut" },
-      };
+      x: [-18, 18, -18],
+      transition: { repeat: Infinity, duration: 15, ease: "easeInOut" },
+    };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const glowPulse: any = shouldReduceMotion
     ? {}
     : {
-        opacity: [0.12, 0.28, 0.12],
-        transition: { repeat: Infinity, duration: 9, ease: "easeInOut" },
-      };
+      opacity: [0.12, 0.28, 0.12],
+      transition: { repeat: Infinity, duration: 9, ease: "easeInOut" },
+    };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cloudDriftA: any = shouldReduceMotion
     ? {}
     : {
-        x: ["-10%", "10%", "-10%"],
-        transition: { repeat: Infinity, duration: 55, ease: "easeInOut" },
-      };
+      x: ["-10%", "10%", "-10%"],
+      transition: { repeat: Infinity, duration: 55, ease: "easeInOut" },
+    };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cloudDriftB: any = shouldReduceMotion
     ? {}
     : {
-        x: ["8%", "-8%", "8%"],
-        transition: { repeat: Infinity, duration: 68, ease: "easeInOut" },
-      };
+      x: ["8%", "-8%", "8%"],
+      transition: { repeat: Infinity, duration: 68, ease: "easeInOut" },
+    };
   const focusRing =
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5fa8d3]";
 
   return (
-    // Everything below lives inside this Fragment, at the very top
-    // of the tree. JourneyProgress and the bubble button are rendered
-    // here — as siblings of the main <section>, not nested inside
-    // any of its motion-animated / overflow-hidden children — so
-    // `position: fixed` is always relative to the real viewport and
-    // the button never gets clipped or "trapped" inside a section.
     <>
       <JourneyProgress />
       <OceanBubbleButton isPlaying={isPlaying} onToggle={toggleMusic} />
 
       <section className="min-h-screen bg-[#f4f9f9] text-[#2c5263] overflow-hidden">
-        {/* 🎬 HERO — cinematic opening sequence 🎬 */}
+        {/* HERO — cinematic opening sequence */}
         <section
           ref={heroRef}
           className="relative min-h-screen overflow-hidden"
@@ -511,7 +543,7 @@ export default function OceanBreezeCard() {
           <WaveDivider toColor="#ffffff" />
         </section>
 
-        {/* ✨ CHAPTER ONE — THE HAPPY COUPLE ✨ */}
+        {/* CHAPTER ONE — THE HAPPY COUPLE */}
         <section
           id="couple"
           className="relative bg-white px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden"
@@ -614,7 +646,7 @@ export default function OceanBreezeCard() {
           <WaveDivider toColor="#f4f9f9" />
         </section>
 
-        {/* 📖 CHAPTER TWO — OUR LOVE STORY 📖 */}
+        {/* CHAPTER TWO — OUR LOVE STORY */}
         <section className="relative bg-[#f4f9f9] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 border-y border-[#e2ecec] overflow-hidden">
           <motion.div
             initial={{ opacity: 0 }}
@@ -667,7 +699,7 @@ export default function OceanBreezeCard() {
           <WaveDivider toColor="#eaf4f4" />
         </section>
 
-        {/* ⏳ THE COUNTDOWN — GLASS ACCENT #1 ⏳ */}
+        {/* THE COUNTDOWN — GLASS ACCENT #1 */}
         <section
           id="countdown"
           className="relative bg-[#eaf4f4] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden"
@@ -734,7 +766,7 @@ export default function OceanBreezeCard() {
           <WaveDivider toColor="#ffffff" />
         </section>
 
-        {/* 🗺️ CHAPTER THREE — WEDDING DETAILS — GLASS ACCENT #2 🗺️ */}
+        {/* CHAPTER THREE — WEDDING DETAILS — GLASS ACCENT #2 */}
         <section className="relative bg-white px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden">
           <div className="absolute -top-24 -left-24 w-72 h-72 bg-[#eaf4f4] rounded-full blur-3xl opacity-60 pointer-events-none" />
           <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#fdf3e7] rounded-full blur-3xl opacity-50 translate-x-1/3 translate-y-1/3 pointer-events-none" />
@@ -828,7 +860,7 @@ export default function OceanBreezeCard() {
           <WaveDivider toColor="#eaf4f4" />
         </section>
 
-        {/* ⏱️ CHAPTER FOUR — WEDDING DAY TIMELINE ⏱️ */}
+        {/* CHAPTER FOUR — WEDDING DAY TIMELINE */}
         <section className="relative bg-[#eaf4f4] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 border-y border-white overflow-hidden">
           <motion.div
             initial="hidden"
@@ -878,7 +910,7 @@ export default function OceanBreezeCard() {
           <WaveDivider toColor="#f4f9f9" />
         </section>
 
-        {/* 🕊️ A NOTE TO OUR LOVED ONES 🕊️ */}
+        {/* A NOTE TO OUR LOVED ONES */}
         <section className="relative bg-[#f4f9f9] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden">
           <motion.div
             animate={glowPulse}
@@ -912,7 +944,7 @@ export default function OceanBreezeCard() {
           <WaveDivider toColor="#fdfbf7" />
         </section>
 
-        {/* 💌 RSVP — AN INVITATION TO OPEN, NOT JUST A FORM 💌 */}
+        {/* RSVP — AN INVITATION TO OPEN, NOT JUST A FORM */}
         <section
           id="rsvp"
           className="relative bg-[#fdfbf7] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 border-t border-[#e2ecec] overflow-hidden"

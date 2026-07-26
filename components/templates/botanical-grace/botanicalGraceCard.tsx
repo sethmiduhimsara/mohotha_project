@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   motion,
@@ -20,6 +21,8 @@ import {
   Mail,
   ArrowRight,
   Sprout,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -358,6 +361,88 @@ function JourneyProgress() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  ForestBubbleButton — fixed floating music toggle in the botanical  */
+/*  green palette. Rendered through a Portal directly into              */
+/*  document.body so no ancestor's CSS `transform` (which Framer       */
+/*  Motion adds to nearly every animated element on this page — the    */
+/*  swaying branches, the vine, the parallax hero) can ever hijack its  */
+/*  `position: fixed` containing block. That's what keeps it pinned to  */
+/*  the real viewport at all times instead of only showing up near the  */
+/*  bottom of the page.                                                 */
+/* ------------------------------------------------------------------ */
+function ForestBubbleButton({
+  isPlaying,
+  onToggle,
+}: {
+  isPlaying: boolean;
+  onToggle: () => void;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+
+  // document.body only exists on the client, so wait for mount before
+  // portaling (avoids Next.js SSR hydration errors).
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const button = (
+    <motion.button
+      onClick={onToggle}
+      aria-label={isPlaying ? "Pause background music" : "Play background music"}
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={
+        shouldReduceMotion
+          ? { opacity: 1, scale: 1 }
+          : {
+            opacity: 1,
+            scale: 1,
+            y: [-4, 4, -4],
+          }
+      }
+      transition={{
+        y: { repeat: Infinity, duration: 4.5, ease: "easeInOut" },
+        opacity: { duration: 0.8, delay: 0.6 },
+        scale: { duration: 0.8, delay: 0.6, type: "spring" },
+      }}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      style={{ position: "fixed", bottom: "1.5rem", right: "1.5rem", zIndex: 99999 }}
+      className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-[#dce8df] bg-[#f2f6f3]/70 shadow-[inset_0_4px_10px_rgba(255,255,255,0.9),0_15px_35px_rgba(30,59,39,0.18)] backdrop-blur-xl overflow-hidden focus:outline-none"
+    >
+      {/* Glossy bubble reflection glare */}
+      <div className="absolute top-1 left-2 h-3 w-5 rounded-full bg-white/80 blur-[1px] rotate-[-25deg] pointer-events-none" />
+      <div className="absolute bottom-1 right-2 h-1.5 w-2.5 rounded-full bg-white/50 blur-[1px] pointer-events-none" />
+
+      {/* Rippling "sound wave" ring while playing */}
+      {isPlaying && !shouldReduceMotion && (
+        <motion.div
+          animate={{ scale: [1, 1.7, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
+          className="absolute inset-0 rounded-full border-2 border-[#6b8e73]/40 pointer-events-none"
+        />
+      )}
+
+      {/* Soft pulse ring when paused, inviting a tap */}
+      {!isPlaying && !shouldReduceMotion && (
+        <motion.div
+          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+          className="absolute inset-0 rounded-full bg-[#6b8e73]/25 pointer-events-none"
+        />
+      )}
+
+      <div className="relative z-10 text-[#1e3b27] drop-shadow-sm">
+        {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
+      </div>
+    </motion.button>
+  );
+
+  if (!mounted) return null;
+  return createPortal(button, document.body);
+}
+
+/* ------------------------------------------------------------------ */
 /*  GrowingVine — the signature botanical moment. A hand-drawn vine    */
 /*  that draws itself in as the guest scrolls through the story, with  */
 /*  leaves and flowers blooming along the way. Desktop only.           */
@@ -486,6 +571,75 @@ function GrowingVine() {
 }
 
 export default function BotanicalGraceCard() {
+  // Background music state & ref
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    // NOTE: this path has no leading space — "/music/botanical-grace.mp3".
+    // If your actual uploaded file really is named with a leading space
+    // (" botanical-grace.mp3"), either rename the file to remove the
+    // space, or swap this line for:
+    //   const audioSrc = encodeURI("/music/ botanical-grace.mp3");
+    const audioSrc = "/music/botanical-grace.mp3";
+    const audio = new Audio(audioSrc);
+    audio.loop = true;
+    audio.volume = 0.6;
+    audio.preload = "auto";
+    audioRef.current = audio;
+
+    const handleError = () => {
+      console.error(
+        "Background music failed to load. Check that the file exists at",
+        audioSrc,
+        "inside your /public folder (path is case-sensitive)."
+      );
+    };
+    audio.addEventListener("error", handleError);
+
+    const startMusic = () => {
+      if (audio.paused) {
+        audio
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch((err) => console.log("Browser blocked autoplay:", err));
+      }
+
+      // Remove the listeners once the music starts so it doesn't keep firing
+      ["click", "scroll", "touchstart", "mousemove"].forEach((evt) =>
+        document.removeEventListener(evt, startMusic)
+      );
+    };
+
+    // Listen for the first user interaction to bypass the browser's
+    // autoplay-with-sound block.
+    ["click", "scroll", "touchstart", "mousemove"].forEach((evt) =>
+      document.addEventListener(evt, startMusic, { once: true })
+    );
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener("error", handleError);
+      audioRef.current = null;
+      ["click", "scroll", "touchstart", "mousemove"].forEach((evt) =>
+        document.removeEventListener(evt, startMusic)
+      );
+    };
+  }, []);
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch((err) =>
+          console.log("Playback failed:", err)
+        );
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   const targetDate = useMemo(
     () => new Date("2026-10-24T00:00:00").getTime(),
     [],
@@ -547,69 +701,69 @@ export default function BotanicalGraceCard() {
   const fallingLeafA: Variants = shouldReduceMotion
     ? {}
     : {
-        animate: {
-            y: [-20, 120],
-            x: [-15, 15, -15],
-            rotate: [0, 180, 360],
-            opacity: [0, 0.8, 0],
-            transition: { repeat: Infinity, duration: 12, ease: "linear" },
-        }
-      };
+      animate: {
+        y: [-20, 120],
+        x: [-15, 15, -15],
+        rotate: [0, 180, 360],
+        opacity: [0, 0.8, 0],
+        transition: { repeat: Infinity, duration: 12, ease: "linear" },
+      }
+    };
 
   const fallingLeafB: Variants = shouldReduceMotion
     ? {}
     : {
-        animate: {
-            y: [-30, 100],
-            x: [10, -20, 10],
-            rotate: [0, -180, -360],
-            opacity: [0, 0.6, 0],
-            transition: { repeat: Infinity, duration: 15, ease: "linear", delay: 2 },
-        }
-      };
+      animate: {
+        y: [-30, 100],
+        x: [10, -20, 10],
+        rotate: [0, -180, -360],
+        opacity: [0, 0.6, 0],
+        transition: { repeat: Infinity, duration: 15, ease: "linear", delay: 2 },
+      }
+    };
 
   // Drifting flower petals, paired with the leaves for a fuller botanical feel
   const fallingPetalA: Variants = shouldReduceMotion
     ? {}
     : {
-        animate: {
-          y: [-15, 130],
-          x: [10, -18, 10],
-          rotate: [0, 140, 280],
-          opacity: [0, 0.75, 0],
-          transition: { repeat: Infinity, duration: 13, ease: "linear", delay: 1 },
-        },
-      };
+      animate: {
+        y: [-15, 130],
+        x: [10, -18, 10],
+        rotate: [0, 140, 280],
+        opacity: [0, 0.75, 0],
+        transition: { repeat: Infinity, duration: 13, ease: "linear", delay: 1 },
+      },
+    };
 
   const fallingPetalB: Variants = shouldReduceMotion
     ? {}
     : {
-        animate: {
-          y: [-25, 110],
-          x: [-8, 18, -8],
-          rotate: [0, -150, -300],
-          opacity: [0, 0.65, 0],
-          transition: { repeat: Infinity, duration: 16, ease: "linear", delay: 3.2 },
-        },
-      };
+      animate: {
+        y: [-25, 110],
+        x: [-8, 18, -8],
+        rotate: [0, -150, -300],
+        opacity: [0, 0.65, 0],
+        transition: { repeat: Infinity, duration: 16, ease: "linear", delay: 3.2 },
+      },
+    };
 
   const swayingBranch: Variants = shouldReduceMotion
     ? {}
     : {
-        animate: {
-            rotate: [-3, 3, -3],
-            transition: { repeat: Infinity, duration: 8, ease: "easeInOut" },
-        }
-      };
+      animate: {
+        rotate: [-3, 3, -3],
+        transition: { repeat: Infinity, duration: 8, ease: "easeInOut" },
+      }
+    };
 
   const glowPulse: Variants = shouldReduceMotion
     ? {}
     : {
-        animate: {
-            opacity: [0.08, 0.2, 0.08],
-            transition: { repeat: Infinity, duration: 9, ease: "easeInOut" },
-        }
-      };
+      animate: {
+        opacity: [0.08, 0.2, 0.08],
+        transition: { repeat: Infinity, duration: 9, ease: "easeInOut" },
+      }
+    };
 
   const focusRing =
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6b8e73]";
@@ -617,6 +771,7 @@ export default function BotanicalGraceCard() {
   return (
     <section className="min-h-screen bg-[#f2f6f3] text-[#2b3a30] overflow-hidden">
       <JourneyProgress />
+      <ForestBubbleButton isPlaying={isPlaying} onToggle={toggleMusic} />
 
       {/* 🎬 HERO — cinematic opening sequence 🎬 */}
       <section ref={heroRef} className="relative min-h-screen overflow-hidden">
@@ -637,7 +792,7 @@ export default function BotanicalGraceCard() {
             />
             {/* EXACT IMAGE NAME 1 */}
             <Image
-              src="/images/hero/botanical-grace 1.jpg" 
+              src="/images/hero/botanical-grace 1.jpg"
               alt="Forest wedding hero background"
               fill
               priority
@@ -871,8 +1026,8 @@ export default function BotanicalGraceCard() {
                   variants={riseIn}
                   className="text-sm sm:text-base leading-relaxed text-[#2b3a30]/80 mb-8"
                 >
-                  From our first walk through the sunlit pines to building a life deeply rooted in love, 
-                  every moment has grown into something beautiful. We can&apos;t wait to celebrate 
+                  From our first walk through the sunlit pines to building a life deeply rooted in love,
+                  every moment has grown into something beautiful. We can&apos;t wait to celebrate
                   our story surrounded by nature and our favorite people.
                 </motion.p>
 
@@ -946,7 +1101,7 @@ export default function BotanicalGraceCard() {
               variants={riseIn}
               className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-[#2b3a30]/80"
             >
-              Like a seed planted in good soil, our friendship blossomed into a 
+              Like a seed planted in good soil, our friendship blossomed into a
               beautiful love. Now we are ready to branch out into our forever.
             </motion.p>
 
@@ -955,8 +1110,8 @@ export default function BotanicalGraceCard() {
               className="mx-auto mt-12 max-w-3xl rounded-[2rem] sm:rounded-[2.5rem] border border-[#dce8df] bg-white p-8 sm:p-10 shadow-[0_20px_50px_rgba(30,59,39,0.05)]"
             >
               <p className="text-sm leading-loose text-[#1e3b27] sm:text-base font-medium">
-                From our first glance to our shared dreams, every passing season 
-                brought us closer. We invite you to be part of this 
+                From our first glance to our shared dreams, every passing season
+                brought us closer. We invite you to be part of this
                 unforgettable day, where love, family, and joy come together under the forest canopy.
               </p>
             </motion.div>
