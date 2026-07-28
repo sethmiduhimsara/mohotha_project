@@ -69,6 +69,7 @@ export type FadeDirection =
 interface FadeInProps {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 
   delay?: number;
   duration?: number;
@@ -87,6 +88,7 @@ interface FadeInProps {
 export function FadeIn({
   children,
   className = "",
+  style,
 
   delay = 0,
   duration = 0.8,
@@ -156,7 +158,7 @@ export function FadeIn({
 
   if (shouldReduceMotion) {
     return (
-      <div ref={ref} className={className}>
+      <div ref={ref} className={className} style={style}>
         {children}
       </div>
     );
@@ -166,6 +168,7 @@ export function FadeIn({
     <motion.div
       ref={ref}
       className={className}
+      style={style}
       initial={initial}
       animate={
         isInView
