@@ -65,19 +65,20 @@ body {
   color: #050505;
 }
 
-/* Custom Scrollbar */
+/* ── Custom Scrollbar (gold accent on hover) ─────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #050505;
+  background: #0a0a0a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #252525;
-  border-radius: 4px;
+  background: linear-gradient(to bottom, #2a2a2a, #1f1f1f);
+  border-radius: 6px;
+  transition: background 0.3s;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #E5B869;
+  background: linear-gradient(to bottom, #C5A059, #9e7e3a);
 }
 
 /* Gold Text Gradient Shimmer */
@@ -113,10 +114,10 @@ body {
   border: 1px solid rgba(229, 184, 105, 0.3);
 }
 
-/* Shimmer Light Beam Effect */
+/* ── Shimmer Light Beam Effect ───────────────────────────────────────────── */
 @keyframes shimmer-beam {
-  0% { transform: translateX(-100%) rotate(45deg); }
-  100% { transform: translateX(200%) rotate(45deg); }
+  0%   { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(200%)  rotate(45deg); }
 }
 
 .animate-shimmer-beam {
@@ -140,22 +141,71 @@ body {
   animation: shimmer-beam 6s infinite;
 }
 
-/* Floating Animation */
+/* ── Floating Animation ──────────────────────────────────────────────────── */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  50%       { transform: translateY(-10px); }
 }
 
 .animate-float {
   animation: float 5s ease-in-out infinite;
 }
 
-/* Subtle Pulse */
+/* ── Subtle Pulse ────────────────────────────────────────────────────────── */
 @keyframes pulse-slow {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.08); }
+  0%, 100% { opacity: 0.3; transform: scale(1);    }
+  50%       { opacity: 0.6; transform: scale(1.08); }
 }
 
 .animate-pulse-slow {
   animation: pulse-slow 7s infinite ease-in-out;
+}
+
+/* ── Wedding Invitation — Gallery infinite scroll ────────────────────────── */
+/*
+ * We use a pure-CSS animation here (not Framer Motion) so that
+ * animation-play-state:paused works reliably on mouse-enter.
+ */
+@keyframes gallery-scroll-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.gallery-scroll {
+  animation: gallery-scroll-left 40s linear infinite;
+  will-change: transform;
+}
+
+/* Toggle this class to pause the carousel on hover */
+.gallery-scroll-paused {
+  animation-play-state: paused;
+}
+
+/* ── Gold petal drift (used via Framer Motion inline, kept here for reference) */
+@keyframes petal-drift {
+  0%   { transform: translateY(0)    rotate(0deg)   opacity(0);   }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateY(115vh) rotate(540deg) opacity(0);   }
+}
+
+/* ── Scale-in bounce ─────────────────────────────────────────────────────── */
+@keyframes scale-in-bounce {
+  0%   { transform: scale(0);    opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+.animate-scale-in-bounce {
+  animation: scale-in-bounce 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── Rotate slow (for decorative rings) ─────────────────────────────────── */
+@keyframes rotate-slow {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 60s linear infinite;
 }
