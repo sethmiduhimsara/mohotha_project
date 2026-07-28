@@ -1,12 +1,35 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import InvitationCardTemplate from "@/components/templates/RoyalHeritage/InvitationCardTemplate";
+
+function MandalaCorner({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 120 120"
+      className={`pointer-events-none absolute h-24 w-24 text-[#d9bb71]/40 sm:h-28 sm:w-28 ${className}`}
+      aria-hidden="true"
+    >
+      <circle cx="6" cy="6" r="20" fill="none" stroke="currentColor" strokeWidth="0.75" />
+      <circle cx="6" cy="6" r="34" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1 4" />
+      <circle cx="6" cy="6" r="48" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="0.5 6" />
+      {Array.from({ length: 8 }).map((_, i) => {
+        const angle = (i * Math.PI) / 16;
+        const x = 6 + 34 * Math.cos(angle);
+        const y = 6 + 34 * Math.sin(angle);
+        return <circle key={i} cx={x} cy={y} r="2.2" fill="currentColor" />;
+      })}
+      <path d="M6 26 Q 26 26 26 6" fill="none" stroke="currentColor" strokeWidth="0.75" />
+    </svg>
+  );
+}
 
 export default function OpenInvitationTemplate() {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [isInvitationOpen, setIsInvitationOpen] = useState(false);
+  const [doorsSwung, setDoorsSwung] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -25,90 +48,141 @@ export default function OpenInvitationTemplate() {
     cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [isInvitationOpen]);
 
-  return (
-    <main id="top" className="relative min-h-screen overflow-hidden bg-[#f5ecde] text-[#3d1722]">
-      <motion.div
-        aria-hidden="true"
-        initial={{ opacity: 0, scale: 1.03 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
-        className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,250,240,0.98)_0%,rgba(246,234,211,0.96)_48%,rgba(229,205,154,0.9)_100%)]"
-      />
-      <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-[#b89545]/45" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(76,26,41,0.1)_0%,rgba(255,255,255,0)_24%,rgba(255,255,255,0)_76%,rgba(76,26,41,0.1)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_44%,rgba(255,255,255,0.82)_0%,rgba(255,250,238,0.5)_30%,rgba(255,255,255,0)_64%)]" />
-      <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(139,96,35,0.16)_1px,transparent_1px),linear-gradient(90deg,rgba(139,96,35,0.16)_1px,transparent_1px)] [background-size:56px_56px]" />
+  const handleOpenDoors = () => {
+    if (doorsSwung) return;
+    setDoorsSwung(true);
+  };
 
-      <div className="relative min-h-screen">
+  return (
+    <main id="top" className="relative min-h-screen overflow-hidden bg-[#faf5ec] text-[#241726]">
+      <div className="relative flex min-h-screen flex-col items-center px-4 pb-16 pt-14 sm:px-6">
         <AnimatePresence mode="wait">
           {!isInvitationOpen ? (
             <motion.div
               key="open-screen"
-              initial={{ opacity: 0, y: 32, scale: 0.965 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -18, scale: 0.98 }}
-              transition={{ duration: 0.75, ease: [0.22, 0.61, 0.36, 1] }}
-              className="relative mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-5 sm:px-6 lg:px-8"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -18 }}
+              transition={{ duration: 0.6, ease: [0.22, 0.61, 0.36, 1] }}
+              className="flex w-full flex-col items-center"
             >
-              <div className="relative flex w-full max-w-6xl justify-center">
-                <div className="absolute inset-x-16 top-8 h-[calc(100%-2rem)] rounded-[42px] bg-[#6b2335]/14 blur-3xl" />
+              {/* Header */}
+              <div className="flex flex-col items-center text-center">
+                <span className="rounded-full border border-[#d9bb71] bg-white/70 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-[#9a7b39]">
+                  Save the Date
+                </span>
+                <h1 className="mt-5 font-serif text-4xl leading-none text-[#241726] sm:text-5xl">
+                  Umiduss &amp; Thimeth
+                </h1>
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.4em] text-[#7a6570] sm:text-sm">
+                  June 12, 2026
+                </p>
+              </div>
 
-                <div className="relative flex h-[calc(100vh-40px)] max-h-[620px] min-h-[510px] w-full max-w-[780px] flex-col items-center justify-center overflow-hidden rounded-[38px] border border-[#d9bb71]/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(255,252,246,0.98)_55%,rgba(249,240,222,0.98)_100%)] px-7 py-8 text-center shadow-[0_28px_80px_rgba(74,25,37,0.16)] ring-1 ring-white/80 backdrop-blur-sm sm:px-14 sm:py-10">
-                  <motion.div
-                    aria-hidden="true"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1.1, ease: [0.22, 0.61, 0.36, 1] }}
-                    className="pointer-events-none absolute inset-0"
-                  >
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(234,211,153,0.22)_0%,rgba(255,255,255,0)_36%)]" />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(184,126,50,0.1)_100%)]" />
-                  </motion.div>
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0))]" />
-                  <div className="pointer-events-none absolute left-6 top-6 h-18 w-18 rounded-tl-[22px] border-l-2 border-t-2 border-[#b88a2f]/65" />
-                  <div className="pointer-events-none absolute right-6 top-6 h-18 w-18 rounded-tr-[22px] border-r-2 border-t-2 border-[#b88a2f]/65" />
-                  <div className="pointer-events-none absolute bottom-6 left-6 h-18 w-18 rounded-bl-[22px] border-b-2 border-l-2 border-[#b88a2f]/65" />
-                  <div className="pointer-events-none absolute bottom-6 right-6 h-18 w-18 rounded-br-[22px] border-b-2 border-r-2 border-[#b88a2f]/65" />
-                  <div className="pointer-events-none absolute -left-22 top-22 h-64 w-44 rounded-r-full border-y border-r border-[#d2b363]/45" />
-                  <div className="pointer-events-none absolute -right-22 bottom-16 h-64 w-44 rounded-l-full border-y border-l border-[#d2b363]/45" />
-
-                  <div className="relative z-20 flex w-full flex-col items-center">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.42em] text-[#9a7b39] sm:text-xs">
-                      Together with their families
-                    </p>
-
-                    <div className="mt-12 flex flex-col items-center gap-3 text-[#9a7b39] sm:mt-14 sm:gap-4">
-                      <p className="font-serif text-[54px] italic leading-none text-[#4a1828] drop-shadow-[0_10px_20px_rgba(74,24,40,0.15)] sm:text-[74px]">
-                        Umiduss
-                      </p>
-                      <div className="font-serif text-4xl leading-none text-[#b88a2f]">&amp;</div>
-                      <p className="font-serif text-[54px] italic leading-none text-[#4a1828] drop-shadow-[0_10px_20px_rgba(74,24,40,0.15)] sm:text-[74px]">
-                        Thimeth
-                      </p>
-                    </div>
-
-                    <div className="mt-11 flex items-center gap-5 text-[#b88a2f] sm:mt-13">
-                      <span className="h-px w-16 bg-current/45" />
-                      <span className="h-2 w-2 rotate-45 border border-current bg-white" />
-                      <span className="h-px w-16 bg-current/45" />
-                    </div>
-
-                    <p className="mt-9 max-w-full text-[10px] font-semibold uppercase tracking-[0.42em] text-[#7a6570] sm:mt-10 sm:text-xs">
-                      Invite you to a RoyalHeritage celebration
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsInvitationOpen(true)}
-                      className="mt-10 w-full max-w-[310px] rounded-full border border-[#d3a94f]/70 bg-[linear-gradient(180deg,#6f2538_0%,#4a1828_58%,#34101b_100%)] px-8 py-4 text-xs font-bold uppercase tracking-[0.32em] text-[#fff8e9] shadow-[0_16px_30px_rgba(74,24,40,0.24)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_38px_rgba(74,24,40,0.32)] focus:outline-none focus:ring-4 focus:ring-[#d8bb71]/55 sm:px-12 sm:py-5 sm:text-sm"
-                    >
-                      View Invitation
-                    </button>
+              {/* Door card */}
+              <div className="relative mt-10 w-full max-w-[420px]" style={{ perspective: 1800 }}>
+                <div className="relative aspect-[9/13] w-full overflow-visible rounded-[26px] shadow-[0_30px_60px_rgba(36,23,38,0.28)]">
+                  {/* Revealed content sits underneath the doors */}
+                  <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden rounded-[26px] bg-[linear-gradient(160deg,#fff8e9_0%,#f3e6c9_100%)]">
+                    <AnimatePresence>
+                      {doorsSwung && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6, ease: "easeOut" }}
+                          className="flex h-full w-full flex-col items-center justify-center gap-4 p-6 text-center"
+                        >
+                          <p className="font-serif text-lg italic text-[#4a1828]">
+                            Join us as we begin our forever.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setIsInvitationOpen(true)}
+                            className="rounded-full border border-[#d9bb71] bg-[#4a1828] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.3em] text-[#fff8e9] transition hover:-translate-y-0.5"
+                          >
+                            View Full Invitation
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
-                  <div className="relative z-10 h-1" />
+                  {/* Left door */}
+                  <motion.div
+                    className="absolute inset-y-0 left-0 z-10 w-1/2 origin-left overflow-hidden rounded-l-[26px] border-y border-l border-[#5a3a52]/40 bg-[linear-gradient(150deg,#6b2335_0%,#4a1828_55%,#34101b_100%)]"
+                    style={{ transformStyle: "preserve-3d", backfaceVisibility: "hidden" }}
+                    animate={
+                      shouldReduceMotion
+                        ? { opacity: doorsSwung ? 0 : 1 }
+                        : { rotateY: doorsSwung ? -112 : 0 }
+                    }
+                    transition={{ duration: 1.1, ease: [0.45, 0, 0.2, 1] }}
+                  >
+                    <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)] [background-size:14px_14px]" />
+                    <MandalaCorner className="left-2 top-2" />
+                    <MandalaCorner className="-left-4 bottom-2 rotate-[270deg]" />
+                    <span className="absolute left-6 top-1/2 -translate-y-1/2 whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.5em] text-[#e8d9b0]/85 [writing-mode:vertical-rl]">
+                      Umiduss &amp; Thimeth
+                    </span>
+                  </motion.div>
+
+                  {/* Right door */}
+                  <motion.div
+                    className="absolute inset-y-0 right-0 z-10 w-1/2 origin-right overflow-hidden rounded-r-[26px] border-y border-r border-[#5a3a52]/40 bg-[linear-gradient(210deg,#6b2335_0%,#4a1828_55%,#34101b_100%)]"
+                    style={{ transformStyle: "preserve-3d", backfaceVisibility: "hidden" }}
+                    animate={
+                      shouldReduceMotion
+                        ? { opacity: doorsSwung ? 0 : 1 }
+                        : { rotateY: doorsSwung ? 112 : 0 }
+                    }
+                    transition={{ duration: 1.1, ease: [0.45, 0, 0.2, 1] }}
+                  >
+                    <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)] [background-size:14px_14px]" />
+                    <MandalaCorner className="right-2 top-2 -scale-x-100" />
+                    <MandalaCorner className="-right-4 bottom-2 rotate-[270deg] -scale-x-100" />
+                  </motion.div>
+
+                  {/* Center divider */}
+                  <motion.div
+                    className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-px -translate-x-1/2 bg-[linear-gradient(180deg,transparent_0%,#d9bb71_20%,#d9bb71_80%,transparent_100%)]"
+                    animate={{ opacity: doorsSwung ? 0 : 1 }}
+                    transition={{ duration: 0.4 }}
+                  />
+
+                  {/* Wax-seal open button */}
+                  <motion.button
+                    type="button"
+                    onClick={handleOpenDoors}
+                    disabled={doorsSwung}
+                    aria-label="Open invitation"
+                    className="absolute left-1/2 top-1/2 z-20 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-0.5 rounded-full border border-[#d9bb71] bg-[radial-gradient(circle_at_35%_30%,#fff8e9_0%,#f3e2b8_45%,#d3a94f_100%)] shadow-[0_10px_26px_rgba(74,24,40,0.35)] transition-transform duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#d9bb71]/70 disabled:pointer-events-none sm:h-28 sm:w-28"
+                    animate={{ opacity: doorsSwung ? 0 : 1, scale: doorsSwung ? 0.5 : 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <span className="font-serif text-xl font-bold text-[#4a1828] sm:text-2xl">U&amp;T</span>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#9a7b39]">Open</span>
+                  </motion.button>
+
+                  {/* Bottom hint pill */}
+                  <motion.div
+                    className="pointer-events-none absolute bottom-6 left-1/2 z-20 -translate-x-1/2"
+                    animate={{ opacity: doorsSwung ? 0 : 1 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <span className="rounded-full border border-[#d9bb71]/70 bg-[#4a1828]/70 px-4 py-1.5 text-[9px] font-semibold uppercase tracking-[0.3em] text-[#fff8e9]">
+                      Tap seal to open
+                    </span>
+                  </motion.div>
                 </div>
               </div>
+
+              <motion.p
+                animate={{ opacity: doorsSwung ? 0 : 1 }}
+                transition={{ duration: 0.4 }}
+                className="mt-6 text-[10px] font-semibold uppercase tracking-[0.4em] text-[#a99aa5]"
+              >
+                Tap to reveal
+              </motion.p>
             </motion.div>
           ) : (
             <motion.div
@@ -117,7 +191,7 @@ export default function OpenInvitationTemplate() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.9, ease: [0.21, 0.47, 0.32, 0.98] }}
-              className="relative z-10"
+              className="relative z-10 w-full"
             >
               <InvitationCardTemplate clientId="royal-heritage" />
             </motion.div>
