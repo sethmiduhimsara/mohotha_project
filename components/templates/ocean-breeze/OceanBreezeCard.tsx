@@ -238,7 +238,80 @@ function AnimatedStarfish({ size = 80, color = "#5fa8d3", className = "", delay 
     </motion.svg>
   );
 }
+/* ------------------------------------------------------------------ */
+/*  FloatingBubbles — Rising bubble trail for glass/RSVP sections 🫧  */
+/* ------------------------------------------------------------------ */
+function FloatingBubbles({ size = 60, color = "#5fa8d3", className = "" }: { size?: number, color?: string, className?: string }) {
+  return (
+    <svg viewBox="0 0 60 100" width={size} className={className} fill="none">
+      <circle cx="10" cy="85" r="5" fill={color} opacity="0.5" />
+      <circle cx="30" cy="55" r="8" fill={color} opacity="0.35" />
+      <circle cx="18" cy="30" r="4" fill={color} opacity="0.5" />
+      <circle cx="42" cy="15" r="6" fill={color} opacity="0.3" />
+      <circle cx="48" cy="70" r="3" fill={color} opacity="0.4" />
+    </svg>
+  );
+}
 
+/* ------------------------------------------------------------------ */
+/*  WaveSquiggle — Simple hand-drawn wave line, draws in on scroll 〰️ */
+/* ------------------------------------------------------------------ */
+function WaveSquiggle({ width = 140, color = "#5fa8d3", className = "", delay = 0 }: { width?: number, color?: string, className?: string, delay?: number }) {
+  return (
+    <motion.svg viewBox="0 0 200 40" width={width} className={className} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round">
+      <motion.path
+        d="M0 20 Q 15 5 30 20 T 60 20 T 90 20 T 120 20 T 150 20 T 180 20 T 210 20"
+        initial={{ pathLength: 0, opacity: 0 }}
+        whileInView={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 1.8, ease: LUX_EASE, delay }}
+        viewport={{ once: true, margin: "-10%" }}
+      />
+    </motion.svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  SeaweedSprig — Gentle swaying coral/seaweed accent 🌿             */
+/* ------------------------------------------------------------------ */
+function SeaweedSprig({ size = 90, color = "#5fa8d3", className = "" }: { size?: number, color?: string, className?: string }) {
+  const shouldReduceMotion = useReducedMotion();
+  return (
+    <motion.svg
+      viewBox="0 0 60 120"
+      width={size}
+      className={className}
+      fill="none"
+      stroke={color}
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      animate={shouldReduceMotion ? {} : { rotate: [-4, 4, -4] }}
+      transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+      style={{ transformOrigin: "50% 100%" }}
+    >
+      <path d="M30 115 C10 95 45 80 20 60 C50 45 15 30 30 5" />
+      <path d="M30 90 C20 85 15 78 12 70" opacity="0.6" />
+      <path d="M30 55 C40 50 46 43 48 35" opacity="0.6" />
+    </motion.svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  WaveTextDivider — small "~ ocean ~" style typographic flourish    */
+/* ------------------------------------------------------------------ */
+function WaveTextFlourish({ className = "" }: { className?: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1, ease: LUX_EASE }}
+      className={`text-[#5fa8d3]/50 text-lg tracking-[0.5em] select-none ${className}`}
+      aria-hidden
+    >
+      ~ ~ ~
+    </motion.div>
+  );
+}
 export default function OceanBreezeCard() {
   // Audio state & ref
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -601,6 +674,10 @@ export default function OceanBreezeCard() {
           <div className="absolute bottom-16 left-8 text-[#5fa8d3] pointer-events-none hidden lg:block opacity-60">
             <AnimatedStarfish size={100} delay={0.2} />
           </div>
+
+          <div className="absolute top-24 right-8 text-[#5fa8d3] pointer-events-none hidden lg:block opacity-50">
+  <FloatingBubbles size={70} />
+</div>
 
           <motion.div
             initial="hidden"

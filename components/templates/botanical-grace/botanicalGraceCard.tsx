@@ -21,6 +21,10 @@ import {
   Volume2,
   VolumeX,
   Leaf,
+  Send,
+  User,
+  Users,
+  MessageSquare,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -875,7 +879,7 @@ function PerchingMessengerBird({ flyingAway = false }: { flyingAway?: boolean })
       }
       transition={{ duration: 1.1, ease: LUX_EASE }}
     >
-      <JungleBird variant="parrot" size={44} wingSpeed={0.38} />
+      <JungleBird variant="hummingbird" size={44} wingSpeed={0.38} />
       <motion.div
         className="absolute -right-3 top-6 h-8 w-5 rounded-sm bg-[#f6ead8] border border-[#d4c4a8] shadow-sm"
         style={{ transform: "rotate(12deg)" }}
@@ -1312,6 +1316,7 @@ export default function BotanicalGraceCard() {
     audioRef.current = audio;
 
     const handleError = () => {
+      if (audio.error && audio.error.code === 1) return;
       console.error(
         "Background music failed to load. Check that the file exists at",
         audioSrc,
@@ -1424,13 +1429,8 @@ export default function BotanicalGraceCard() {
     offset: ["start start", "end end"],
   });
 
-  const [rsvpStep, setRsvpStep] = useState<"intro" | "form" | "success">("intro");
+  const [rsvpStep, setRsvpStep] = useState<"form" | "success">("form");
   const [rsvpBirdFlying, setRsvpBirdFlying] = useState(false);
-
-  const openNest = () => {
-    setRsvpBirdFlying(true);
-    window.setTimeout(() => setRsvpStep("form"), 650);
-  };
 
   // Ambient jungle motion 🍃
   const fallingLeafA: Variants = shouldReduceMotion
@@ -2183,98 +2183,130 @@ export default function BotanicalGraceCard() {
             {/* The nest sits just above the card — the bird waits here    */}
             {/* until the guest sends it off with their reply.              */}
             <motion.div variants={riseIn} className="relative mx-auto mt-10 max-w-md">
-              <NestBranch nestOpen={rsvpStep !== "intro"} />
+              <NestBranch nestOpen={rsvpBirdFlying} />
               <PerchingMessengerBird flyingAway={rsvpBirdFlying} />
             </motion.div>
 
             <motion.div
               variants={riseIn}
-              className="relative mx-auto -mt-2 rounded-[2rem] sm:rounded-[2.5rem] border border-[#d7e6da] bg-white p-8 sm:p-12 shadow-[0_30px_60px_rgba(16,48,31,0.1)] text-left overflow-hidden"
+              className="relative mx-auto -mt-2 rounded-[5.5rem_1.25rem_5.5rem_1.25rem] sm:rounded-[7.5rem_1.75rem_7.5rem_1.75rem] border-[3px] border-[#3f7a56]/50 bg-gradient-to-br from-white via-[#f1f8f3] to-[#d6e9db] p-8 sm:p-12 shadow-[0_35px_70px_-15px_rgba(16,48,31,0.25)] text-left overflow-hidden"
             >
-              <AnimatePresence mode="wait">
-                {rsvpStep === "intro" && (
-                  <motion.div
-                    key="intro"
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{
-                      opacity: 0,
-                      y: -24,
-                      transition: { duration: 0.5, ease: LUX_EASE },
-                    }}
-                    transition={{ duration: 0.9, ease: LUX_EASE }}
-                    className="flex flex-col items-center text-center"
-                  >
-                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[#3f7a56]/30 bg-[#f2f8f4] text-[#3f7a56]">
-                      <Sprout size={26} strokeWidth={1.4} />
-                    </div>
-                    <p className="font-serif text-2xl italic text-[#10301f]">
-                      Ready When You Are
-                    </p>
-                    <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#1b2b20]/70">
-                      Send our messenger off with your reply and the nest
-                      will open to your invitation.
-                    </p>
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={openNest}
-                      className={`mt-8 flex items-center gap-2 rounded-2xl bg-[#10301f] px-8 py-4 text-[11px] font-semibold tracking-widest uppercase text-white shadow-xl shadow-[#10301f]/20 transition-colors duration-500 hover:bg-[#0a1f14] ${focusRing}`}
-                    >
-                      Send the Bird
-                      <ArrowRight size={14} />
-                    </motion.button>
-                  </motion.div>
-                )}
+              {/* Leaf Tip Accent - Top Left */}
+              <div className="absolute top-0 left-0 p-3 pointer-events-none opacity-40">
+                <svg width="45" height="45" viewBox="0 0 45 45" fill="none">
+                  <path d="M0 45 C 0 12, 12 0, 45 0 C 22 18, 18 22, 0 45 Z" fill="#3f7a56" />
+                </svg>
+              </div>
 
+              {/* Leaf Stem Accent - Bottom Right */}
+              <div className="absolute bottom-0 right-0 p-3 pointer-events-none opacity-40">
+                <svg width="55" height="35" viewBox="0 0 55 35" fill="none">
+                  <path d="M0 0 C 22 12, 38 28, 55 35" stroke="#3f7a56" strokeWidth="4" strokeLinecap="round" />
+                </svg>
+              </div>
+
+              {/* Detailed Leaf Vein Structure Background Watermark */}
+              <svg
+                className="pointer-events-none absolute inset-0 h-full w-full opacity-20"
+                viewBox="0 0 400 400"
+                fill="none"
+              >
+                <path d="M10 10 C 120 120 280 280 390 390" stroke="#2d5c40" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M90 90 C 160 70 240 70 310 90" stroke="#3f7a56" strokeWidth="1.8" />
+                <path d="M140 140 C 210 120 290 120 360 140" stroke="#3f7a56" strokeWidth="1.8" />
+                <path d="M190 190 C 260 170 340 170 390 190" stroke="#3f7a56" strokeWidth="1.8" />
+                <path d="M90 90 C 70 160 70 240 90 310" stroke="#3f7a56" strokeWidth="1.8" />
+                <path d="M140 140 C 120 210 120 290 140 360" stroke="#3f7a56" strokeWidth="1.8" />
+              </svg>
+
+              <AnimatePresence mode="wait">
                 {rsvpStep === "form" && (
                   <motion.form
                     key="form"
                     initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    animate={
+                      rsvpBirdFlying && !shouldReduceMotion
+                        ? {
+                            opacity: [1, 0.9, 0],
+                            y: [0, -60, -260],
+                            x: [0, 40, 140],
+                            rotate: [0, -8, 24],
+                            scale: [1, 0.92, 0.6],
+                          }
+                        : { opacity: 1, y: 0, x: 0, rotate: 0, scale: 1 }
+                    }
                     exit={{
                       opacity: 0,
-                      y: -24,
-                      transition: { duration: 0.5, ease: LUX_EASE },
+                      y: -240,
+                      x: 120,
+                      rotate: 22,
+                      scale: 0.6,
+                      transition: { duration: 0.75, ease: LUX_EASE },
                     }}
-                    transition={{ duration: 0.9, ease: LUX_EASE }}
+                    transition={{ duration: 0.75, ease: LUX_EASE }}
                     onSubmit={(e) => {
                       e.preventDefault();
-                      setRsvpStep("success");
+                      setRsvpBirdFlying(true);
+                      window.setTimeout(() => setRsvpStep("success"), 700);
                     }}
-                    className="grid gap-5"
+                    className="grid gap-5 relative z-10"
                   >
-                    <input
-                      type="text"
-                      placeholder="Your name"
-                      className={`rounded-2xl border border-[#d7e6da] bg-[#f6faf7] px-5 py-4 text-sm outline-none focus:border-[#3f7a56] focus:ring-1 focus:ring-[#3f7a56] transition-colors duration-300 ${focusRing}`}
-                    />
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <select
-                        className={`rounded-2xl border border-[#d7e6da] bg-[#f6faf7] px-5 py-4 text-sm outline-none focus:border-[#3f7a56] focus:ring-1 focus:ring-[#3f7a56] text-[#1b2b20] transition-colors duration-300 cursor-pointer ${focusRing}`}
-                      >
-                        <option>Will you attend?</option>
-                        <option>Joyfully Accept 🌿</option>
-                        <option>Regretfully Decline 🍃</option>
-                      </select>
+                    {/* Leaf-shaped Type Bar 1: Name */}
+                    <div className="relative flex items-center rounded-[2.5rem_0.6rem_2.5rem_0.6rem] border-2 border-[#5c9271]/40 bg-white/90 px-5 py-3.5 shadow-sm transition-all duration-300 focus-within:border-[#3f7a56] focus-within:ring-2 focus-within:ring-[#3f7a56]/20 hover:border-[#3f7a56]/70 hover:bg-white">
+                      <User size={18} className="text-[#3f7a56] shrink-0 opacity-80" />
+                      <div className="h-5 w-px bg-[#5c9271]/30 mx-3 shrink-0" />
                       <input
-                        type="number"
-                        placeholder="Number of guests"
-                        className={`rounded-2xl border border-[#d7e6da] bg-[#f6faf7] px-5 py-4 text-sm outline-none focus:border-[#3f7a56] focus:ring-1 focus:ring-[#3f7a56] transition-colors duration-300 ${focusRing}`}
+                        type="text"
+                        placeholder="Your name"
+                        className="w-full bg-transparent text-sm text-[#10301f] font-medium placeholder:text-[#3f7a56]/60 outline-none"
                       />
                     </div>
-                    <textarea
-                      rows={4}
-                      placeholder="Leave a message for the couple..."
-                      className={`rounded-2xl border border-[#d7e6da] bg-[#f6faf7] px-5 py-4 text-sm outline-none focus:border-[#3f7a56] focus:ring-1 focus:ring-[#3f7a56] transition-colors duration-300 resize-none ${focusRing}`}
-                    />
+
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      {/* Leaf-shaped Type Bar 2: Attendance */}
+                      <div className="relative flex items-center rounded-[0.6rem_2.5rem_0.6rem_2.5rem] border-2 border-[#5c9271]/40 bg-white/90 px-5 py-3.5 shadow-sm transition-all duration-300 focus-within:border-[#3f7a56] focus-within:ring-2 focus-within:ring-[#3f7a56]/20 hover:border-[#3f7a56]/70 hover:bg-white">
+                        <Sprout size={18} className="text-[#3f7a56] shrink-0 opacity-80" />
+                        <div className="h-5 w-px bg-[#5c9271]/30 mx-3 shrink-0" />
+                        <select className="w-full bg-transparent text-sm font-medium text-[#10301f] outline-none cursor-pointer">
+                          <option>Will you attend?</option>
+                          <option>Joyfully Accept 🌿</option>
+                          <option>Regretfully Decline 🍃</option>
+                        </select>
+                      </div>
+
+                      {/* Leaf-shaped Type Bar 3: Guest count */}
+                      <div className="relative flex items-center rounded-[2.5rem_0.6rem_2.5rem_0.6rem] border-2 border-[#5c9271]/40 bg-white/90 px-5 py-3.5 shadow-sm transition-all duration-300 focus-within:border-[#3f7a56] focus-within:ring-2 focus-within:ring-[#3f7a56]/20 hover:border-[#3f7a56]/70 hover:bg-white">
+                        <Users size={18} className="text-[#3f7a56] shrink-0 opacity-80" />
+                        <div className="h-5 w-px bg-[#5c9271]/30 mx-3 shrink-0" />
+                        <input
+                          type="number"
+                          placeholder="Number of guests"
+                          className="w-full bg-transparent text-sm text-[#10301f] font-medium placeholder:text-[#3f7a56]/60 outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Leaf-shaped Type Bar 4: Message */}
+                    <div className="relative flex items-start rounded-[3rem_0.8rem_3rem_0.8rem] border-2 border-[#5c9271]/40 bg-white/90 px-5 py-4 shadow-sm transition-all duration-300 focus-within:border-[#3f7a56] focus-within:ring-2 focus-within:ring-[#3f7a56]/20 hover:border-[#3f7a56]/70 hover:bg-white">
+                      <MessageSquare size={18} className="text-[#3f7a56] shrink-0 opacity-80 mt-0.5" />
+                      <div className="h-5 w-px bg-[#5c9271]/30 mx-3 shrink-0 mt-0.5" />
+                      <textarea
+                        rows={4}
+                        placeholder="Leave a message for the couple..."
+                        className="w-full bg-transparent text-sm text-[#10301f] font-medium placeholder:text-[#3f7a56]/60 outline-none resize-none"
+                      />
+                    </div>
+
+                    {/* Leaf-shaped Send Button */}
                     <motion.button
                       type="submit"
                       whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`mt-4 rounded-2xl bg-[#10301f] px-6 py-4 text-[11px] font-semibold tracking-widest uppercase text-white shadow-xl shadow-[#10301f]/20 transition-colors duration-500 hover:bg-[#0a1f14] ${focusRing}`}
+                      whileTap={{ scale: 0.97 }}
+                      className={`mt-4 flex items-center justify-center gap-2.5 rounded-[2.5rem_0.6rem_2.5rem_0.6rem] bg-gradient-to-r from-[#10301f] via-[#234a34] to-[#3f7a56] px-6 py-4 text-[11px] font-bold tracking-[0.2em] uppercase text-[#f0e2ae] shadow-xl shadow-[#10301f]/30 transition-all duration-500 hover:shadow-2xl hover:shadow-[#10301f]/40 hover:from-[#0a1f14] hover:to-[#2c583e] ${focusRing}`}
                     >
-                      Send RSVP
+                      <Leaf size={16} className="text-[#f0e2ae]" />
+                      Send RSVP Leaf
+                      <Send size={14} className="text-[#f0e2ae]" />
                     </motion.button>
                   </motion.form>
                 )}

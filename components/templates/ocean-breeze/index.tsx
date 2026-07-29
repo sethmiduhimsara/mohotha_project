@@ -33,30 +33,30 @@ export default function OceanBreezeTemplate() {
     };
   }, [isInvitationOpen]);
 
-const driftShell = shouldReduceMotion
+  const driftShell = shouldReduceMotion
     ? {}
     : {
-        y: [-6, 6, -6],
-        transition: { repeat: Infinity, duration: 10, ease: "easeInOut" as const },
-      };
+      y: [-6, 6, -6],
+      transition: { repeat: Infinity, duration: 10, ease: "easeInOut" as const },
+    };
   const swayPalm = shouldReduceMotion
     ? {}
     : {
-        rotate: [-2, 2, -2],
-        transition: { repeat: Infinity, duration: 8, ease: "easeInOut" as const },
-      };
+      rotate: [-2, 2, -2],
+      transition: { repeat: Infinity, duration: 8, ease: "easeInOut" as const },
+    };
   const cloudDriftA = shouldReduceMotion
     ? {}
     : {
-        x: ["-8%", "8%", "-8%"],
-        transition: { repeat: Infinity, duration: 58, ease: "easeInOut" as const },
-      };
+      x: ["-8%", "8%", "-8%"],
+      transition: { repeat: Infinity, duration: 58, ease: "easeInOut" as const },
+    };
   const cloudDriftB = shouldReduceMotion
     ? {}
     : {
-        x: ["6%", "-6%", "6%"],
-        transition: { repeat: Infinity, duration: 70, ease: "easeInOut" as const },
-      };
+      x: ["6%", "-6%", "6%"],
+      transition: { repeat: Infinity, duration: 70, ease: "easeInOut" as const },
+    };
 
   return (
     <main className="relative min-h-screen bg-[#f4f9f9] overflow-hidden">
