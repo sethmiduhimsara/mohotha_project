@@ -10,23 +10,21 @@ import {
   useTransform,
   useReducedMotion,
   Variants,
+  type MotionValue,
+  type TargetAndTransition,
 } from "framer-motion";
 import {
-  TreePine,
-  Trees,
-  Leaf,
-  Flower2,
   MapPin,
   Heart,
-  Mail,
   ArrowRight,
   Sprout,
   Volume2,
   VolumeX,
+  Leaf,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
-/*  Motion tokens — slow, earthy easing curve                          */
+/*  Motion tokens — slow, humid jungle easing curve                    */
 /* ------------------------------------------------------------------ */
 const LUX_EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -48,23 +46,56 @@ const riseIn: Variants = {
   },
 };
 
-/* Fixed angles for the RSVP petal burst — kept static (no Math.random)
-   so server and client render the same markup. */
+/* Fixed angles for the RSVP burst — kept static (no Math.random) so    */
+/* server and client render the same markup.                           */
 const PETAL_BURST_ANGLES = [0, 60, 120, 180, 240, 300];
 
-/* A small garden palette the botanical accents pull from, so the page   */
-/* reads like a curated bouquet rather than a single repeated flower.    */
+/* Fixed flight paths for scroll-linked birds — static so SSR stays stable. */
+const SCROLL_BIRD_FLIGHTS = [
+  { variant: "parrot" as const, size: 36, start: 0.0, end: 0.13, fromX: -14, toX: 112, yPercent: 5, flip: false, wingSpeed: 0.34 },
+  { variant: "hummingbird" as const, size: 22, start: 0.06, end: 0.2, fromX: 112, toX: -16, yPercent: 12, flip: true, wingSpeed: 0.16 },
+  { variant: "finch" as const, size: 24, start: 0.14, end: 0.27, fromX: -12, toX: 108, yPercent: 20, flip: false, wingSpeed: 0.24 },
+  { variant: "finch" as const, size: 26, start: 0.19, end: 0.33, fromX: -12, toX: 108, yPercent: 30, flip: false, wingSpeed: 0.26 },
+  { variant: "parrot" as const, size: 30, start: 0.28, end: 0.44, fromX: 110, toX: -14, yPercent: 38, flip: true, wingSpeed: 0.3 },
+  { variant: "hummingbird" as const, size: 20, start: 0.36, end: 0.5, fromX: -10, toX: 112, yPercent: 47, flip: false, wingSpeed: 0.14 },
+  { variant: "parrot" as const, size: 26, start: 0.42, end: 0.58, fromX: -14, toX: 110, yPercent: 55, flip: false, wingSpeed: 0.3 },
+  { variant: "finch" as const, size: 24, start: 0.5, end: 0.64, fromX: 108, toX: -12, yPercent: 63, flip: true, wingSpeed: 0.24 },
+  { variant: "hummingbird" as const, size: 22, start: 0.58, end: 0.72, fromX: 112, toX: -16, yPercent: 70, flip: true, wingSpeed: 0.16 },
+  { variant: "parrot" as const, size: 28, start: 0.66, end: 0.82, fromX: -14, toX: 110, yPercent: 78, flip: false, wingSpeed: 0.28 },
+  { variant: "finch" as const, size: 22, start: 0.74, end: 0.88, fromX: 112, toX: -10, yPercent: 87, flip: true, wingSpeed: 0.22 },
+  { variant: "parrot" as const, size: 32, start: 0.84, end: 0.98, fromX: -16, toX: 112, yPercent: 94, flip: false, wingSpeed: 0.32 },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Jungle palette — misty rainforest, fireflies, ferns                 */
+/*  canopy    #10301f  deep near-black emerald — headings, primary CTAs */
+/*  canopy-2  #0a1f14  CTA hover / deepest shadow                        */
+/*  jade      #3f7a56  eyebrows, links, focus rings                     */
+/*  fern      #5c9271  stems, dividers, vines                           */
+/*  mist      #eef4ef  pale fog background                              */
+/*  mist-brd  #d7e6da  hairline borders on mist                         */
+/*  paper     #f6faf7  near-white section background                   */
+/*  fog       #e1ede3  alternate section background                    */
+/*  ink       #1b2b20  body copy                                       */
+/*  firefly   #e8c468  glowing gold accent                              */
+/*  firefly-2 #f3e2a0  softer gold glow                                 */
+/*                                                                      */
+/*  A small rainforest-bloom palette the botanical accents pull from,   */
+/*  so the page reads like real jungle flora rather than one repeated   */
+/*  flower.                                                              */
+/* ------------------------------------------------------------------ */
 const BLOOM_PALETTE = [
-  { petal: "#d98a92", center: "#fbe9dd" }, // blush rose
-  { petal: "#e4b95f", center: "#fff7e6" }, // marigold
-  { petal: "#a98fc9", center: "#f1e9fb" }, // lavender
-  { petal: "#e0896a", center: "#fdece3" }, // coral
-  { petal: "#c98f96", center: "#f4e1c1" }, // dusty rose
-  { petal: "#8fb08a", center: "#eef6ea" }, // sage bloom
+  { petal: "#a8567a", center: "#f6e6ef" }, // jungle orchid
+  { petal: "#c1493f", center: "#fbe9df" }, // torch ginger
+  { petal: "#f3ede0", center: "#d9a441" }, // moth orchid
+  { petal: "#d97b3f", center: "#fdecc9" }, // heliconia
+  { petal: "#7c6bab", center: "#efeaf7" }, // passionflower
+  { petal: "#e8c468", center: "#fff6df" }, // firefly bloom
 ] as const;
 
 /* ------------------------------------------------------------------ */
-/*  RevealText — word-by-word storytelling reveal                     */
+/*  RevealText — word-by-word storytelling reveal, used for supporting */
+/*  copy and labels (the bigger headline moments use LeafReveal below). */
 /* ------------------------------------------------------------------ */
 function RevealText({
   text,
@@ -107,12 +138,111 @@ function RevealText({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Petal — a small teardrop bloom petal, used for drifting particles  */
-/*  and the RSVP confirmation burst.                                   */
+/*  LeafReveal — the signature jungle typography moment. Each word      */
+/*  hides behind a small glossy leaf patch; as it scrolls into view the */
+/*  leaf peels open like it's unfurling in the canopy, a firefly slips  */
+/*  out from underneath, and the word settles into place beneath it.    */
+/*  Used for the hero names and every chapter headline.                 */
+/* ------------------------------------------------------------------ */
+function LeafReveal({
+  text,
+  className,
+  as = "h2",
+  delay = 0,
+}: {
+  text: string;
+  className?: string;
+  as?: "h1" | "h2" | "p" | "div" | "span";
+  delay?: number;
+}) {
+  const words = text.split(" ");
+  const Tag = as as React.ElementType;
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <Tag className={className}>
+      {words.map((word, i) => (
+        <span
+          key={i}
+          className="relative inline-block overflow-visible align-top mr-[0.28em] last:mr-0"
+        >
+          <motion.span
+            className="relative inline-block"
+            initial={shouldReduceMotion ? undefined : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10% 0px" }}
+            transition={{
+              duration: 0.9,
+              delay: delay + i * 0.16 + 0.32,
+              ease: LUX_EASE,
+            }}
+          >
+            {word}
+          </motion.span>
+
+          {!shouldReduceMotion && (
+            <>
+              <motion.span
+                aria-hidden
+                className="absolute inset-0 origin-left"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #5c9271 0%, #234a34 100%)",
+                  borderRadius: "46% 54% 58% 42% / 50% 40% 60% 50%",
+                  boxShadow: "0 8px 18px rgba(10,20,14,0.22)",
+                }}
+                initial={{ opacity: 1, rotate: 0, scale: 1, x: "0%", y: "0%" }}
+                whileInView={{
+                  opacity: 0,
+                  rotate: -68,
+                  scale: 0.82,
+                  x: "-32%",
+                  y: "-8%",
+                }}
+                viewport={{ once: true, margin: "-10% 0px" }}
+                transition={{
+                  duration: 0.85,
+                  delay: delay + i * 0.16,
+                  ease: LUX_EASE,
+                }}
+              />
+              <motion.span
+                aria-hidden
+                className="absolute -right-1 top-1/2 h-1.5 w-1.5 rounded-full"
+                style={{
+                  background: "#e8c468",
+                  boxShadow: "0 0 6px 2px rgba(232,196,104,0.7)",
+                }}
+                initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                whileInView={{
+                  opacity: [0, 1, 0],
+                  scale: [0, 1.4, 0],
+                  x: [0, 16, 28],
+                  y: [0, -12, -22],
+                }}
+                viewport={{ once: true, margin: "-10% 0px" }}
+                transition={{
+                  duration: 1.1,
+                  delay: delay + i * 0.16 + 0.15,
+                  ease: "easeOut",
+                }}
+              />
+            </>
+          )}
+          {i < words.length - 1 ? "\u00A0" : ""}
+        </span>
+      ))}
+    </Tag>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Petal — a small teardrop bloom sliver. Doubles as a "leaf sliver"   */
+/*  when tinted green for the RSVP success burst.                      */
 /* ------------------------------------------------------------------ */
 function Petal({
   size = 16,
-  color = "#e3b7ac",
+  color = "#5c9271",
 }: {
   size?: number;
   color?: string;
@@ -131,8 +261,8 @@ function Petal({
 /* ------------------------------------------------------------------ */
 function MiniFlower({
   size = 26,
-  petal = "#c98f96",
-  center = "#f4e1c1",
+  petal = "#a8567a",
+  center = "#f6e6ef",
 }: {
   size?: number;
   petal?: string;
@@ -163,8 +293,8 @@ function MiniFlower({
 /* ------------------------------------------------------------------ */
 function BloomingFlower({
   size = 60,
-  petal = "#c98f96",
-  center = "#f4e1c1",
+  petal = "#a8567a",
+  center = "#f6e6ef",
   className = "",
   delay = 0,
 }: {
@@ -271,22 +401,26 @@ function CornerFlourish({ className = "" }: { className?: string }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  LeafSprig — a small sprouting stem, used flanking the dividers      */
+/*  FernFrond — a small feathery fern, flanking the botanical dividers  */
+/*  and standing in for the old rose-tipped sprig. Built from paired    */
+/*  leaflets along a central stem so it reads as a real jungle fern.    */
 /* ------------------------------------------------------------------ */
-function LeafSprig({
+function FernFrond({
   size = 22,
   flip = false,
-  color = "#7fa07f",
+  color = "#5c9271",
 }: {
   size?: number;
   flip?: boolean;
   color?: string;
 }) {
+  const leaflets = [16, 28, 40, 52, 64, 76, 88];
+
   return (
     <motion.svg
-      viewBox="0 0 40 60"
+      viewBox="0 0 40 100"
       width={size}
-      height={size * 1.5}
+      height={size * 2.4}
       fill="none"
       style={{
         transform: flip ? "scaleX(-1)" : undefined,
@@ -297,21 +431,528 @@ function LeafSprig({
       viewport={{ once: true }}
       transition={{ duration: 0.9, ease: LUX_EASE }}
     >
-      <path d="M20 58 C20 40 20 20 20 2" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M20 40 C10 34 4 24 8 14" stroke={color} strokeWidth="1.4" strokeLinecap="round" />
-      <path d="M20 26 C30 22 34 12 30 4" stroke={color} strokeWidth="1.4" strokeLinecap="round" />
-      <ellipse cx="9" cy="15" rx="7" ry="3.6" fill={color} fillOpacity="0.85" transform="rotate(-35 9 15)" />
-      <ellipse cx="31" cy="6" rx="7" ry="3.6" fill={color} fillOpacity="0.85" transform="rotate(35 31 6)" />
+      <path
+        d="M20 98 C20 70 20 40 20 2"
+        stroke={color}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      {leaflets.map((y, i) => {
+        const len = 15 - i * 1.4;
+        return (
+          <g key={y}>
+            <ellipse
+              cx={20 - len / 1.6}
+              cy={y}
+              rx={len / 2}
+              ry="2.4"
+              fill={color}
+              fillOpacity={0.82}
+              transform={`rotate(-32 ${20 - len / 1.6} ${y})`}
+            />
+            <ellipse
+              cx={20 + len / 1.6}
+              cy={y}
+              rx={len / 2}
+              ry="2.4"
+              fill={color}
+              fillOpacity={0.82}
+              transform={`rotate(32 ${20 + len / 1.6} ${y})`}
+            />
+          </g>
+        );
+      })}
     </motion.svg>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  BotanicalDivider — replaces the old wave/hill seam between          */
-/*  sections. A little garden of blooms and sprigs on a resting line,   */
-/*  drawing itself and opening as it scrolls into view. Each instance   */
-/*  cycles through the palette so the page reads like a bouquet rather  */
-/*  than one repeated flower.                                           */
+/*  MonsteraLeaf — the page's broad-leaf silhouette: a stylised split-  */
+/*  leaf shape with veining, used for the swaying canopy accents and    */
+/*  as the "leaf doors" that part to reveal the RSVP card.              */
+/* ------------------------------------------------------------------ */
+function MonsteraLeaf({
+  size = 80,
+  color = "#3f7a56",
+  flip = false,
+  className = "",
+}: {
+  size?: number;
+  color?: string;
+  flip?: boolean;
+  className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 100 140"
+      width={size}
+      height={size * 1.4}
+      className={className}
+      style={{ transform: flip ? "scaleX(-1)" : undefined }}
+      fill="none"
+    >
+      <path
+        d="M50 4
+           C 74 10 90 34 92 58
+           C 94 80 84 98 68 112
+           C 60 119 54 126 50 136
+           C 46 126 40 119 32 112
+           C 16 98 6 80 8 58
+           C 10 34 26 10 50 4 Z"
+        fill={color}
+        fillOpacity="0.92"
+      />
+      <path
+        d="M50 20 C 60 45 60 75 50 118"
+        stroke="rgba(8,20,14,0.18)"
+        strokeWidth="2"
+      />
+      <path
+        d="M50 34 C 40 40 30 46 24 56"
+        stroke="rgba(8,20,14,0.14)"
+        strokeWidth="1.4"
+      />
+      <path
+        d="M50 34 C 60 40 70 46 76 56"
+        stroke="rgba(8,20,14,0.14)"
+        strokeWidth="1.4"
+      />
+      <path
+        d="M50 58 C 38 64 28 72 22 82"
+        stroke="rgba(8,20,14,0.14)"
+        strokeWidth="1.4"
+      />
+      <path
+        d="M50 58 C 62 64 72 72 78 82"
+        stroke="rgba(8,20,14,0.14)"
+        strokeWidth="1.4"
+      />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Firefly — a small drifting glow. Purely ambient atmosphere, so it   */
+/*  disappears entirely for reduced-motion visitors.                    */
+/* ------------------------------------------------------------------ */
+function Firefly({
+  className = "",
+  size = 5,
+  duration = 7,
+  delay = 0,
+}: {
+  className?: string;
+  size?: number;
+  duration?: number;
+  delay?: number;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+  if (shouldReduceMotion) return null;
+
+  return (
+    <motion.div
+      aria-hidden
+      className={`pointer-events-none absolute ${className}`}
+      animate={{
+        x: [0, 16, -12, 8, 0],
+        y: [0, -22, -8, -26, 0],
+        opacity: [0, 1, 0.55, 1, 0],
+      }}
+      transition={{ repeat: Infinity, duration, ease: "easeInOut", delay }}
+    >
+      <div
+        style={{
+          width: size,
+          height: size,
+          borderRadius: "9999px",
+          background: "#e8c468",
+          boxShadow:
+            "0 0 6px 2px rgba(232,196,104,0.55), 0 0 14px 6px rgba(243,226,160,0.25)",
+        }}
+      />
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  JungleBird — cute tropical bird silhouettes with flapping wings.     */
+/*  parrot · hummingbird · finch — each drifts through the canopy.     */
+/* ------------------------------------------------------------------ */
+function JungleBird({
+  variant = "finch",
+  size = 28,
+  flip = false,
+  wingSpeed = 0.28,
+  className = "",
+}: {
+  variant?: "parrot" | "hummingbird" | "finch";
+  size?: number;
+  flip?: boolean;
+  wingSpeed?: number;
+  className?: string;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+
+  const wingFlap: TargetAndTransition = shouldReduceMotion
+    ? {}
+    : {
+        rotate: variant === "hummingbird" ? [-28, 28, -28] : [-18, 14, -18],
+        transition: { repeat: Infinity, duration: wingSpeed, ease: "easeInOut" },
+      };
+
+  const bodyFlap: TargetAndTransition = shouldReduceMotion
+    ? {}
+    : {
+        y: [0, -2, 0],
+        transition: { repeat: Infinity, duration: wingSpeed * 2.4, ease: "easeInOut" },
+      };
+
+  if (variant === "hummingbird") {
+    return (
+      <motion.svg
+        viewBox="0 0 60 36"
+        width={size}
+        height={size * 0.6}
+        className={className}
+        style={{ transform: flip ? "scaleX(-1)" : undefined }}
+        animate={bodyFlap}
+      >
+        <ellipse cx="30" cy="20" rx="9" ry="7" fill="#3f7a56" />
+        <circle cx="38" cy="14" r="5.5" fill="#5c9271" />
+        <path d="M43 13 L54 10 L43 16 Z" fill="#d97b3f" />
+        <motion.g style={{ transformOrigin: "26px 18px" }} animate={wingFlap}>
+          <ellipse cx="22" cy="16" rx="11" ry="4" fill="#9fc9ab" fillOpacity="0.85" transform="rotate(-20 22 16)" />
+        </motion.g>
+        <path d="M18 22 C12 26 8 30 6 34" stroke="#3f7a56" strokeWidth="1.4" fill="none" strokeLinecap="round" />
+        <circle cx="40" cy="13" r="1.2" fill="#10301f" />
+      </motion.svg>
+    );
+  }
+
+  if (variant === "parrot") {
+    return (
+      <motion.svg
+        viewBox="0 0 80 52"
+        width={size}
+        height={size * 0.65}
+        className={className}
+        style={{ transform: flip ? "scaleX(-1)" : undefined }}
+        animate={bodyFlap}
+      >
+        <ellipse cx="38" cy="30" rx="16" ry="12" fill="#3f7a56" />
+        <circle cx="52" cy="18" r="10" fill="#5c9271" />
+        <path d="M58 16 L72 12 L60 24 Z" fill="#e8c468" />
+        <path d="M48 10 C44 4 54 2 58 8" fill="#c1493f" />
+        <motion.g style={{ transformOrigin: "32px 24px" }} animate={wingFlap}>
+          <ellipse cx="28" cy="22" rx="18" ry="7" fill="#234a34" fillOpacity="0.75" transform="rotate(-16 28 22)" />
+          <ellipse cx="30" cy="24" rx="14" ry="5" fill="#3f7a56" fillOpacity="0.9" transform="rotate(-12 30 24)" />
+        </motion.g>
+        <path d="M18 32 C10 36 4 42 2 48" stroke="#234a34" strokeWidth="2" fill="none" strokeLinecap="round" />
+        <path d="M22 28 C14 30 8 34 6 40" stroke="#5c9271" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        <circle cx="55" cy="17" r="2" fill="#10301f" />
+        <circle cx="59" cy="16" r="1" fill="#08150e" />
+      </motion.svg>
+    );
+  }
+
+  /* finch — small cheerful songbird */
+  return (
+    <motion.svg
+      viewBox="0 0 64 40"
+      width={size}
+      height={size * 0.62}
+      className={className}
+      style={{ transform: flip ? "scaleX(-1)" : undefined }}
+      animate={bodyFlap}
+    >
+      <ellipse cx="32" cy="24" rx="12" ry="9" fill="#e8c468" />
+      <circle cx="44" cy="16" r="7" fill="#f3e2a0" />
+      <path d="M50 15 L58 13 L50 19 Z" fill="#d97b3f" />
+      <motion.g style={{ transformOrigin: "28px 20px" }} animate={wingFlap}>
+        <ellipse cx="24" cy="18" rx="14" ry="5" fill="#3f7a56" fillOpacity="0.85" transform="rotate(-18 24 18)" />
+      </motion.g>
+      <path d="M16 26 C10 28 6 32 4 36" stroke="#3f7a56" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      <circle cx="46" cy="15" r="1.4" fill="#10301f" />
+      <ellipse cx="30" cy="28" rx="4" ry="3" fill="#f3e2a0" fillOpacity="0.6" />
+    </motion.svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  AmbientBird — a bird that loops a lazy figure-of-flight on its own  */
+/*  clock rather than following scroll. Used for the hero and for a     */
+/*  couple of chapter corners so the canopy always feels a little       */
+/*  alive, even before the guest starts scrolling.                      */
+/* ------------------------------------------------------------------ */
+function AmbientBird({
+  variant = "finch",
+  size = 26,
+  flip = false,
+  wingSpeed = 0.26,
+  duration = 14,
+  delay = 0,
+  path,
+  className = "",
+}: {
+  variant?: "parrot" | "hummingbird" | "finch";
+  size?: number;
+  flip?: boolean;
+  wingSpeed?: number;
+  duration?: number;
+  delay?: number;
+  /* keyframed drift, as percentages of the containing box */
+  path: { x: number[]; y: number[] };
+  className?: string;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+  if (shouldReduceMotion) return null;
+
+  return (
+    <motion.div
+      aria-hidden
+      className={`pointer-events-none absolute will-change-transform ${className}`}
+      animate={{
+        x: path.x.map((v) => `${v}%`),
+        y: path.y.map((v) => `${v}%`),
+        opacity: [0, 1, 1, 1, 0],
+        rotate: flip ? [6, -4, 6] : [-6, 4, -6],
+      }}
+      transition={{ repeat: Infinity, duration, ease: "easeInOut", delay }}
+    >
+      <JungleBird
+        variant={variant}
+        size={size}
+        flip={flip}
+        wingSpeed={wingSpeed}
+        className="drop-shadow-[0_4px_10px_rgba(16,48,31,0.2)]"
+      />
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  FlyingBird — one bird whose position is tied to page scroll.        */
+/* ------------------------------------------------------------------ */
+function FlyingBird({
+  progress,
+  config,
+}: {
+  progress: MotionValue<number>;
+  config: (typeof SCROLL_BIRD_FLIGHTS)[number];
+}) {
+  const x = useTransform(
+    progress,
+    [config.start, config.end],
+    [`${config.fromX}%`, `${config.toX}%`],
+  );
+  const y = useTransform(
+    progress,
+    [config.start, (config.start + config.end) / 2, config.end],
+    [config.yPercent, config.yPercent - 3, config.yPercent + 2],
+  );
+  const opacity = useTransform(
+    progress,
+    [
+      Math.max(0, config.start - 0.015),
+      config.start + 0.02,
+      config.end - 0.02,
+      Math.min(1, config.end + 0.015),
+    ],
+    [0, 1, 1, 0],
+  );
+  const rotate = useTransform(
+    progress,
+    [config.start, config.end],
+    [config.flip ? 8 : -8, config.flip ? -6 : 6],
+  );
+
+  return (
+    <motion.div
+      aria-hidden
+      className="absolute left-0 will-change-transform hidden sm:block"
+      style={{ x, top: `${config.yPercent}%`, opacity, rotate, zIndex: 6 }}
+    >
+      <JungleBird
+        variant={config.variant}
+        size={config.size}
+        flip={config.flip}
+        wingSpeed={config.wingSpeed}
+        className="drop-shadow-[0_4px_10px_rgba(16,48,31,0.18)]"
+      />
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  ScrollBirdFlock — birds that glide across the card as guests scroll.  */
+/* ------------------------------------------------------------------ */
+function ScrollBirdFlock({ progress }: { progress: MotionValue<number> }) {
+  const shouldReduceMotion = useReducedMotion();
+  if (shouldReduceMotion) return null;
+
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-[6] overflow-hidden"
+    >
+      {SCROLL_BIRD_FLIGHTS.map((flight, i) => (
+        <FlyingBird key={i} progress={progress} config={flight} />
+      ))}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  NestBranch — curved vine branch with a woven nest for the RSVP.     */
+/* ------------------------------------------------------------------ */
+function NestBranch({ nestOpen = false }: { nestOpen?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 400 120"
+      className="mx-auto w-full max-w-md h-24 sm:h-28"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M0 70 C80 40 160 90 200 55 C240 20 320 50 400 35"
+        stroke="#5c9271"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M200 55 C195 75 205 95 200 105 C195 95 205 75 200 55"
+        stroke="#3f7a56"
+        strokeWidth="2"
+        fill="#d7e6da"
+        fillOpacity="0.5"
+      />
+      <motion.g
+        initial={false}
+        animate={nestOpen ? { scaleY: 0.35, y: 18, opacity: 0.4 } : { scaleY: 1, y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: LUX_EASE }}
+        style={{ transformOrigin: "200px 80px" }}
+      >
+        <ellipse cx="200" cy="82" rx="34" ry="16" fill="#8b6914" fillOpacity="0.25" />
+        <ellipse cx="200" cy="80" rx="30" ry="14" fill="#a07828" fillOpacity="0.35" />
+        <path
+          d="M172 78 C180 68 190 64 200 62 C210 64 220 68 228 78
+             C220 88 210 92 200 94 C190 92 180 88 172 78 Z"
+          fill="#c4a035"
+          fillOpacity="0.45"
+          stroke="#8b6914"
+          strokeWidth="1.2"
+        />
+        {!nestOpen && (
+          <>
+            <ellipse cx="192" cy="78" rx="5" ry="6" fill="#f6faf7" fillOpacity="0.9" />
+            <ellipse cx="208" cy="80" rx="4.5" ry="5.5" fill="#eef4ef" fillOpacity="0.85" />
+          </>
+        )}
+      </motion.g>
+      <FernFrond size={16} color="#5c9271" />
+      <g transform="translate(320, 20)">
+        <FernFrond size={14} color="#3f7a56" />
+      </g>
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  PerchingMessengerBird — sits on the nest until the guest opens it.  */
+/* ------------------------------------------------------------------ */
+function PerchingMessengerBird({ flyingAway = false }: { flyingAway?: boolean }) {
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      aria-hidden
+      className="absolute left-1/2 top-0 z-30 -translate-x-1/2"
+      initial={false}
+      animate={
+        flyingAway && !shouldReduceMotion
+          ? { y: -120, x: 80, opacity: 0, rotate: -18, scale: 0.7 }
+          : { y: -8, x: 0, opacity: 1, rotate: 0, scale: 1 }
+      }
+      transition={{ duration: 1.1, ease: LUX_EASE }}
+    >
+      <JungleBird variant="parrot" size={44} wingSpeed={0.38} />
+      <motion.div
+        className="absolute -right-3 top-6 h-8 w-5 rounded-sm bg-[#f6ead8] border border-[#d4c4a8] shadow-sm"
+        style={{ transform: "rotate(12deg)" }}
+        animate={shouldReduceMotion ? {} : { y: [0, -2, 0] }}
+        transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+      >
+        <div className="mx-auto mt-1 h-0.5 w-3 rounded bg-[#c4a882]/60" />
+        <div className="mx-auto mt-0.5 h-0.5 w-2 rounded bg-[#c4a882]/40" />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  JungleCanopy — a layered tropical tree silhouette (trunk, buttress  */
+/*  roots, hanging vines, rounded canopy lobes) standing in for the     */
+/*  old pine-forest icons.                                              */
+/* ------------------------------------------------------------------ */
+function JungleCanopy({
+  size = 110,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 200 220"
+      width={size}
+      height={size * 1.1}
+      className={className}
+      fill="none"
+    >
+      <path
+        d="M100 220 L100 140"
+        stroke="currentColor"
+        strokeWidth="6"
+        strokeLinecap="round"
+        opacity="0.9"
+      />
+      <path
+        d="M100 190 C 80 185 70 175 62 160"
+        stroke="currentColor"
+        strokeWidth="3"
+        opacity="0.7"
+      />
+      <path
+        d="M100 190 C 120 185 130 175 138 160"
+        stroke="currentColor"
+        strokeWidth="3"
+        opacity="0.7"
+      />
+      <circle cx="100" cy="90" r="60" fill="currentColor" opacity="0.14" />
+      <circle cx="55" cy="110" r="42" fill="currentColor" opacity="0.16" />
+      <circle cx="145" cy="110" r="42" fill="currentColor" opacity="0.16" />
+      <circle cx="100" cy="55" r="46" fill="currentColor" opacity="0.18" />
+      <path
+        d="M70 130 C 68 155 66 175 64 200"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        opacity="0.5"
+      />
+      <path
+        d="M130 130 C 132 150 134 172 136 198"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        opacity="0.5"
+      />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  BotanicalDivider — a little garden of blooms and ferns on a resting */
+/*  line, drawing itself and opening as it scrolls into view. Each      */
+/*  instance cycles through the palette so the page reads like real     */
+/*  rainforest understory rather than one repeated flower.              */
 /* ------------------------------------------------------------------ */
 function BotanicalDivider({ bg, variant = 0 }: { bg: string; variant?: number }) {
   const c1 = BLOOM_PALETTE[variant % BLOOM_PALETTE.length];
@@ -327,20 +968,20 @@ function BotanicalDivider({ bg, variant = 0 }: { bg: string; variant?: number })
           viewport={{ once: true }}
           transition={{ duration: 1, ease: LUX_EASE }}
           style={{ transformOrigin: "right center" }}
-          className="h-px flex-1 bg-[#8fa992]/40"
+          className="h-px flex-1 bg-[#5c9271]/40"
         />
-        <LeafSprig flip />
+        <FernFrond flip />
         <BloomingFlower size={24} petal={c1.petal} center={c1.center} delay={0.05} />
         <BloomingFlower size={38} petal={c2.petal} center={c2.center} delay={0.15} />
         <BloomingFlower size={24} petal={c3.petal} center={c3.center} delay={0.25} />
-        <LeafSprig />
+        <FernFrond />
         <motion.div
           initial={{ scaleX: 0, opacity: 0 }}
           whileInView={{ scaleX: 1, opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1, ease: LUX_EASE }}
           style={{ transformOrigin: "left center" }}
-          className="h-px flex-1 bg-[#8fa992]/40"
+          className="h-px flex-1 bg-[#5c9271]/40"
         />
       </div>
     </div>
@@ -348,29 +989,26 @@ function BotanicalDivider({ bg, variant = 0 }: { bg: string; variant?: number })
 }
 
 /* ------------------------------------------------------------------ */
-/*  JourneyProgress — earthy green scroll progress bar                */
+/*  JourneyProgress — jungle-dusk scroll progress bar                  */
 /* ------------------------------------------------------------------ */
 function JourneyProgress() {
   const { scrollYProgress } = useScroll();
   return (
     <motion.div
       style={{ scaleX: scrollYProgress }}
-      className="fixed top-0 left-0 right-0 z-50 h-[2px] origin-left bg-gradient-to-r from-[#6b8e73] via-[#1e3b27] to-[#6b8e73]"
+      className="fixed top-0 left-0 right-0 z-50 h-[2px] origin-left bg-gradient-to-r from-[#3f7a56] via-[#10301f] to-[#e8c468]"
     />
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  ForestBubbleButton — fixed floating music toggle in the botanical  */
-/*  green palette. Rendered through a Portal directly into              */
-/*  document.body so no ancestor's CSS `transform` (which Framer       */
-/*  Motion adds to nearly every animated element on this page — the    */
-/*  swaying branches, the vine, the parallax hero) can ever hijack its  */
-/*  `position: fixed` containing block. That's what keeps it pinned to  */
-/*  the real viewport at all times instead of only showing up near the  */
-/*  bottom of the page.                                                 */
+/*  JungleBubbleButton — fixed floating music toggle. Rendered through  */
+/*  a Portal directly into document.body so no ancestor's CSS           */
+/*  `transform` (which Framer Motion adds to nearly every animated       */
+/*  element on this page) can ever hijack its `position: fixed`          */
+/*  containing block.                                                    */
 /* ------------------------------------------------------------------ */
-function ForestBubbleButton({
+function JungleBubbleButton({
   isPlaying,
   onToggle,
 }: {
@@ -380,8 +1018,6 @@ function ForestBubbleButton({
   const shouldReduceMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
 
-  // document.body only exists on the client, so wait for mount before
-  // portaling (avoids Next.js SSR hydration errors).
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -408,31 +1044,28 @@ function ForestBubbleButton({
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       style={{ position: "fixed", bottom: "1.5rem", right: "1.5rem", zIndex: 99999 }}
-      className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-[#dce8df] bg-[#f2f6f3]/70 shadow-[inset_0_4px_10px_rgba(255,255,255,0.9),0_15px_35px_rgba(30,59,39,0.18)] backdrop-blur-xl overflow-hidden focus:outline-none"
+      className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-[#d7e6da] bg-[#f2f8f4]/70 shadow-[inset_0_4px_10px_rgba(255,255,255,0.9),0_15px_35px_rgba(16,48,31,0.2)] backdrop-blur-xl overflow-hidden focus:outline-none"
     >
-      {/* Glossy bubble reflection glare */}
       <div className="absolute top-1 left-2 h-3 w-5 rounded-full bg-white/80 blur-[1px] rotate-[-25deg] pointer-events-none" />
       <div className="absolute bottom-1 right-2 h-1.5 w-2.5 rounded-full bg-white/50 blur-[1px] pointer-events-none" />
 
-      {/* Rippling "sound wave" ring while playing */}
       {isPlaying && !shouldReduceMotion && (
         <motion.div
           animate={{ scale: [1, 1.7, 1], opacity: [0.5, 0, 0.5] }}
           transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
-          className="absolute inset-0 rounded-full border-2 border-[#6b8e73]/40 pointer-events-none"
+          className="absolute inset-0 rounded-full border-2 border-[#3f7a56]/40 pointer-events-none"
         />
       )}
 
-      {/* Soft pulse ring when paused, inviting a tap */}
       {!isPlaying && !shouldReduceMotion && (
         <motion.div
           animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
           transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full bg-[#6b8e73]/25 pointer-events-none"
+          className="absolute inset-0 rounded-full bg-[#3f7a56]/25 pointer-events-none"
         />
       )}
 
-      <div className="relative z-10 text-[#1e3b27] drop-shadow-sm">
+      <div className="relative z-10 text-[#10301f] drop-shadow-sm">
         {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
       </div>
     </motion.button>
@@ -445,7 +1078,8 @@ function ForestBubbleButton({
 /* ------------------------------------------------------------------ */
 /*  GrowingVine — the signature botanical moment. A hand-drawn vine    */
 /*  that draws itself in as the guest scrolls through the story, with  */
-/*  leaves and flowers blooming along the way. Desktop only.           */
+/*  leaves, blooms, and a couple of fireflies drifting alongside it.    */
+/*  Desktop only.                                                        */
 /* ------------------------------------------------------------------ */
 function GrowingVine() {
   const vineRef = useRef<HTMLDivElement>(null);
@@ -483,7 +1117,7 @@ function GrowingVine() {
         <motion.path
           d="M32,0 C8,55 56,110 32,165 C8,220 56,275 32,330 C8,385 56,440 32,495 C8,550 56,605 32,660 C8,715 56,770 32,825 C8,880 56,935 32,1000"
           fill="none"
-          stroke="#8fa992"
+          stroke="#5c9271"
           strokeWidth="1.6"
           strokeLinecap="round"
           style={{ pathLength: scrollYProgress, opacity: 0.55 }}
@@ -494,7 +1128,7 @@ function GrowingVine() {
           cy="58"
           rx="8"
           ry="4"
-          fill="#8fa992"
+          fill="#5c9271"
           transform="rotate(-30 15 58)"
           style={{ opacity: leaf1 }}
         />
@@ -503,7 +1137,7 @@ function GrowingVine() {
           cy="195"
           rx="8"
           ry="4"
-          fill="#8fa992"
+          fill="#5c9271"
           transform="rotate(25 50 195)"
           style={{ opacity: leaf2 }}
         />
@@ -512,7 +1146,7 @@ function GrowingVine() {
           cy="358"
           rx="8"
           ry="4"
-          fill="#8fa992"
+          fill="#5c9271"
           transform="rotate(-20 14 358)"
           style={{ opacity: leaf3 }}
         />
@@ -521,7 +1155,7 @@ function GrowingVine() {
           cy="522"
           rx="8"
           ry="4"
-          fill="#8fa992"
+          fill="#5c9271"
           transform="rotate(30 50 522)"
           style={{ opacity: leaf4 }}
         />
@@ -530,7 +1164,7 @@ function GrowingVine() {
           cy="688"
           rx="8"
           ry="4"
-          fill="#8fa992"
+          fill="#5c9271"
           transform="rotate(-25 14 688)"
           style={{ opacity: leaf5 }}
         />
@@ -566,12 +1200,16 @@ function GrowingVine() {
       >
         <MiniFlower size={26} petal={BLOOM_PALETTE[4].petal} center={BLOOM_PALETTE[4].center} />
       </motion.div>
+
+      <Firefly className="left-3 top-[38%]" size={4} duration={8} delay={0.4} />
+      <Firefly className="-left-1 top-[74%]" size={4} duration={9.5} delay={2.1} />
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  TrailingVineFlower — An animated vine growing down with a bloom   */
+/*  TrailingVineFlower — An animated vine growing down with a torch-    */
+/*  ginger bloom, hung from the hero's canopy edge.                     */
 /* ------------------------------------------------------------------ */
 function TrailingVineFlower({ className = "", delay = 0 }: { className?: string, delay?: number }) {
   return (
@@ -584,11 +1222,11 @@ function TrailingVineFlower({ className = "", delay = 0 }: { className?: string,
       whileInView="show"
       viewport={{ once: true, margin: "-10%" }}
     >
-      {/* The Vine curving and growing downwards */}
+      {/* The vine curving and growing downwards */}
       <motion.path
         d="M50,0 C20,60 80,120 50,190"
         fill="none"
-        stroke="#8fa992" // Earthy green stem
+        stroke="#5c9271" // Fern green stem
         strokeWidth="1.8"
         strokeLinecap="round"
         variants={{
@@ -600,10 +1238,10 @@ function TrailingVineFlower({ className = "", delay = 0 }: { className?: string,
         }}
       />
 
-      {/* Sprouting Leaf 1 */}
+      {/* Sprouting leaf 1 */}
       <motion.path
         d="M50,60 C70,50 80,70 50,75"
-        fill="#8fa992"
+        fill="#5c9271"
         style={{ transformOrigin: "50px 60px" }}
         variants={{
           hidden: { scale: 0, opacity: 0 },
@@ -611,10 +1249,10 @@ function TrailingVineFlower({ className = "", delay = 0 }: { className?: string,
         }}
       />
 
-      {/* Sprouting Leaf 2 */}
+      {/* Sprouting leaf 2 */}
       <motion.path
         d="M62,120 C35,115 30,135 55,140"
-        fill="#8fa992"
+        fill="#5c9271"
         style={{ transformOrigin: "62px 120px" }}
         variants={{
           hidden: { scale: 0, opacity: 0 },
@@ -622,7 +1260,7 @@ function TrailingVineFlower({ className = "", delay = 0 }: { className?: string,
         }}
       />
 
-      {/* The Flower Blooming at the tip */}
+      {/* The torch-ginger bloom opening at the tip */}
       <motion.g
         variants={{
           hidden: { scale: 0, opacity: 0, rotate: -30 },
@@ -635,7 +1273,7 @@ function TrailingVineFlower({ className = "", delay = 0 }: { className?: string,
         }}
         style={{ transformOrigin: "50px 190px" }}
       >
-        {/* 5 Petals */}
+        {/* 5 petals */}
         {[0, 72, 144, 216, 288].map((deg) => (
           <ellipse
             key={deg}
@@ -643,13 +1281,13 @@ function TrailingVineFlower({ className = "", delay = 0 }: { className?: string,
             cy="178"
             rx="7"
             ry="15"
-            fill="#d98a92" // Blush rose petal
+            fill="#c1493f" // Torch ginger petal
             fillOpacity="0.88"
             transform={`rotate(${deg} 50 190)`}
           />
         ))}
-        {/* Flower Center */}
-        <circle cx="50" cy="190" r="6" fill="#fbe9dd" />
+        {/* Flower center */}
+        <circle cx="50" cy="190" r="6" fill="#fbe9df" />
       </motion.g>
     </motion.svg>
   );
@@ -780,9 +1418,21 @@ export default function BotanicalGraceCard() {
   const heroTextOpacity = useTransform(heroProgress, [0, 0.75], [1, 0]);
   const heroOverlay = useTransform(heroProgress, [0, 1], [0.4, 0.8]);
 
-  const [rsvpStep, setRsvpStep] = useState<"intro" | "form" | "success">("intro");
+  const pageRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: pageProgress } = useScroll({
+    target: pageRef,
+    offset: ["start start", "end end"],
+  });
 
-  // New Animations explicitly for the "Greeny" Vibe 🍃
+  const [rsvpStep, setRsvpStep] = useState<"intro" | "form" | "success">("intro");
+  const [rsvpBirdFlying, setRsvpBirdFlying] = useState(false);
+
+  const openNest = () => {
+    setRsvpBirdFlying(true);
+    window.setTimeout(() => setRsvpStep("form"), 650);
+  };
+
+  // Ambient jungle motion 🍃
   const fallingLeafA: Variants = shouldReduceMotion
     ? {}
     : {
@@ -807,7 +1457,7 @@ export default function BotanicalGraceCard() {
       }
     };
 
-  // Drifting flower petals, paired with the leaves for a fuller botanical feel
+  // Drifting bloom petals, paired with the leaves for a fuller rainforest feel
   const fallingPetalA: Variants = shouldReduceMotion
     ? {}
     : {
@@ -853,15 +1503,15 @@ export default function BotanicalGraceCard() {
     };
 
   const focusRing =
-    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6b8e73]";
+    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3f7a56]";
 
   return (
-    <section className="min-h-screen bg-[#f2f6f3] text-[#2b3a30] overflow-hidden">
+    <section className="min-h-screen bg-[#eef4ef] text-[#1b2b20] overflow-hidden">
       <JourneyProgress />
-      <ForestBubbleButton isPlaying={isPlaying} onToggle={toggleMusic} />
+      <JungleBubbleButton isPlaying={isPlaying} onToggle={toggleMusic} />
 
       {/* 🎬 HERO — cinematic opening sequence 🎬 */}
-      <section ref={heroRef} className="relative min-h-,,screen overflow-hidden">
+      <section ref={heroRef} className="relative min-h-screen overflow-hidden">
         <motion.div
           initial={{ opacity: 0, filter: "blur(16px)" }}
           animate={{ opacity: 1, filter: "blur(0px)" }}
@@ -872,15 +1522,15 @@ export default function BotanicalGraceCard() {
             style={{ y: heroImageY, scale: heroImageScale }}
             className="absolute inset-0"
           >
-            <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#1e3b27]/40 via-transparent to-[#f2f6f3]" />
+            <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#10301f]/40 via-transparent to-[#eef4ef]" />
             <motion.div
               style={{ opacity: heroOverlay }}
-              className="absolute inset-0 z-10 bg-[#0f1d14]"
+              className="absolute inset-0 z-10 bg-[#08150e]"
             />
             {/* EXACT IMAGE NAME 1 */}
             <Image
               src="/images/hero/botanical-grace 1.jpg"
-              alt="Forest wedding hero background"
+              alt="Rainforest wedding hero background"
               fill
               priority
               className="object-cover object-center opacity-90"
@@ -889,11 +1539,11 @@ export default function BotanicalGraceCard() {
           </motion.div>
         </motion.div>
 
-        {/* Ambient forest sunlight glow */}
+        {/* Ambient firefly glow */}
         <motion.div
           variants={glowPulse}
           animate="animate"
-          className="absolute left-1/2 top-1/3 z-10 h-[300px] w-[300px] sm:h-[420px] sm:w-[420px] -translate-x-1/2 rounded-full bg-[#e8f2d5] blur-[120px] pointer-events-none"
+          className="absolute left-1/2 top-1/3 z-10 h-[300px] w-[300px] sm:h-[420px] sm:w-[420px] -translate-x-1/2 rounded-full bg-[#f0e2ae] blur-[120px] pointer-events-none"
         />
 
         {/* 🌿 TRAILING VINES HANGING FROM THE TOP 🌿 */}
@@ -905,7 +1555,30 @@ export default function BotanicalGraceCard() {
           <TrailingVineFlower delay={1.2} />
         </div>
 
+        {/* Fireflies drifting through the canopy */}
+        <Firefly className="top-[20%] left-[12%] z-10 hidden sm:block" size={5} duration={7.5} delay={0.6} />
+        <Firefly className="top-[14%] right-[20%] z-10 hidden sm:block" size={4} duration={9} delay={2.4} />
+        <Firefly className="top-[38%] left-[46%] z-10 hidden sm:block" size={4} duration={8.2} delay={1.3} />
 
+        {/* A couple of birds looping lazily through the hero, here and there */}
+        <AmbientBird
+          variant="parrot"
+          size={34}
+          duration={16}
+          delay={0.8}
+          className="top-[10%] left-0 z-10 hidden sm:block"
+          path={{ x: [-8, 55, 118], y: [0, -6, 4] }}
+        />
+        <AmbientBird
+          variant="hummingbird"
+          size={20}
+          flip
+          duration={11}
+          delay={3.4}
+          wingSpeed={0.15}
+          className="top-[52%] right-0 z-10 hidden sm:block"
+          path={{ x: [10, -60, -124], y: [0, 8, -3] }}
+        />
 
         {/* Falling leaves + petals instead of drifting clouds */}
         <motion.div
@@ -927,14 +1600,14 @@ export default function BotanicalGraceCard() {
           animate="animate"
           className="absolute top-32 left-[45%] z-10 pointer-events-none hidden sm:block"
         >
-          <Petal size={20} color="#f2d4cf" />
+          <Petal size={20} color="#e7c9da" />
         </motion.div>
         <motion.div
           variants={fallingPetalB}
           animate="animate"
           className="absolute top-16 right-[8%] z-10 pointer-events-none hidden sm:block"
         >
-          <Petal size={16} color="#eccac4" />
+          <Petal size={16} color="#f0c9b0" />
         </motion.div>
 
         {/* Thin botanical corner flourishes framing the hero */}
@@ -992,19 +1665,19 @@ export default function BotanicalGraceCard() {
               </motion.p>
 
               <div className="font-serif italic leading-[1.05] text-white drop-shadow-md">
-                <RevealText
+                <LeafReveal
                   as="div"
                   text="Roshel"
                   className="text-5xl sm:text-7xl lg:text-8xl"
                   delay={0.4}
                 />
-                <RevealText
+                <LeafReveal
                   as="div"
                   text="&"
-                  className="not-italic font-light text-3xl sm:text-4xl text-[#a4c2a8] my-2"
+                  className="not-italic font-light text-3xl sm:text-4xl text-[#9fc9ab] my-2"
                   delay={0.65}
                 />
-                <RevealText
+                <LeafReveal
                   as="div"
                   text="David"
                   className="text-5xl sm:text-7xl lg:text-8xl"
@@ -1047,7 +1720,8 @@ export default function BotanicalGraceCard() {
       </section>
 
       {/* The vine grows alongside every chapter from here to the RSVP */}
-      <div className="relative">
+      <div ref={pageRef} className="relative">
+        <ScrollBirdFlock progress={pageProgress} />
         <GrowingVine />
         <BotanicalDivider bg="#ffffff" variant={0} />
 
@@ -1056,17 +1730,17 @@ export default function BotanicalGraceCard() {
           id="couple"
           className="relative bg-white px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-72 h-72 sm:w-96 sm:h-96 bg-[#e6eee8] rounded-full blur-3xl opacity-60 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-72 h-72 sm:w-96 sm:h-96 bg-[#e1ede3] rounded-full blur-3xl opacity-60 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 0.15 }}
             viewport={{ once: true }}
             transition={{ duration: 1.8 }}
-            className="absolute bottom-16 left-8 text-[#6b8e73] pointer-events-none hidden lg:block origin-bottom"
+            className="absolute bottom-16 left-8 text-[#3f7a56] pointer-events-none hidden lg:block origin-bottom"
           >
             <motion.div variants={swayingBranch} animate="animate">
-              <TreePine size={110} strokeWidth={0.8} />
+              <JungleCanopy size={130} />
             </motion.div>
           </motion.div>
 
@@ -1086,7 +1760,7 @@ export default function BotanicalGraceCard() {
                 variants={riseIn}
                 className="relative mx-auto w-full max-w-sm sm:max-w-md lg:max-w-none"
               >
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(30,59,39,0.12)]">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(16,48,31,0.14)]">
                   {/* EXACT IMAGE NAME 2 */}
                   <Image
                     src="/images/hero/botanical-grace 2.jpg"
@@ -1103,50 +1777,51 @@ export default function BotanicalGraceCard() {
                     shouldReduceMotion ? {} : { y: [-5, 5, -5] }
                   }
                   transition={{ repeat: Infinity, duration: 7, ease: "easeInOut" }}
-                  className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 md:-right-12 rounded-full bg-[#f2f6f3] p-5 sm:p-6 shadow-xl border border-white"
+                  className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 md:-right-12 rounded-full bg-[#f2f8f4] p-5 sm:p-6 shadow-xl border border-white"
                 >
-                  <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-full border border-[#6b8e73]/40 flex items-center justify-center">
-                    <Sprout className="text-[#6b8e73]" size={28} />
+                  <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-full border border-[#3f7a56]/40 flex items-center justify-center">
+                    <Sprout className="text-[#3f7a56]" size={28} />
                   </div>
                 </motion.div>
               </motion.div>
 
               <div className="text-center lg:text-left lg:pl-6">
-                <p className="text-[10px] uppercase tracking-[0.4em] text-[#6b8e73] font-semibold mb-3">
+                <p className="text-[10px] uppercase tracking-[0.4em] text-[#3f7a56] font-semibold mb-3">
                   Chapter One
                 </p>
-                <RevealText
+                <LeafReveal
                   as="h2"
                   text="The Happy Couple"
-                  className="font-serif text-3xl italic text-[#1e3b27] sm:text-4xl lg:text-6xl mb-6"
+                  className="font-serif text-3xl italic text-[#10301f] sm:text-4xl lg:text-6xl mb-6"
                 />
                 <motion.p
                   variants={riseIn}
-                  className="text-sm sm:text-base leading-relaxed text-[#2b3a30]/80 mb-8"
+                  className="text-sm sm:text-base leading-relaxed text-[#1b2b20]/80 mb-8"
                 >
-                  From our first walk through the sunlit pines to building a life deeply rooted in love,
-                  every moment has grown into something beautiful. We can&apos;t wait to celebrate
-                  our story surrounded by nature and our favorite people.
+                  From our first walk beneath the rustling canopy to building a life
+                  deeply rooted in love, every moment has grown into something beautiful.
+                  We can&apos;t wait to celebrate our story surrounded by the jungle and
+                  our favorite people.
                 </motion.p>
 
                 <motion.div
                   variants={riseIn}
-                  className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 sm:gap-8 text-[#1e3b27]"
+                  className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 sm:gap-8 text-[#10301f]"
                 >
                   <div className="text-center lg:text-left">
                     <div className="font-serif italic text-2xl sm:text-3xl">
                       David
                     </div>
-                    <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#6b8e73]">
+                    <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#3f7a56]">
                       The Groom
                     </div>
                   </div>
-                  <div className="text-[#a4c2a8] text-2xl font-light">|</div>
+                  <div className="text-[#9fc9ab] text-2xl font-light">|</div>
                   <div className="text-center lg:text-left">
                     <div className="font-serif italic text-2xl sm:text-3xl">
                       Roshel
                     </div>
-                    <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#6b8e73]">
+                    <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#3f7a56]">
                       The Bride
                     </div>
                   </div>
@@ -1156,20 +1831,20 @@ export default function BotanicalGraceCard() {
           </motion.div>
 
         </section>
-        <BotanicalDivider bg="#f2f6f3" variant={1} />
+        <BotanicalDivider bg="#eef4ef" variant={1} />
 
         {/* 📖 CHAPTER TWO — OUR LOVE STORY 📖 */}
-        <section className="relative bg-[#f2f6f3] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 border-y border-[#dce8df] overflow-hidden">
+        <section className="relative bg-[#eef4ef] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 border-y border-[#d7e6da] overflow-hidden">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 0.07 }}
             viewport={{ once: true }}
             transition={{ duration: 2 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#6b8e73] pointer-events-none origin-bottom"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#3f7a56] pointer-events-none origin-bottom"
           >
             <motion.div variants={swayingBranch} animate="animate">
-              <Trees size={260} strokeWidth={0.5} className="sm:hidden" />
-              <Trees size={380} strokeWidth={0.5} className="hidden sm:block" />
+              <JungleCanopy size={280} className="sm:hidden" />
+              <JungleCanopy size={420} className="hidden sm:block" />
             </motion.div>
           </motion.div>
 
@@ -1187,41 +1862,43 @@ export default function BotanicalGraceCard() {
             variants={staggerContainer}
             className="relative mx-auto max-w-4xl text-center z-10"
           >
-            <p className="text-[10px] uppercase tracking-[0.4em] text-[#6b8e73] font-semibold mb-3">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-[#3f7a56] font-semibold mb-3">
               Chapter Two
             </p>
-            <RevealText
+            <LeafReveal
               as="h2"
               text="Our Love Story"
-              className="font-serif text-3xl italic text-[#1e3b27] sm:text-4xl lg:text-5xl"
+              className="font-serif text-3xl italic text-[#10301f] sm:text-4xl lg:text-5xl"
             />
             <motion.p
               variants={riseIn}
-              className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-[#2b3a30]/80"
+              className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-[#1b2b20]/80"
             >
-              Like a seed planted in good soil, our friendship blossomed into a
-              beautiful love. Now we are ready to branch out into our forever.
+              Like a seed planted in rich rainforest soil, our friendship blossomed
+              into a beautiful love. Now we&apos;re ready to grow into our forever,
+              side by side.
             </motion.p>
 
             <motion.div
               variants={riseIn}
-              className="mx-auto mt-12 max-w-3xl rounded-[2rem] sm:rounded-[2.5rem] border border-[#dce8df] bg-white p-8 sm:p-10 shadow-[0_20px_50px_rgba(30,59,39,0.05)]"
+              className="mx-auto mt-12 max-w-3xl rounded-[2rem] sm:rounded-[2.5rem] border border-[#d7e6da] bg-white p-8 sm:p-10 shadow-[0_20px_50px_rgba(16,48,31,0.06)]"
             >
-              <p className="text-sm leading-loose text-[#1e3b27] sm:text-base font-medium">
+              <p className="text-sm leading-loose text-[#10301f] sm:text-base font-medium">
                 From our first glance to our shared dreams, every passing season
                 brought us closer. We invite you to be part of this
-                unforgettable day, where love, family, and joy come together under the forest canopy.
+                unforgettable day, where love, family, and joy come together
+                beneath the jungle canopy.
               </p>
             </motion.div>
           </motion.div>
 
         </section>
-        <BotanicalDivider bg="#e6eee8" variant={2} />
+        <BotanicalDivider bg="#e1ede3" variant={2} />
 
         {/* ⏳ THE COUNTDOWN ⏳ */}
         <section
           id="countdown"
-          className="relative bg-[#e6eee8] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden"
+          className="relative bg-[#e1ede3] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden"
         >
           <div className="absolute top-8 right-12 hidden md:block opacity-80">
             <BloomingFlower size={72} petal={BLOOM_PALETTE[3].petal} center={BLOOM_PALETTE[3].center} />
@@ -1234,14 +1911,14 @@ export default function BotanicalGraceCard() {
             variants={staggerContainer}
             className="relative mx-auto max-w-6xl text-center z-10"
           >
-            <RevealText
+            <LeafReveal
               as="p"
               text="Counting Down to Forever"
-              className="font-serif text-2xl italic text-[#1e3b27] sm:text-4xl lg:text-5xl mb-3"
+              className="font-serif text-2xl italic text-[#10301f] sm:text-4xl lg:text-5xl mb-3"
             />
             <motion.p
               variants={riseIn}
-              className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-[#6b8e73] font-semibold"
+              className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-[#3f7a56] font-semibold"
             >
               See you beneath the canopy
             </motion.p>
@@ -1256,12 +1933,12 @@ export default function BotanicalGraceCard() {
                   variants={riseIn}
                   whileHover={{ y: -4, scale: 1.015 }}
                   transition={{ type: "spring", stiffness: 220, damping: 20 }}
-                  className="rounded-2xl sm:rounded-3xl border border-white/90 bg-white/70 backdrop-blur-xl px-3 py-7 sm:px-4 sm:py-10 shadow-[0_15px_35px_rgba(30,59,39,0.06)]"
+                  className="rounded-2xl sm:rounded-3xl border border-white/90 bg-white/70 backdrop-blur-xl px-3 py-7 sm:px-4 sm:py-10 shadow-[0_15px_35px_rgba(16,48,31,0.08)]"
                 >
-                  <div className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#6b8e73] drop-shadow-sm">
+                  <div className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#3f7a56] drop-shadow-sm">
                     {String(item.value).padStart(2, "0")}
                   </div>
-                  <div className="mt-3 sm:mt-4 text-[9px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.35em] text-[#2b3a30] font-medium">
+                  <div className="mt-3 sm:mt-4 text-[9px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.35em] text-[#1b2b20] font-medium">
                     {item.label}
                   </div>
                 </motion.div>
@@ -1274,8 +1951,8 @@ export default function BotanicalGraceCard() {
 
         {/* 🗺️ CHAPTER THREE — WEDDING DETAILS 🗺️ */}
         <section className="relative bg-white px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden">
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-[#e6eee8] rounded-full blur-3xl opacity-80 pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#f0f4ea] rounded-full blur-3xl opacity-70 translate-x-1/3 translate-y-1/3 pointer-events-none" />
+          <div className="absolute -top-24 -left-24 w-72 h-72 bg-[#e1ede3] rounded-full blur-3xl opacity-80 pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#e6f2ea] rounded-full blur-3xl opacity-70 translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
           <motion.div
             initial="hidden"
@@ -1285,17 +1962,17 @@ export default function BotanicalGraceCard() {
             className="relative mx-auto max-w-6xl z-10"
           >
             <div className="text-center">
-              <p className="text-[10px] uppercase tracking-[0.4em] text-[#6b8e73] font-semibold mb-3">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-[#3f7a56] font-semibold mb-3">
                 Chapter Three
               </p>
-              <RevealText
+              <LeafReveal
                 as="h2"
                 text="Wedding Details"
-                className="font-serif text-3xl italic text-[#1e3b27] sm:text-4xl lg:text-5xl"
+                className="font-serif text-3xl italic text-[#10301f] sm:text-4xl lg:text-5xl"
               />
               <motion.p
                 variants={riseIn}
-                className="mt-4 text-[10px] uppercase tracking-[0.3em] text-[#6b8e73] font-semibold"
+                className="mt-4 text-[10px] uppercase tracking-[0.3em] text-[#3f7a56] font-semibold"
               >
                 All the important information you need to celebrate with us
               </motion.p>
@@ -1304,42 +1981,42 @@ export default function BotanicalGraceCard() {
             <div className="mt-14 grid gap-6 sm:gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
               <motion.div
                 variants={riseIn}
-                className="rounded-[2.5rem] sm:rounded-[3rem] border border-[#dce8df] bg-[#f8faf8]/80 backdrop-blur-2xl p-8 sm:p-10 shadow-[0_20px_50px_rgba(30,59,39,0.06)] h-full flex flex-col justify-center relative overflow-hidden"
+                className="rounded-[2.5rem] sm:rounded-[3rem] border border-[#d7e6da] bg-[#f2f8f4]/80 backdrop-blur-2xl p-8 sm:p-10 shadow-[0_20px_50px_rgba(16,48,31,0.08)] h-full flex flex-col justify-center relative overflow-hidden"
               >
-                <div className="absolute -bottom-10 -right-10 text-[#6b8e73]/10 pointer-events-none">
+                <div className="absolute -bottom-10 -right-10 text-[#3f7a56]/10 pointer-events-none">
                   <MapPin size={220} strokeWidth={1} />
                 </div>
 
-                <div className="relative z-10 space-y-7 sm:space-y-8 text-sm text-[#2b3a30]">
+                <div className="relative z-10 space-y-7 sm:space-y-8 text-sm text-[#1b2b20]">
                   <div>
-                    <div className="text-[10px] uppercase tracking-[0.35em] text-[#6b8e73] font-bold">
+                    <div className="text-[10px] uppercase tracking-[0.35em] text-[#3f7a56] font-bold">
                       Ceremony
                     </div>
-                    <div className="mt-2 font-serif text-2xl sm:text-3xl text-[#1e3b27]">
+                    <div className="mt-2 font-serif text-2xl sm:text-3xl text-[#10301f]">
                       4:00 PM
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] uppercase tracking-[0.35em] text-[#6b8e73] font-bold">
+                    <div className="text-[10px] uppercase tracking-[0.35em] text-[#3f7a56] font-bold">
                       Venue
                     </div>
-                    <div className="mt-2 font-serif text-2xl sm:text-3xl text-[#1e3b27]">
-                      The Whispering Pines Estate
+                    <div className="mt-2 font-serif text-2xl sm:text-3xl text-[#10301f]">
+                      The Emerald Canopy Estate
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] uppercase tracking-[0.35em] text-[#6b8e73] font-bold">
+                    <div className="text-[10px] uppercase tracking-[0.35em] text-[#3f7a56] font-bold">
                       Dress Code
                     </div>
-                    <div className="mt-2 font-serif text-2xl sm:text-3xl text-[#1e3b27]">
-                      Earthy Elegance / Semi-Formal
+                    <div className="mt-2 font-serif text-2xl sm:text-3xl text-[#10301f]">
+                      Tropical Elegance / Semi-Formal
                     </div>
                   </div>
                 </div>
 
                 <div className="relative z-10 mt-10 sm:mt-12 flex justify-start">
                   <button
-                    className={`rounded-2xl bg-[#1e3b27] px-7 py-3.5 sm:px-8 sm:py-4 text-[10px] font-semibold uppercase tracking-[0.35em] text-white shadow-xl shadow-[#1e3b27]/20 transition-all duration-500 hover:bg-[#132619] hover:-translate-y-1 ${focusRing}`}
+                    className={`rounded-2xl bg-[#10301f] px-7 py-3.5 sm:px-8 sm:py-4 text-[10px] font-semibold uppercase tracking-[0.35em] text-white shadow-xl shadow-[#10301f]/20 transition-all duration-500 hover:bg-[#0a1f14] hover:-translate-y-1 ${focusRing}`}
                   >
                     Map Directions
                   </button>
@@ -1348,13 +2025,13 @@ export default function BotanicalGraceCard() {
 
               <motion.div
                 variants={riseIn}
-                className="overflow-hidden rounded-[2.5rem] sm:rounded-[3rem] border border-[#dce8df] shadow-[0_20px_50px_rgba(30,59,39,0.08)] h-full min-h-[320px] sm:min-h-[400px]"
+                className="overflow-hidden rounded-[2.5rem] sm:rounded-[3rem] border border-[#d7e6da] shadow-[0_20px_50px_rgba(16,48,31,0.1)] h-full min-h-[320px] sm:min-h-[400px]"
               >
                 <div className="relative h-full w-full">
                   {/* EXACT IMAGE NAME 3 - Note the .jpeg extension! */}
                   <Image
                     src="/images/hero/botanical-grace 3.jpeg"
-                    alt="Forest wedding venue"
+                    alt="Jungle wedding venue"
                     fill
                     className="object-cover object-center transition-transform duration-[1400ms] ease-out hover:scale-105"
                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -1365,10 +2042,10 @@ export default function BotanicalGraceCard() {
           </motion.div>
 
         </section>
-        <BotanicalDivider bg="#e6eee8" variant={4} />
+        <BotanicalDivider bg="#e1ede3" variant={4} />
 
         {/* ⏱️ CHAPTER FOUR — WEDDING DAY TIMELINE ⏱️ */}
-        <section className="relative bg-[#e6eee8] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 border-y border-white overflow-hidden">
+        <section className="relative bg-[#e1ede3] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 border-y border-white overflow-hidden">
           <motion.div
             initial="hidden"
             whileInView="show"
@@ -1376,37 +2053,37 @@ export default function BotanicalGraceCard() {
             variants={staggerContainer}
             className="mx-auto max-w-4xl text-center relative z-10"
           >
-            <p className="text-[10px] uppercase tracking-[0.4em] text-[#6b8e73] font-semibold mb-3">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-[#3f7a56] font-semibold mb-3">
               Chapter Four
             </p>
-            <RevealText
+            <LeafReveal
               as="h2"
               text="Wedding Day Timeline"
-              className="font-serif text-3xl italic text-[#1e3b27] sm:text-4xl lg:text-5xl"
+              className="font-serif text-3xl italic text-[#10301f] sm:text-4xl lg:text-5xl"
             />
 
-            <div className="mx-auto mt-14 max-w-2xl space-y-10 sm:space-y-12 text-left relative before:absolute before:inset-0 before:ml-8 sm:before:ml-10 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#6b8e73]/50 before:to-transparent">
+            <div className="mx-auto mt-14 max-w-2xl space-y-10 sm:space-y-12 text-left relative before:absolute before:inset-0 before:ml-8 sm:before:ml-10 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#3f7a56]/50 before:to-transparent">
               {[
-                ["04 PM", "The Vows", "Underneath the grand oak tree"],
-                ["05 PM", "Cocktail Hour", "Drinks, mingling, and woodland walks"],
+                ["04 PM", "The Vows", "Beneath the great banyan tree"],
+                ["05 PM", "Cocktail Hour", "Drinks, mingling, and jungle trail walks"],
                 ["07 PM", "Reception", "Dinner, speeches, and celebration"],
-                ["09 PM", "Under the Stars", "Music, dancing, and bonfires"],
+                ["09 PM", "Under the Stars", "Music, dancing, and firefly light"],
               ].map(([time, title, note]) => (
                 <motion.div
                   key={title}
                   variants={riseIn}
                   className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
                 >
-                  <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white bg-[#f2f6f3] text-[#6b8e73] shadow-lg shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                  <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white bg-[#eef4ef] text-[#3f7a56] shadow-lg shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
                     <span className="text-[10px] sm:text-xs font-bold tracking-[0.2em]">
                       {time}
                     </span>
                   </div>
                   <div className="w-full rounded-[1.5rem] sm:rounded-[2rem] border border-white bg-white/80 p-5 sm:p-6 shadow-sm md:w-[45%] md:group-odd:text-right">
-                    <div className="font-serif text-xl sm:text-2xl italic text-[#1e3b27]">
+                    <div className="font-serif text-xl sm:text-2xl italic text-[#10301f]">
                       {title}
                     </div>
-                    <div className="mt-2 text-sm font-medium text-[#2b3a30]/80">
+                    <div className="mt-2 text-sm font-medium text-[#1b2b20]/80">
                       {note}
                     </div>
                   </div>
@@ -1416,15 +2093,18 @@ export default function BotanicalGraceCard() {
           </motion.div>
 
         </section>
-        <BotanicalDivider bg="#f2f6f3" variant={5} />
+        <BotanicalDivider bg="#eef4ef" variant={5} />
 
         {/* 🕊️ A NOTE TO OUR LOVED ONES 🕊️ */}
-        <section className="relative bg-[#f2f6f3] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden">
+        <section className="relative bg-[#eef4ef] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 overflow-hidden">
           <motion.div
             variants={glowPulse}
             animate="animate"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[220px] w-[220px] sm:h-[300px] sm:w-[300px] rounded-full bg-[#e8f2d5] blur-[110px] pointer-events-none"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[220px] w-[220px] sm:h-[300px] sm:w-[300px] rounded-full bg-[#f0e2ae] blur-[110px] pointer-events-none"
           />
+
+          <Firefly className="left-[30%] top-[30%]" size={4} duration={8} delay={0.3} />
+          <Firefly className="right-[28%] top-[62%]" size={4} duration={9.4} delay={1.8} />
 
           <motion.div
             initial="hidden"
@@ -1434,18 +2114,18 @@ export default function BotanicalGraceCard() {
             className="relative mx-auto max-w-4xl text-center z-10"
           >
             <div className="mb-4 flex justify-center opacity-90">
-              <BloomingFlower size={44} center="#e8f2d5" />
+              <BloomingFlower size={44} petal={BLOOM_PALETTE[5].petal} center="#fff6df" />
             </div>
-            <RevealText
+            <LeafReveal
               as="h2"
               text="A Note to Our Loved Ones"
-              className="font-serif text-3xl italic text-[#1e3b27] sm:text-4xl lg:text-5xl"
+              className="font-serif text-3xl italic text-[#10301f] sm:text-4xl lg:text-5xl"
             />
             <motion.div
               variants={riseIn}
-              className="mx-auto mt-10 max-w-3xl rounded-[2rem] sm:rounded-[2.5rem] border border-[#dce8df] bg-white p-8 sm:p-10 shadow-[0_20px_50px_rgba(30,59,39,0.03)]"
+              className="mx-auto mt-10 max-w-3xl rounded-[2rem] sm:rounded-[2.5rem] border border-[#d7e6da] bg-white p-8 sm:p-10 shadow-[0_20px_50px_rgba(16,48,31,0.04)]"
             >
-              <p className="text-sm leading-loose text-[#2b3a30] font-medium">
+              <p className="text-sm leading-loose text-[#1b2b20] font-medium">
                 Your presence will make our day complete. Thank you for being a
                 part of our journey and for sharing in the joy of our
                 celebration.
@@ -1454,28 +2134,32 @@ export default function BotanicalGraceCard() {
           </motion.div>
 
         </section>
-        <BotanicalDivider bg="#fbfdfb" variant={0} />
+        <BotanicalDivider bg="#f6faf7" variant={0} />
 
-        {/* 💌 RSVP — AN INVITATION TO OPEN 💌 */}
+        {/* 🕊️ RSVP — SEND THE MESSENGER BIRD 🕊️ */}
         <section
           id="rsvp"
-          className="relative bg-[#fbfdfb] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 border-t border-[#dce8df] overflow-hidden"
+          className="relative bg-[#f6faf7] px-4 py-20 sm:px-6 sm:py-28 lg:px-8 border-t border-[#d7e6da] overflow-hidden"
         >
           <motion.div
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 0.12 }}
+            whileInView={{ opacity: 0.16 }}
             viewport={{ once: true }}
-            transition={{ duration: 2 }}
-            className="absolute -top-8 -left-8 text-[#6b8e73] pointer-events-none origin-bottom-left"
+            transition={{ duration: 1.8 }}
+            className="absolute -top-8 -left-10 pointer-events-none origin-top-left"
           >
             <motion.div variants={swayingBranch} animate="animate">
-              <Flower2 size={130} strokeWidth={1} className="-rotate-12" />
+              <MonsteraLeaf size={140} color="#3f7a56" className="-rotate-[18deg]" />
             </motion.div>
           </motion.div>
 
           <div className="absolute top-10 right-10 hidden lg:block opacity-90">
             <BloomingFlower size={56} petal={BLOOM_PALETTE[4].petal} center={BLOOM_PALETTE[4].center} />
           </div>
+
+          <Firefly className="left-[8%] top-[20%]" size={5} duration={7.8} delay={0.4} />
+          <Firefly className="right-[10%] top-[68%]" size={4} duration={9.2} delay={1.6} />
+          <Firefly className="left-[20%] top-[75%]" size={4} duration={8.6} delay={2.6} />
 
           <motion.div
             initial="hidden"
@@ -1484,21 +2168,28 @@ export default function BotanicalGraceCard() {
             variants={staggerContainer}
             className="relative mx-auto max-w-2xl text-center z-10"
           >
-            <p className="text-[10px] uppercase tracking-[0.4em] text-[#6b8e73] font-semibold mb-3">
-              Join Us
+            <p className="text-[10px] uppercase tracking-[0.4em] text-[#3f7a56] font-semibold mb-3">
+              Send Word Back
             </p>
-            <RevealText
+            <LeafReveal
               as="h2"
-              text="Will You Join Us"
-              className="font-serif text-3xl italic text-[#1e3b27] sm:text-5xl lg:text-6xl"
+              text="A Messenger Awaits"
+              className="font-serif text-3xl italic text-[#10301f] sm:text-5xl lg:text-6xl"
             />
-            <motion.p variants={riseIn} className="mt-4 text-sm text-[#2b3a30]/70">
-              Please respond so we can save you a seat in the woods. 🌲
+            <motion.p variants={riseIn} className="mt-4 text-sm text-[#1b2b20]/70">
+              Our messenger bird is perched and ready to carry your reply. 🕊️
             </motion.p>
+
+            {/* The nest sits just above the card — the bird waits here    */}
+            {/* until the guest sends it off with their reply.              */}
+            <motion.div variants={riseIn} className="relative mx-auto mt-10 max-w-md">
+              <NestBranch nestOpen={rsvpStep !== "intro"} />
+              <PerchingMessengerBird flyingAway={rsvpBirdFlying} />
+            </motion.div>
 
             <motion.div
               variants={riseIn}
-              className="mx-auto mt-12 rounded-[2rem] sm:rounded-[2.5rem] border border-[#dce8df] bg-white p-8 sm:p-12 shadow-[0_30px_60px_rgba(30,59,39,0.06)] text-left overflow-hidden"
+              className="relative mx-auto -mt-2 rounded-[2rem] sm:rounded-[2.5rem] border border-[#d7e6da] bg-white p-8 sm:p-12 shadow-[0_30px_60px_rgba(16,48,31,0.1)] text-left overflow-hidden"
             >
               <AnimatePresence mode="wait">
                 {rsvpStep === "intro" && (
@@ -1514,22 +2205,23 @@ export default function BotanicalGraceCard() {
                     transition={{ duration: 0.9, ease: LUX_EASE }}
                     className="flex flex-col items-center text-center"
                   >
-                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[#6b8e73]/30 bg-[#f2f6f3] text-[#6b8e73]">
-                      <Mail size={26} strokeWidth={1.4} />
+                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[#3f7a56]/30 bg-[#f2f8f4] text-[#3f7a56]">
+                      <Sprout size={26} strokeWidth={1.4} />
                     </div>
-                    <p className="font-serif text-2xl italic text-[#1e3b27]">
-                      You&apos;re invited to open this
+                    <p className="font-serif text-2xl italic text-[#10301f]">
+                      Ready When You Are
                     </p>
-                    <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#2b3a30]/70">
-                      A small envelope, resting on a bed of moss. Open it whenever you&apos;re ready.
+                    <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#1b2b20]/70">
+                      Send our messenger off with your reply and the nest
+                      will open to your invitation.
                     </p>
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => setRsvpStep("form")}
-                      className={`mt-8 flex items-center gap-2 rounded-2xl bg-[#1e3b27] px-8 py-4 text-[11px] font-semibold tracking-widest uppercase text-white shadow-xl shadow-[#1e3b27]/20 transition-colors duration-500 hover:bg-[#132619] ${focusRing}`}
+                      onClick={openNest}
+                      className={`mt-8 flex items-center gap-2 rounded-2xl bg-[#10301f] px-8 py-4 text-[11px] font-semibold tracking-widest uppercase text-white shadow-xl shadow-[#10301f]/20 transition-colors duration-500 hover:bg-[#0a1f14] ${focusRing}`}
                     >
-                      Open Your Invitation
+                      Send the Bird
                       <ArrowRight size={14} />
                     </motion.button>
                   </motion.div>
@@ -1555,32 +2247,32 @@ export default function BotanicalGraceCard() {
                     <input
                       type="text"
                       placeholder="Your name"
-                      className={`rounded-2xl border border-[#dce8df] bg-[#fbfdfb] px-5 py-4 text-sm outline-none focus:border-[#6b8e73] focus:ring-1 focus:ring-[#6b8e73] transition-colors duration-300 ${focusRing}`}
+                      className={`rounded-2xl border border-[#d7e6da] bg-[#f6faf7] px-5 py-4 text-sm outline-none focus:border-[#3f7a56] focus:ring-1 focus:ring-[#3f7a56] transition-colors duration-300 ${focusRing}`}
                     />
                     <div className="grid gap-5 sm:grid-cols-2">
                       <select
-                        className={`rounded-2xl border border-[#dce8df] bg-[#fbfdfb] px-5 py-4 text-sm outline-none focus:border-[#6b8e73] focus:ring-1 focus:ring-[#6b8e73] text-[#2b3a30] transition-colors duration-300 cursor-pointer ${focusRing}`}
+                        className={`rounded-2xl border border-[#d7e6da] bg-[#f6faf7] px-5 py-4 text-sm outline-none focus:border-[#3f7a56] focus:ring-1 focus:ring-[#3f7a56] text-[#1b2b20] transition-colors duration-300 cursor-pointer ${focusRing}`}
                       >
                         <option>Will you attend?</option>
-                        <option>Joyfully Accept 🥂</option>
-                        <option>Regretfully Decline 🤍</option>
+                        <option>Joyfully Accept 🌿</option>
+                        <option>Regretfully Decline 🍃</option>
                       </select>
                       <input
                         type="number"
                         placeholder="Number of guests"
-                        className={`rounded-2xl border border-[#dce8df] bg-[#fbfdfb] px-5 py-4 text-sm outline-none focus:border-[#6b8e73] focus:ring-1 focus:ring-[#6b8e73] transition-colors duration-300 ${focusRing}`}
+                        className={`rounded-2xl border border-[#d7e6da] bg-[#f6faf7] px-5 py-4 text-sm outline-none focus:border-[#3f7a56] focus:ring-1 focus:ring-[#3f7a56] transition-colors duration-300 ${focusRing}`}
                       />
                     </div>
                     <textarea
                       rows={4}
                       placeholder="Leave a message for the couple..."
-                      className={`rounded-2xl border border-[#dce8df] bg-[#fbfdfb] px-5 py-4 text-sm outline-none focus:border-[#6b8e73] focus:ring-1 focus:ring-[#6b8e73] transition-colors duration-300 resize-none ${focusRing}`}
+                      className={`rounded-2xl border border-[#d7e6da] bg-[#f6faf7] px-5 py-4 text-sm outline-none focus:border-[#3f7a56] focus:ring-1 focus:ring-[#3f7a56] transition-colors duration-300 resize-none ${focusRing}`}
                     />
                     <motion.button
                       type="submit"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`mt-4 rounded-2xl bg-[#1e3b27] px-6 py-4 text-[11px] font-semibold tracking-widest uppercase text-white shadow-xl shadow-[#1e3b27]/20 transition-colors duration-500 hover:bg-[#132619] ${focusRing}`}
+                      className={`mt-4 rounded-2xl bg-[#10301f] px-6 py-4 text-[11px] font-semibold tracking-widest uppercase text-white shadow-xl shadow-[#10301f]/20 transition-colors duration-500 hover:bg-[#0a1f14] ${focusRing}`}
                     >
                       Send RSVP
                     </motion.button>
@@ -1596,7 +2288,7 @@ export default function BotanicalGraceCard() {
                     className="flex flex-col items-center text-center py-4"
                   >
                     <div className="relative mb-6 flex h-16 w-16 items-center justify-center">
-                      {/* A small burst of petals celebrates the RSVP */}
+                      {/* A small burst of leaves and fireflies celebrates the RSVP */}
                       <div className="pointer-events-none absolute inset-0">
                         {PETAL_BURST_ANGLES.map((deg, i) => {
                           const rad = (deg * Math.PI) / 180;
@@ -1618,10 +2310,17 @@ export default function BotanicalGraceCard() {
                                 delay: 0.15 + i * 0.03,
                               }}
                             >
-                              <Petal
-                                size={14}
-                                color={i % 2 === 0 ? "#d9a3a0" : "#8fa992"}
-                              />
+                              {i % 2 === 0 ? (
+                                <Petal size={14} color="#5c9271" />
+                              ) : (
+                                <span
+                                  className="block h-2.5 w-2.5 rounded-full"
+                                  style={{
+                                    background: "#e8c468",
+                                    boxShadow: "0 0 6px 2px rgba(232,196,104,0.6)",
+                                  }}
+                                />
+                              )}
                             </motion.span>
                           );
                         })}
@@ -1632,16 +2331,17 @@ export default function BotanicalGraceCard() {
                           shouldReduceMotion ? {} : { scale: [1, 1.12, 1] }
                         }
                         transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                        className="flex h-16 w-16 items-center justify-center rounded-full border border-[#6b8e73]/30 bg-[#f2f6f3] text-[#6b8e73]"
+                        className="flex h-16 w-16 items-center justify-center rounded-full border border-[#3f7a56]/30 bg-[#f2f8f4] text-[#3f7a56]"
                       >
                         <Heart size={26} strokeWidth={1.4} />
                       </motion.div>
                     </div>
-                    <p className="font-serif text-2xl italic text-[#1e3b27]">
-                      RSVP Sent
+                    <p className="font-serif text-2xl italic text-[#10301f]">
+                      Your Bird Has Taken Flight
                     </p>
-                    <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#2b3a30]/70">
-                      Thank you for letting us know. Until then — see you beneath the trees.
+                    <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#1b2b20]/70">
+                      Your reply is on its way to us. We&apos;ll keep a
+                      lantern lit among the leaves until October 24th.
                     </p>
                   </motion.div>
                 )}
@@ -1651,7 +2351,7 @@ export default function BotanicalGraceCard() {
         </section>
 
         {/* Footer Buffer */}
-        <div className="h-10 sm:h-14 bg-[#fbfdfb]" />
+        <div className="h-10 sm:h-14 bg-[#f6faf7]" />
       </div>
     </section>
   );
