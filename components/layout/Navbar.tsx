@@ -56,11 +56,9 @@ export default function Navbar() {
           <div className="hidden items-center gap-8 rounded-full border border-[#222222]/80 bg-[#0a0a0a]/70 px-8 py-2.5 backdrop-blur-md lg:flex">
             {[
               { label: "Collection", href: "#templates" },
-              { label: "Interactive Demo", href: "#interactive-preview" },
-              { label: "Capabilities", href: "#features" },
-              { label: "Process", href: "#how-it-works" },
               { label: "Calculator", href: "#calculator" },
               { label: "Pricing", href: "#pricing" },
+              { label: "Contact Us", href: "#contact" },
             ].map((item) => (
               <Link
                 key={item.label}
@@ -109,12 +107,9 @@ export default function Navbar() {
             <div className="flex flex-col gap-5">
               {[
                 { label: "Collection", href: "#templates" },
-                { label: "Interactive Demo", href: "#interactive-preview" },
-                { label: "Capabilities", href: "#features" },
-                { label: "Process", href: "#how-it-works" },
                 { label: "Calculator", href: "#calculator" },
                 { label: "Pricing", href: "#pricing" },
-                { label: "Inquiries", href: "#faq" },
+                { label: "Contact Us", href: "#contact" },
               ].map((item) => (
                 <Link
                   key={item.label}
