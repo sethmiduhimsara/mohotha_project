@@ -41,7 +41,7 @@ const featuredDesigns = [
     category: "Botanical & Coastal",
     style: "Floral & Organic",
     href: "/demo/botanical-grace",
-    image: "/images/hero/botanical-grace 1.jpg",
+    image: "/images/hero/botnical.jpg",
     tags: ["Garden Vibe", "Photo Gallery"],
   },
   {
@@ -50,7 +50,7 @@ const featuredDesigns = [
     category: "Botanical & Coastal",
     style: "Destination Beach",
     href: "/demo/ocean-breeze",
-    image: "/images/hero/ocean-breeze 1.png",
+    image: "/images/hero/ocean.jpeg",
     tags: ["Seaside Luxe", "Interactive Map"],
   },
   {
@@ -59,7 +59,7 @@ const featuredDesigns = [
     category: "Kandyan Royal",
     style: "Sinhala Luxury",
     href: "/demo/swarna-heritage", // <-- Added /demo right here!
-    image: "/images/hero/dark4.jpg", 
+    image: "/images/hero/warna.png", 
     tags: ["Royal Theme", "Gold Foil"],
   },
 ];
