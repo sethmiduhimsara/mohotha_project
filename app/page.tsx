@@ -10,6 +10,7 @@ import SavingsCalculator from "@/components/sections/SavingsCalculator";
 import Testimonials from "@/components/sections/Testimonials";
 import Pricing from "@/components/sections/Pricing";
 import FAQ from "@/components/sections/FAQ";
+import ContactForm from "@/components/sections/ContactForm";
 import FinalCTA from "@/components/sections/FinalCTA";
 import SocialProofToast from "@/components/ui/SocialProofToast";
 
@@ -28,6 +29,7 @@ export default function Home() {
         <Testimonials />
         <Pricing />
         <FAQ />
+        <ContactForm />
         <FinalCTA />
       </main>
       <Footer />

@@ -1,24 +1,29 @@
 "use client";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { Check, Sparkles, ShieldCheck } from "lucide-react";
+import { Check, ShieldCheck, Sparkles, Star } from "lucide-react";
 
-const freePlan = [
-  "Single invitation template preview",
-  "Standard hero countdown timer",
-  "Fundamental RSVP form",
-  "3-day live preview window",
+const basicPlan = [
+  "Premium Digital Invitation",
+  "Custom typography & elegant design",
+  "Mobile-optimized responsive view",
+  "Event time & venue details",
+  "Instant WhatsApp sharing",
+];
+
+const standardPlan = [
+  "Photo Gallery, Maps & Music",
+  "Live RSVP Guest Form",
+  "Google Sheets Auto-Sync",
+  "Meal & Dietary Preferences",
+  "Permanent archival link",
 ];
 
 const premiumPlan = [
-  "Unlimited invitation page views",
-  "Google Sheets live RSVP auto-sync",
-  "Interactive 1-Tap Google Maps pin",
-  "Background music audio reveal player",
-  "High-resolution couple gallery photo suite",
-  "Instant WhatsApp & social preview metadata",
-  "Permanent archival host link",
-  "Bespoke guest name personalization",
+  "All Signature Features",
+  "Advanced RSVP Dashboard",
+  "Downloadable Guest List (CSV/Excel)",
+  "Custom OpenGraph social preview",
 ];
 
 export default function Pricing() {
@@ -60,7 +65,7 @@ export default function Pricing() {
             Transparent <span className="text-[#CBA365] italic">Pricing</span>
           </h2>
           <p className="mt-4 text-[#a3a3a3] text-sm sm:text-base font-light">
-            One-time fixed investment. Zero hidden fees. Zero recurring monthly subscriptions.
+            One-time fixed investment starting from Rs. 6,000. Select the suite that perfectly matches your event's scale.
           </p>
         </motion.div>
 
@@ -69,31 +74,31 @@ export default function Pricing() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
-          className="mx-auto grid max-w-5xl grid-cols-1 gap-8 lg:grid-cols-2 items-stretch"
+          className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3 items-stretch"
         >
           
-          {/* Complimentary Preview Plan */}
+          {/* Tier 1 */}
           <motion.div 
             variants={itemVariants} 
             className="flex flex-col justify-between rounded-3xl border border-[#1e1e1e] bg-[#090909] p-8 sm:p-10 transition-colors duration-500 hover:border-[#333333]"
           >
             <div>
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#777777]">
-                Complimentary Sandbox
+                Essential Elegance
               </p>
               <div className="flex items-baseline gap-2 mb-6">
-                <h3 className="heading-font text-5xl text-white">
-                  Rs. 0
+                <h3 className="heading-font text-4xl text-white">
+                  Rs. 6,000
                 </h3>
               </div>
-              <p className="mb-8 text-xs sm:text-sm text-[#a3a3a3] font-light leading-relaxed border-b border-[#1a1a1a] pb-6">
-                Test and curate your invitation with full design freedom before making any final commitment.
+              <p className="mb-8 text-xs text-[#a3a3a3] font-light leading-relaxed border-b border-[#1a1a1a] pb-6">
+                A stunning digital invitation perfectly crafted for seamless sharing without RSVP tracking.
               </p>
               
-              <ul className="space-y-3.5 mb-10">
-                {freePlan.map((f) => (
+              <ul className="space-y-4 mb-10">
+                {basicPlan.map((f) => (
                   <li key={f} className="flex items-start gap-3 text-xs sm:text-sm text-[#a3a3a3] font-light">
-                    <span className="flex-none mt-1 w-1.5 h-1.5 rounded-full bg-[#444444]" />
+                    <span className="flex-none mt-1.5 w-1.5 h-1.5 rounded-full bg-[#444444]" />
                     {f}
                   </li>
                 ))}
@@ -104,36 +109,30 @@ export default function Pricing() {
               href="#templates"
               className="block w-full rounded-full border border-[#333333] py-4 text-center text-xs font-semibold uppercase tracking-[0.15em] text-white hover:border-[#CBA365] hover:text-[#CBA365] transition-colors"
             >
-              Start Free Preview
+              Select Essential
             </Link>
           </motion.div>
 
-          {/* Full Premium Collection Plan */}
+          {/* Tier 2 */}
           <motion.div 
             variants={itemVariants} 
-            className="relative flex flex-col justify-between rounded-3xl border-2 border-[#CBA365] bg-gradient-to-b from-[#121212] to-[#0a0a0a] p-8 sm:p-10 shadow-2xl shadow-[#CBA365]/10"
+            className="flex flex-col justify-between rounded-3xl border border-[#CBA365]/40 bg-[#0c0c0c] p-8 sm:p-10 transition-colors duration-500 hover:border-[#CBA365]/80 relative"
           >
-            {/* Top Recommended Tag */}
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#CBA365] text-[#050505] text-[10px] font-extrabold uppercase tracking-[0.25em] px-4 py-1 rounded-full shadow-lg">
-              Most Popular Choice
-            </div>
-
             <div>
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#CBA365]">
-                Full Bespoke Package
+                Signature Premium
               </p>
               <div className="flex items-baseline gap-2 mb-6">
-                <h3 className="heading-font text-5xl text-white gold-gradient-text">
-                  Rs. 2,500
+                <h3 className="heading-font text-4xl text-white">
+                  Rs. 10,000
                 </h3>
-                <span className="text-[10px] tracking-widest text-[#888888] uppercase">/ flat rate</span>
               </div>
-              <p className="mb-8 text-xs sm:text-sm text-[#cccccc] font-light leading-relaxed border-b border-[#222222] pb-6">
-                Unlock the complete suite of features, Google Sheets sync, maps, audio, and permanent live hosting.
+              <p className="mb-8 text-xs text-[#a3a3a3] font-light leading-relaxed border-b border-[#222222] pb-6">
+                The perfect balance. Beautiful digital invitations paired with automatic Google Sheets RSVP sync.
               </p>
               
-              <ul className="space-y-3.5 mb-10">
-                {premiumPlan.map((f) => (
+              <ul className="space-y-4 mb-10">
+                {standardPlan.map((f) => (
                   <li key={f} className="flex items-start gap-3 text-xs sm:text-sm text-white font-light">
                     <Check className="flex-none w-4 h-4 text-[#CBA365] mt-0.5" />
                     {f}
@@ -144,9 +143,50 @@ export default function Pricing() {
             
             <Link
               href="#templates"
+              className="block w-full rounded-full border border-[#CBA365] bg-[#CBA365]/5 py-4 text-center text-xs font-semibold uppercase tracking-[0.15em] text-[#CBA365] hover:bg-[#CBA365] hover:text-[#050505] transition-colors"
+            >
+              Select Signature
+            </Link>
+          </motion.div>
+
+          {/* Tier 3 */}
+          <motion.div 
+            variants={itemVariants} 
+            className="relative flex flex-col justify-between rounded-3xl border-2 border-[#CBA365] bg-gradient-to-b from-[#121212] to-[#0a0a0a] p-8 sm:p-10 shadow-2xl shadow-[#CBA365]/10"
+          >
+            {/* Top Recommended Tag */}
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#CBA365] text-[#050505] text-[10px] font-extrabold uppercase tracking-[0.25em] px-4 py-1 rounded-full shadow-lg whitespace-nowrap flex items-center gap-1.5">
+              <Star className="w-3 h-3 fill-black" /> Most Popular Choice
+            </div>
+
+            <div>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#CBA365]">
+                Royal Bespoke
+              </p>
+              <div className="flex items-baseline gap-2 mb-6">
+                <h3 className="heading-font text-4xl text-white gold-gradient-text">
+                  Rs. 12,000
+                </h3>
+              </div>
+              <p className="mb-8 text-xs text-[#cccccc] font-light leading-relaxed border-b border-[#222222] pb-6">
+                The ultimate digital suite. Advanced RSVP dashboard, downloadable guest lists, and priority support.
+              </p>
+              
+              <ul className="space-y-4 mb-10">
+                {premiumPlan.map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-xs sm:text-sm text-white font-light">
+                    <Sparkles className="flex-none w-4 h-4 text-[#CBA365] mt-0.5" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <Link
+              href="#templates"
               className="block w-full rounded-full bg-[#CBA365] py-4 text-center text-xs font-bold uppercase tracking-[0.15em] text-[#050505] hover:bg-[#dfba7c] transition-colors shadow-lg shadow-[#CBA365]/20"
             >
-              Get Started Now
+              Select Royal Bespoke
             </Link>
           </motion.div>
           
@@ -155,7 +195,7 @@ export default function Pricing() {
         <div className="mt-16 text-center">
           <p className="text-[10px] tracking-[0.25em] uppercase text-[#666666] flex items-center justify-center gap-2">
             <ShieldCheck className="w-4 h-4 text-[#CBA365]" />
-            Zero Subscriptions • Secure Handover • Lifetime Archival
+            Zero Hidden Fees • Secure Delivery • Lifetime Archival
           </p>
         </div>
       </div>

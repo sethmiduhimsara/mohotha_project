@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: "What is the structure of the investment?",
-    a: "Creating and previewing your invitation design is 100% free. You only pay a one-time fee of Rs. 2,500 when you are ready to publish and link your Google Sheet. There are no recurring monthly subscriptions.",
+    a: "Our packages start at a one-time flat fee of Rs. 6,000 for the Essential digital invitation. For RSVP tracking and Google Sheets sync, our packages range up to Rs. 12,000. There are no recurring monthly subscriptions.",
   },
   {
     q: "Can we make changes to dates, venues, or photos after publishing?",
@@ -149,7 +149,7 @@ export default function FAQ() {
             </div>
           </div>
           <a
-            href="mailto:studio@mohotha.lk"
+            href="mailto:contact.mohotha@gmail.com"
             className="px-6 py-2.5 rounded-full border border-[#CBA365] text-[#CBA365] text-xs font-semibold uppercase tracking-wider hover:bg-[#CBA365] hover:text-[#050505] transition-colors"
           >
             Contact Desk

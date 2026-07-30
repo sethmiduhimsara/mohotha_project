@@ -1,9 +1,27 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, Mail } from "lucide-react";
 
-const links = {
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 448 512" fill="currentColor" className={className}>
+    <path d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25v178.72A162.55 162.55 0 1 1 185.85 188.31v89.89a74.62 74.62 0 1 0 52.23 71.18V0h88a121.18 121.18 0 0 0 1.86 22.17h.12A122.18 122.18 0 0 0 381 102.39a121.43 121.43 0 0 0 67 20.14Z"/>
+  </svg>
+);
+
+const YouTubeIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
+type LinkItem = {
+  label: string;
+  href: string;
+  icon?: React.ReactNode;
+};
+
+const links: Record<string, LinkItem[]> = {
   Platform: [
     { label: "The Collection", href: "#templates" },
     { label: "Interactive Demo", href: "#interactive-preview" },
@@ -18,9 +36,9 @@ const links = {
     { label: "Terms of Service", href: "#" },
   ],
   Connect: [
-    { label: "studio@mohotha.lk", href: "mailto:studio@mohotha.lk" },
-    { label: "WhatsApp Desk", href: "https://wa.me/94770000000" },
-    { label: "Instagram (@mohotha.lk)", href: "#" },
+    { label: "Email", href: "mailto:contact.mohotha@gmail.com", icon: <Mail className="w-4 h-4" /> },
+    { label: "TikTok", href: "https://www.tiktok.com/@mohotha?_r=1&_t=ZS-98NibCR1mOS", icon: <TikTokIcon className="w-4 h-4" /> },
+    { label: "YouTube", href: "https://youtube.com/@mohotha_evemts?si=6kjZlg7nlfa67Z2U", icon: <YouTubeIcon className="w-4 h-4" /> },
   ],
 };
 
@@ -82,9 +100,10 @@ export default function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-xs text-[#a3a3a3] hover:text-white transition-colors font-light tracking-wide"
+                      className="flex items-center gap-2 text-xs text-[#a3a3a3] hover:text-white transition-colors font-light tracking-wide group"
                     >
-                      {link.label}
+                      {link.icon && <span className="text-[#666666] group-hover:text-[#CBA365] transition-colors">{link.icon}</span>}
+                      <span>{link.label}</span>
                     </Link>
                   </li>
                 ))}

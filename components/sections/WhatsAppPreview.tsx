@@ -99,7 +99,7 @@ export default function WhatsAppPreview() {
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-xs font-bold uppercase tracking-wider text-black hover:bg-[#20bd5a] transition-colors shadow-lg shadow-[#25D366]/20"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>Choose Template &amp; Start Free</span>
+                  <span>Choose Template &amp; Order Now</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <a
