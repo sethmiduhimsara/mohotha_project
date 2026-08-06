@@ -103,30 +103,34 @@ export default function SavingsCalculator() {
             </div>
 
             {/* Right Highlights Box */}
-            <div className="lg:col-span-6 border border-[#CBA365]/30 bg-gradient-to-b from-[#121212] to-[#0a0a0a] rounded-2xl p-8 text-center relative shadow-xl mt-6 lg:mt-0">
+            <div className="lg:col-span-6 border border-[#CBA365]/30 bg-gradient-to-b from-[#121212] to-[#0a0a0a] rounded-2xl p-8 text-center relative shadow-xl mt-6 lg:mt-0 flex flex-col justify-center">
               {percentageSaved > 0 && (
-                <div className="absolute top-4 right-4 bg-[#CBA365]/10 border border-[#CBA365]/40 text-[#CBA365] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                <div className="absolute top-4 right-4 bg-[#4cd964]/10 border border-[#4cd964]/30 text-[#4cd964] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                   Save {percentageSaved}%
                 </div>
               )}
 
-              <span className="text-xs uppercase tracking-[0.25em] text-[#888888] font-medium block">Total Saved</span>
-              <div className="heading-font text-5xl sm:text-6xl text-[#CBA365] my-4 font-normal gold-gradient-text">
-                {savings > 0 ? `Rs. ${savings.toLocaleString()}` : "Rs. 0"}
+              <span className="text-xs uppercase tracking-[0.25em] text-[#888888] font-medium block">Total Investment</span>
+              <div className="heading-font text-5xl sm:text-6xl text-white my-3 font-normal">
+                Rs. {selectedPackage.toLocaleString()}
+              </div>
+              <div className="text-xs font-medium text-[#CBA365] mb-6 tracking-wide uppercase">
+                One-Time All-Inclusive Fee
+              </div>
+              
+              <div className="bg-[#CBA365]/5 border border-[#CBA365]/20 rounded-xl p-4 mb-6">
+                 <span className="text-[10px] uppercase tracking-[0.2em] text-[#CBA365] font-semibold block mb-1">Total Savings vs Traditional</span>
+                 <span className="text-2xl font-bold text-[#CBA365]">Rs. {savings > 0 ? savings.toLocaleString() : "0"}</span>
               </div>
 
-              <p className="text-xs text-[#a3a3a3] font-light leading-relaxed mb-6">
-                Plus zero print delay risk, zero paper waste, and instant WhatsApp delivery worldwide.
-              </p>
-
               <div className="grid grid-cols-2 gap-3 pt-6 border-t border-[#222222]">
-                <div className="flex items-center gap-2 text-left">
+                <div className="flex items-center justify-center gap-2">
                   <Leaf className="w-4 h-4 text-[#4cd964] flex-shrink-0" />
                   <span className="text-[11px] text-[#cccccc]">Zero Paper Waste</span>
                 </div>
-                <div className="flex items-center gap-2 text-left">
+                <div className="flex items-center justify-center gap-2">
                   <Clock className="w-4 h-4 text-[#CBA365] flex-shrink-0" />
-                  <span className="text-[11px] text-[#cccccc]">Instant Deployment</span>
+                  <span className="text-[11px] text-[#cccccc]">Instant Delivery</span>
                 </div>
               </div>
             </div>

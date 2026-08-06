@@ -150,7 +150,7 @@ export default function Templates() {
               >
                 <Link
                   href={design.href}
-                  className="group block relative rounded-2xl overflow-hidden bg-[#0c0c0c] border border-[#1e1e1e] transition-all duration-500 hover:border-[#CBA365]/60 hover:shadow-2xl hover:shadow-[#CBA365]/10 flex flex-col h-full"
+                  className="group block relative rounded-2xl overflow-hidden bg-[#0c0c0c] border border-[#1e1e1e] transition-all duration-700 hover:border-[#CBA365]/50 hover:shadow-[0_0_40px_rgba(203,163,101,0.15)] flex flex-col h-full"
                 >
                   {/* Card Thumbnail Image */}
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#111111]">
@@ -158,24 +158,29 @@ export default function Templates() {
                       src={design.image}
                       alt={design.name}
                       fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-108 opacity-80 group-hover:opacity-100"
+                      className="object-cover object-top transition-all duration-1000 ease-out group-hover:scale-110 opacity-80 group-hover:opacity-40 group-hover:blur-[2px]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent opacity-90" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-[#0c0c0c]/20 to-[#000000]/60 opacity-90 transition-opacity duration-700" />
                     
-                    {/* Badge */}
-                    <div className="absolute top-4 left-4 border border-[#ffffff]/10 bg-[#050505]/70 backdrop-blur-md px-3 py-1 rounded-full text-[10px] tracking-widest text-[#CBA365] uppercase">
-                      {design.style}
+                    {/* Hover Reveal Content (Center) */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-8 group-hover:translate-y-0 z-20">
+                      <div className="border border-[#CBA365]/60 bg-[#0a0a0a]/70 backdrop-blur-xl px-6 py-3 rounded-full flex items-center gap-3 shadow-2xl shadow-[#CBA365]/20 transform transition-transform duration-300 hover:scale-105">
+                         <Sparkles className="w-3.5 h-3.5 text-[#CBA365]" />
+                         <span className="text-xs uppercase tracking-[0.2em] font-semibold text-white">View Inside</span>
+                         <ArrowUpRight className="w-4 h-4 text-[#CBA365]" />
+                      </div>
                     </div>
 
-                    <div className="absolute top-4 right-4 w-9 h-9 rounded-full border border-white/20 bg-black/60 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-45">
-                      <ArrowUpRight className="w-4 h-4 text-[#CBA365]" />
+                    {/* Badge */}
+                    <div className="absolute top-4 left-4 border border-[#ffffff]/10 bg-[#050505]/70 backdrop-blur-md px-3 py-1 rounded-full text-[10px] tracking-widest text-[#CBA365] uppercase transition-all duration-500 group-hover:opacity-0 group-hover:-translate-y-4 z-10">
+                      {design.style}
                     </div>
                   </div>
 
                   {/* Card Info Content */}
-                  <div className="p-6 flex flex-col justify-between flex-1">
+                  <div className="p-6 flex flex-col justify-between flex-1 relative z-10 bg-[#0c0c0c] transition-transform duration-500 group-hover:-translate-y-2">
                     <div>
-                      <h3 className="heading-font text-2xl text-white mb-2 group-hover:text-[#CBA365] transition-colors duration-300">
+                      <h3 className="heading-font text-2xl text-white mb-2 group-hover:text-[#CBA365] transition-colors duration-500">
                         {design.name}
                       </h3>
                       
@@ -184,7 +189,7 @@ export default function Templates() {
                         {design.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="text-[9px] tracking-wider uppercase px-2.5 py-1 rounded-md bg-[#161616] text-[#888888] border border-[#222222]"
+                            className="text-[9px] tracking-wider uppercase px-2.5 py-1 rounded-md bg-[#161616] text-[#888888] border border-[#222222] transition-colors duration-500 group-hover:border-[#CBA365]/30 group-hover:text-[#cccccc]"
                           >
                             {tag}
                           </span>
@@ -192,9 +197,9 @@ export default function Templates() {
                       </div>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-[#1a1a1a] flex items-center justify-between text-xs tracking-widest text-[#a3a3a3] uppercase font-medium">
-                      <span>Explore Demo</span>
-                      <span className="text-[#CBA365] group-hover:translate-x-1 transition-transform">→</span>
+                    <div className="mt-6 pt-4 border-t border-[#1a1a1a] flex items-center justify-between text-xs tracking-widest text-[#a3a3a3] uppercase font-medium group-hover:border-[#CBA365]/20 transition-colors duration-500">
+                      <span className="group-hover:text-white transition-colors duration-500">Explore Demo</span>
+                      <span className="text-[#CBA365] group-hover:translate-x-2 transition-transform duration-500">→</span>
                     </div>
                   </div>
                 </Link>
